@@ -1,9 +1,9 @@
-import HomeCard from './HomeCard';
+import HomeCard from './UI/HomeCard';
 
 const HomeContent = () => {
   return (
-    <div className="flex flex-col p-10 w-full">
-      <h1 className="text-3xl font-bold mb-4">Home</h1>
+    <div className="flex flex-col flex-auto px-12 py-8 w-full">
+      <h1 className="text-[1.75rem] font-bold mb-4">Home</h1>
       <div className="flex flex-wrap gap-4">
         <HomeCard
           title="Start with AI"

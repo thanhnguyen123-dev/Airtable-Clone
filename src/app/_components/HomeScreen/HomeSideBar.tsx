@@ -1,16 +1,17 @@
 import { GoHome } from "react-icons/go";
 import { MdKeyboardArrowRight } from "react-icons/md";
-
+import HomeSideBarItem from "./UI/HomeSideBarItem";
+import HomeCreateButton from "./UI/HomeCreateButton";
 
 const HomeSideBar = ({isSideBarOpen}  : {isSideBarOpen: boolean}) => {
   return (
     <div
-    className={`bg-white shadow-md transition-all duration-300 ${
+    className={`bg-white border-1 shadow-md transition-all duration-300 ${
       isSideBarOpen ? "w-[300px] min-w-[300px]" : "w-12"
     } flex flex-col items-start h-full`}
     >
       {/* Collapsed/Expanded Sidebar Content */}
-      <div className="flex flex-col w-full h-full p-4">
+      <div className="flex flex-col w-full h-full p-6">
         <div className="flex flex-col h-full w-full">
           {isSideBarOpen ? (
             <div className="flex flex-col justify-between w-full h-full">
@@ -18,7 +19,7 @@ const HomeSideBar = ({isSideBarOpen}  : {isSideBarOpen: boolean}) => {
               <div className="flex flex-col items-center gap-6 w-full font-medium">
                 <div className="flex flex-row justify-between w-full">
                   <p>Home</p>
-                  <div className="flex items-center justify-center">
+                  <div className="flex items-center justify-center gap-2">
                     <button>
                       <svg
                       width="16"
@@ -60,54 +61,21 @@ const HomeSideBar = ({isSideBarOpen}  : {isSideBarOpen: boolean}) => {
               </div>
 
               <div className="flex flex-col items-center gap-4 w-full">
-                <div className="flex flex-row gap-2 w-full">
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    className="flex-none"
-                  >
-                    <use href="/icons/icons_definitions.svg#BookOpen"></use>
-                  </svg>
-                  <p className="text-xs">Template and apps</p>
-                </div>
+                <HomeSideBarItem 
+                  title="Templates and apps" 
+                  imagePath="/icons/icons_definitions.svg#BookOpen"
+                />
 
-                <div className="flex flex-row gap-2 w-full">
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    className="flex-none"
-                  >
-                    <use href="/icons/icons_definitions.svg#ShoppingBag"></use>
-                  </svg>
-                  <p className="text-xs">Marketplace</p>
-                </div>
+                <HomeSideBarItem 
+                  title="Marketplace" 
+                  imagePath="/icons/icons_definitions.svg#ShoppingBag"
+                />
 
-                <div className="flex flex-row gap-2 w-full">
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    className="flex-none"
-                  >
-                    <use href="/icons/icons_definitions.svg#UploadSimple"></use>
-                  </svg>
-                  <p className="text-xs">Import</p>
-                </div>
-
-                <button className="bg-blue-500 w-full flex justify-center items-center p-1 rounded gap-4">
-                  <svg
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    className="flex-none"
-                    fill="white"
-                  >
-                    <use href="/icons/icons_definitions.svg#Plus"></use>
-                  </svg>
-                  <span className="text-white text-sm">Create</span>
-                </button>
+                <HomeSideBarItem 
+                  title="Import" 
+                  imagePath="/icons/icons_definitions.svg#Plus"
+                />
+                <HomeCreateButton/>
               </div>
             </div>
           ) 
