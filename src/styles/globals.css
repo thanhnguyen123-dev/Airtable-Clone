@@ -6,10 +6,10 @@
   background-color: #f5f5f5;
 }
 
-.rec-cell {
-  @apply flex flex-col gap-4 border-2 bg-white rounded-lg p-4 basis-72 grow hover:shadow-md hover:shadow-slate-200;
+.home-card-style{
+  @apply flex flex-col gap-2 border-2 bg-white rounded-lg p-4 basis-72 grow hover:shadow-md hover:shadow-slate-200;
 }
 
-.rec-cell-p {
+.home-card-p-style {
   @apply text-sm font-normal text-gray-600
 }
