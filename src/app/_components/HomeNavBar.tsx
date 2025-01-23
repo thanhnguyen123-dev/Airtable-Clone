@@ -16,8 +16,8 @@ const NavBar = ({ isSideBarOpen, setIsSideBarOpen }: Props) => {
   };
 
   return (
-    <nav className="flex items-center justify-between w-full px-6 py-2 bg-white border-b border-gray-200 sticky top-0">
-      <div className="flex items-center gap-4">
+    <nav className="flex items-center justify-between w-full px-4 py-2 bg-white border-b border-gray-200 sticky top-0">
+      <div className="flex items-center gap-6">
         <button onClick={handleClick} className="text-gray-600">
           <RxHamburgerMenu />
         </button>
