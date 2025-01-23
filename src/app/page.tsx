@@ -1,5 +1,6 @@
 "use client";
 import { signIn } from "next-auth/react";
+import React from "react";
 import { FcGoogle } from "react-icons/fc";
 import { IoLogoGithub } from "react-icons/io";
 import { OAuthButton } from "./_components/AuthButton";
