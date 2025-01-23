@@ -15,6 +15,5 @@ export default function MainPage() {
         <HomeContent/>
       </div>
     </div>
-
   );
 }

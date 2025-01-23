@@ -1,5 +1,3 @@
-import Home from "../../../page";
-
 const HomeSearchBar = () => {
   return (
     <div role="button" className="flex items-center justify-between rounded-3xl w-full border px-4 py-1 hover:shadow-sm hover:shadow-gray-400">
