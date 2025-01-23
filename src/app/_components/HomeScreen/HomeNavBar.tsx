@@ -3,7 +3,7 @@ import Image from "next/image";
 import { FiHelpCircle } from "react-icons/fi";
 import { FaBell } from "react-icons/fa";
 import { RxHamburgerMenu } from "react-icons/rx";
-import HomeSearchBar from "./HomeSearchBar";
+import HomeSearchBar from "./UI/HomeSearchBar";
 import { useSession } from "next-auth/react";
 
 type Props = {
@@ -33,7 +33,9 @@ const NavBar = ({ isSideBarOpen, setIsSideBarOpen }: Props) => {
       </div>
 
       {/* Middle Section: Search Bar */}
-      <HomeSearchBar />
+      <div className="flex justify-center w-1/4">
+        <HomeSearchBar />
+      </div>
 
       {/* Right Section: Help, Notifications, Profile */}
       <div className="flex items-center gap-4">
