@@ -1,16 +1,16 @@
 const HomeCreateButton = () => {
   return (
-    <button className="bg-blue-500 w-full flex justify-center items-center p-1 rounded gap-4">
+    <button className="bg-blue-600 w-full flex justify-center items-center p-[0.4rem] rounded-md gap-2 mt-2">
       <svg
-        width="16"
-        height="16"
+        width="14"
+        height="14"
         viewBox="0 0 16 16"
         className="flex-none"
         fill="white"
       >
         <use href="/icons/icons_definitions.svg#Plus"></use>
       </svg>
-      <span className="text-white text-sm">Create</span>
+      <span className="text-white text-[0.75rem]">Create</span>
     </button>
   )
 }

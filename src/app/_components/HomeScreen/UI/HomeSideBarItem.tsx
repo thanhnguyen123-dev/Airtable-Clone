@@ -5,7 +5,7 @@ type HomeSideBarItemProps = {
 
 const HomeSideBarItem = ({title, imagePath} : HomeSideBarItemProps) => {
   return (
-    <div className="flex flex-row gap-2 w-full">
+    <div className="flex flex-row gap-2 w-full rounded-md hover:bg-gray-100 p-2">
       <svg
         width="16"
         height="16"

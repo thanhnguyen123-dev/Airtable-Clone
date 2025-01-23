@@ -6,21 +6,21 @@ import HomeCreateButton from "./UI/HomeCreateButton";
 const HomeSideBar = ({isSideBarOpen}  : {isSideBarOpen: boolean}) => {
   return (
     <div
-    className={`bg-white border-1 shadow-md transition-all duration-300 ${
-      isSideBarOpen ? "w-[300px] min-w-[300px]" : "w-12"
-    } flex flex-col items-start h-full`}
+      className={`bg-white border-1 shadow-md duration-75 ${
+        isSideBarOpen ? "w-[300px] min-w-[300px] translate-x-0" : "w-12"
+      } flex flex-col items-start h-full`}
     >
       {/* Collapsed/Expanded Sidebar Content */}
-      <div className="flex flex-col w-full h-full p-6">
+      <div className="flex flex-col w-full h-full p-4">
         <div className="flex flex-col h-full w-full">
           {isSideBarOpen ? (
             <div className="flex flex-col justify-between w-full h-full">
-              {/**Home */}
-              <div className="flex flex-col items-center gap-6 w-full font-medium">
-                <div className="flex flex-row justify-between w-full">
+              <div className="flex flex-col items-center gap-[0.75rem] w-full font-medium text-[0.95rem]">
+                {/**Home */}
+                <div className="flex flex-row justify-between w-full rounded-md hover:bg-gray-100 p-2">
                   <p>Home</p>
                   <div className="flex items-center justify-center gap-2">
-                    <button>
+                    <button className="hover:bg-gray-200 p-1 rounded-md">
                       <svg
                       width="16"
                       height="16"
@@ -32,11 +32,12 @@ const HomeSideBar = ({isSideBarOpen}  : {isSideBarOpen: boolean}) => {
                     </button>
                   </div>
                 </div>
+
                 {/** Workspace */}
-                <div className="flex flex-row justify-between w-full">
-                  <p>Workspace</p>
+                <div className="flex flex-row justify-between w-full rounded-md hover:bg-gray-100 p-2">
+                  <p>All workspaces</p>
                   <div className="flex items-center gap-2">
-                    <button>
+                    <button className="hover:bg-gray-200 p-1 rounded-md">
                       <svg
                       width="16"
                       height="16"
@@ -46,7 +47,7 @@ const HomeSideBar = ({isSideBarOpen}  : {isSideBarOpen: boolean}) => {
                         <use href="/icons/icons_definitions.svg#Plus"></use>
                       </svg>
                     </button>
-                    <button>
+                    <button className="hover:bg-gray-200 p-1 rounded-md">
                       <svg
                       width="16"
                       height="16"
@@ -60,7 +61,9 @@ const HomeSideBar = ({isSideBarOpen}  : {isSideBarOpen: boolean}) => {
                 </div>
               </div>
 
-              <div className="flex flex-col items-center gap-4 w-full">
+              <div className="flex flex-col items-center gap-1 w-full">
+                <div className="border w-11/12 border-gray-200 mb-2"></div>
+
                 <HomeSideBarItem 
                   title="Templates and apps" 
                   imagePath="/icons/icons_definitions.svg#BookOpen"
@@ -99,9 +102,12 @@ const HomeSideBar = ({isSideBarOpen}  : {isSideBarOpen: boolean}) => {
                 >
                   <use href="/icons/icons_definitions.svg#UsersThree"></use>
                 </svg>
+
+                <div className="border w-5 border-gray-200"></div>
               </div>
 
               <div className="flex flex-col items-center justify-center gap-4">
+                <div className="border w-5 border-gray-200"></div>
                 <svg
                   width="16"
                   height="16"
