@@ -1,6 +1,6 @@
-# Airtable Clone
+# [Airtable Clone](https://thanh-nguyen-airtable-clone.vercel.app/)
 
-This is an Airtable-like web app using the following tech stack:
+This is a fullstack web-app (implementing from scratch) cloning core functionalities of [Airtable](https://airtable.com/) using the following tech stack:
 - Front-End: [Next.js](https://nextjs.org)
 - Back-End: [tRPC](https://trpc.io)
 - Database: [Prisma](https://prisma.io)
