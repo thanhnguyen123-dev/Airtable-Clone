@@ -1,6 +1,12 @@
-import HomeCard from './UI/HomeCard';
+import HomeCard from './HomeCard';
+import React from 'react';
+import { api } from '~/trpc/react';
+import BaseCardGrid from '../BaseScreen/BaseCardGrid';
 
 const HomeContent = () => {
+  const {data: bases, isLoading} = api.base.getAll.useQuery();
+
+
   return (
     <div className="flex flex-col flex-auto px-12 py-8 w-full">
       <h1 className="text-[1.75rem] font-bold mb-4">Home</h1>
@@ -113,6 +119,15 @@ const HomeContent = () => {
               <use href='icons/icons_definitions.svg#GridFour'></use>
             </svg>
           </div>
+        </div>
+      </div>
+
+      <div className='flex flex-col gap-2 w-full'>
+        <div className='flex flex-wrap gap-4 mt-2'>
+          <p>Today</p>
+        </div>
+        <div className='flex flex-wrap gap-4 mt-2'>
+          <BaseCardGrid/>
         </div>
       </div>
     </div>

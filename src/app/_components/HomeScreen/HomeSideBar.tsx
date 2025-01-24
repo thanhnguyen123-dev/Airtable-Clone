@@ -1,7 +1,5 @@
-import { GoHome } from "react-icons/go";
-import { MdKeyboardArrowRight } from "react-icons/md";
-import HomeSideBarItem from "./UI/HomeSideBarItem";
-import HomeCreateButton from "./UI/HomeCreateButton";
+import HomeSideBarItem from "./HomeSideBarItem";
+import HomeCreateButton from "./HomeCreateButton";
 
 const HomeSideBar = ({isSideBarOpen}  : {isSideBarOpen: boolean}) => {
   return (

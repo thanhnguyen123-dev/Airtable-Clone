@@ -22,7 +22,7 @@ export default function Home() {
   return (
     <div className="flex flex-col justify-center items-center h-screen gap-4">
       <div className="flex flex-col gap-4 w-full max-w-md">
-          <OAuthButton handleClick={handleGoogleAuth} action="Continue with" providerName="Google" icon={<FcGoogle className="absolute left-6"/>} />
+        <OAuthButton handleClick={handleGoogleAuth} action="Continue with" providerName="Google" icon={<FcGoogle className="absolute left-6"/>} />
       </div>
     </div>
   
