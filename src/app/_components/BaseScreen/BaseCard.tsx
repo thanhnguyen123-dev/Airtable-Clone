@@ -9,7 +9,7 @@ type BaseCardProps = {
 const BaseCard = ({name, baseId} : BaseCardProps) => {
   const router = useRouter();
   const handleClick = () => {
-    router.push(`${baseId}`);
+    router.push(`/${baseId}`);
   }
 
   return (

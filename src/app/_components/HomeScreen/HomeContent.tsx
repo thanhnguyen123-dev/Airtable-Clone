@@ -4,9 +4,6 @@ import { api } from '~/trpc/react';
 import BaseCardGrid from '../BaseScreen/BaseCardGrid';
 
 const HomeContent = () => {
-  const {data: bases, isLoading} = api.base.getAll.useQuery();
-
-
   return (
     <div className="flex flex-col flex-auto px-12 py-8 w-full">
       <h1 className="text-[1.75rem] font-bold mb-4">Home</h1>

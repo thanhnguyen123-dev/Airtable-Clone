@@ -7,16 +7,16 @@ const BaseCardGrid = () => {
   if (isLoading) {
     return <div>Loading...</div>
   }
-  if (baseError) {
-    return <div>Error: {baseError.message}</div>
+  if (baseError || !bases) {
+    return <></>
   }
   
   return (
     <>
       {
-        bases?.map((base, index) => {
+        bases.map((base, index) => {
           return <BaseCard key={index} name={base.name} baseId={base.id}/>
-        }) || []
+        })
       }
     </>
   )
