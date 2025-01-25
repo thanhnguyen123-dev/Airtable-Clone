@@ -16,7 +16,7 @@ const TableToolItem = ({d, name, handleClick}: TableToolItemProps) => {
         className="flex-none"
         fill="rgb(71 85 105)"
       >
-        <path fill-rul="non-zero" d={d} />
+        <path fill-rule="non-zero" d={d} />
       </svg>
       <span className='text-slate-600'>{name}</span>
     </div>
