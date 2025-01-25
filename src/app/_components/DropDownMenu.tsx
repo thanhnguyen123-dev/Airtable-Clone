@@ -10,7 +10,7 @@ const DropDownMenu = ({top}: Props) => {
   const {data: session} = useSession();
 
   return (  
-    <div className={`absolute right-4 ${top} w-sm bg-white border-2 rounded-lg shadow-md z-10`}>
+    <div className={`absolute right-4 ${top} w-sm bg-white border-2 rounded-lg shadow-md z-40`}>
       <div className="px-4 py-2">
         <p className="text-sm font-medium">{session?.user?.name}</p>
         <p className="text-[0.75rem] text-gray-500">{session?.user?.email}</p>

@@ -11,7 +11,7 @@ const NavBar = () => {
   const toggleDropDown = () => setIsDropDownOpen(!isDropDownOpen);
 
   return (
-    <nav className="flex items-center justify-between w-full px-4 py-3 pale-teal-green sticky top-0">
+    <nav className="flex items-center justify-between w-full px-4 py-3 pale-teal-green sticky top-0 z-30">
       {/** left portion */}
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-4 text-white font-semibold">
@@ -31,7 +31,7 @@ const NavBar = () => {
         </div>
 
         <div className="text-[0.8rem] flex gap-4 items-center text-white">
-          <div role="button" className="flex justify-center items-center dark-teal-green rounded-2xl px-3 py-2 text-white">
+          <div role="button" className="flex justify-center items-center dark-teal-green rounded-2xl px-3 py-[0.4rem] text-white">
             <span>Data</span>
           </div>
           <div role="button" className="base-nav-item">
