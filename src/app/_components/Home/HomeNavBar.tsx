@@ -4,7 +4,6 @@ import { RxHamburgerMenu } from "react-icons/rx";
 import HomeSearchBar from "./HomeSearchBar";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
-import { signOut } from "next-auth/react";
 import DropDownMenu from "../DropDownMenu";
 
 type Props = {
