@@ -4,9 +4,10 @@ import { useRouter } from "next/navigation";
 type BaseCardProps = {
   name: string;
   baseId: string;
+  isLoading?: boolean;
 }
 
-const BaseCard = ({name, baseId} : BaseCardProps) => {
+const BaseCard = ({name, baseId, isLoading} : BaseCardProps) => {
   const router = useRouter();
   const handleClick = () => {
     router.push(`/${baseId}`);

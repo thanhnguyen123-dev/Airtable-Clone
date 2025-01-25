@@ -1,12 +1,21 @@
 import React from "react";
 import { api } from "~/trpc/react";
 import BaseCard from "./BaseCard";
+import BaseCardSkeleton from "./BaseCardSkeleton";
 
 const BaseCardGrid = () => {
   const {data: bases, isLoading: isLoading, error: basesError} = api.base.getAll.useQuery();
+
   if (isLoading) {
-    return <div>Loading...</div>
+    return (
+      <>
+        {Array.from({ length: 8 }).map((_, index) => (
+          <BaseCardSkeleton key={index} />
+        ))}
+      </>
+    );
   }
+
   if (basesError || !bases) {
     return <></>
   }

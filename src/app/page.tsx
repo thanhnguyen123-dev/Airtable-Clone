@@ -6,6 +6,7 @@ import { OAuthButton } from "./_components/AuthButton";
 import NavBar from "./_components/HomeScreen/HomeNavBar";
 import HomeSideBar from "./_components/HomeScreen/HomeSideBar";
 import HomeContent from "./_components/HomeScreen/HomeContent";
+import Loader from "./_components/Loader";
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -16,7 +17,7 @@ export default function Home() {
   };
 
   if (status === "loading") {
-    return <div className="flex items-center justify-center h-screen">Loading...</div>;
+    return <Loader/>;
   }
 
   if (!session) {
