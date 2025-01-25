@@ -2,6 +2,7 @@
 
 import React from "react";
 import { api } from "~/trpc/react";
+import BaseNavBar from "../_components/Base/BaseNavBar";
 
 interface BasePageProps {
   params: {
@@ -29,12 +30,10 @@ export default function BasePage({ params }: BasePageProps) {
 
   // Once loaded, you can render the base’s “dummy content” or table or anything else
   return (
-    <div className="p-4">
-      <h2 className="text-xl font-bold">{base.name}</h2>
-      <p className="text-gray-500 text-sm">Base ID: {base.id}</p>
-
-      {/* Put your placeholder or real table UI here */}
-      <p className="mt-4">TODO: Build out the real table UI for {base.name}!</p>
+    <div className="bg-grey flex flex-col w-full max-w-10xl h-screen">
+      <BaseNavBar/>
+      <div className="h-screen max-w-10xl flex flex-grow overflow-y-auto">
+      </div>
     </div>
   );
 }

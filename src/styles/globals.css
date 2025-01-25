@@ -10,6 +10,31 @@
   background-color: #f8fafc;
 }
 
+.pale-teal-green{
+  background-color: #008080;
+}
+
+.dark-teal-green {
+  background-color:  rgba(0, 0, 0, 0.1)
+
+}
+
+.base-nav-item {
+  @apply flex items-center justify-center rounded-2xl px-3 py-2 transition-colors
+}
+
+.base-nav-item:hover {
+  background-color: #037676;
+}
+
+.separator {
+  height: 1.5rem;
+  background-color: rgba(237, 237, 237, 0.2); 
+  width: 1.1px; 
+  margin: 0; 
+}
+
+
 .base-grid {
   display: grid;
   gap: 1rem;

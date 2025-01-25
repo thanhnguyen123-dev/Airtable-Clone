@@ -1,7 +1,7 @@
 import HomeCard from './HomeCard';
 import React from 'react';
 import { api } from '~/trpc/react';
-import BaseCardGrid from '../BaseScreen/BaseCardGrid';
+import BaseCardGrid from '../Base/BaseCardGrid';
 
 const HomeContent = () => {
   return (

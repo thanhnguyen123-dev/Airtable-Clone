@@ -1,7 +1,5 @@
 "use client";
 import Image from "next/image";
-import { FiHelpCircle } from "react-icons/fi";
-import { FaBell } from "react-icons/fa";
 import { RxHamburgerMenu } from "react-icons/rx";
 import HomeSearchBar from "./HomeSearchBar";
 import { useSession } from "next-auth/react";

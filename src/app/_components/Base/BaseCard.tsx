@@ -4,14 +4,14 @@ import { useRouter } from "next/navigation";
 type BaseCardProps = {
   name: string;
   baseId: string;
-  isLoading?: boolean;
 }
 
-const BaseCard = ({name, baseId, isLoading} : BaseCardProps) => {
+const BaseCard = ({name, baseId} : BaseCardProps) => {
   const router = useRouter();
   const handleClick = () => {
     router.push(`/${baseId}`);
   }
+  
   const initials = name.slice(0, 2).charAt(0).toUpperCase() + name.slice(1, 2);
 
   return (

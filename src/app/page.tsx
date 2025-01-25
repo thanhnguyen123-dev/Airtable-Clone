@@ -3,9 +3,9 @@ import { useSession, signIn } from "next-auth/react";
 import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
 import { OAuthButton } from "./_components/AuthButton";
-import NavBar from "./_components/HomeScreen/HomeNavBar";
-import HomeSideBar from "./_components/HomeScreen/HomeSideBar";
-import HomeContent from "./_components/HomeScreen/HomeContent";
+import NavBar from "./_components/Home/HomeNavBar";
+import HomeSideBar from "./_components/Home/HomeSideBar";
+import HomeContent from "./_components/Home/HomeContent";
 import Loader from "./_components/Loader";
 
 export default function Home() {
