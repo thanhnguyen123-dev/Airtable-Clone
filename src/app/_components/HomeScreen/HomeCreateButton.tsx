@@ -1,7 +1,7 @@
 "use client";
 
 import { api } from "~/trpc/react";
-import { redirect, useRouter } from "next/navigation";
+import { useRouter } from "next/navigation";
 import React from "react";
 
 
@@ -9,12 +9,13 @@ const HomeCreateButton = () => {
   const router = useRouter();
   const createBaseMutation = api.base.create.useMutation();
   const handleCreate = async () => {
-    const base = await createBaseMutation.mutateAsync(
-      {name: "Untitled Base"}
-    );
-    router.push(`/${base.id}`);
-
-  }
+    try {
+      const base = await createBaseMutation.mutateAsync({ name: "Untitled Base", });
+      router.push(`/${base.id}`);
+    } catch (error) {
+      console.error("Failed to create base:", error);
+    }
+  };
 
   return (
     <button 
