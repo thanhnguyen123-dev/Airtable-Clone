@@ -63,6 +63,7 @@ model User {
     accounts      Account[]
     sessions      Session[]
     posts         Post[]
+    bases         Base[]
 }
 
 model VerificationToken {
@@ -71,4 +72,12 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+model Base {
+    id        String   @id @default(cuid())
+    name      String   @default("Untitled Base")
+    createdAt DateTime @default(now())
+    createdBy      User     @relation(fields: [createdById], references: [id])
+    createdById   String   
 }

@@ -57,8 +57,8 @@ export const authConfig: NextAuthOptions = {
       },
     }),
 
-    async redirect({baseUrl}) {
-      return baseUrl + "/home";
+    async redirect() {
+      return "/";
     }
   },
   pages: {

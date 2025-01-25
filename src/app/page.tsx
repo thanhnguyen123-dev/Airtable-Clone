@@ -1,30 +1,47 @@
 "use client";
-import { signIn } from "next-auth/react";
-import React from "react";
+import { useSession, signIn } from "next-auth/react";
+import { useState } from "react";
 import { FcGoogle } from "react-icons/fc";
-import { IoLogoGithub } from "react-icons/io";
 import { OAuthButton } from "./_components/AuthButton";
-import { auth } from "~/server/auth";
-
+import NavBar from "./_components/HomeScreen/HomeNavBar";
+import HomeSideBar from "./_components/HomeScreen/HomeSideBar";
+import HomeContent from "./_components/HomeScreen/HomeContent";
+import Loader from "./_components/Loader";
 
 export default function Home() {
-  // const hello = await api.post.hello({ text: "from tRPC" });
-  // const session = await auth();
+  const { data: session, status } = useSession();
+  const [isSideBarOpen, setIsSideBarOpen] = useState(false);
 
-  // if (session?.user) {
-  //   void api.post.getLatest.prefetch();
-  // }
   const handleGoogleAuth = async () => {
     await signIn("google");
   };
-  
+
+  if (status === "loading") {
+    return <Loader/>;
+  }
+
+  if (!session) {
+    return (
+      <div className="flex flex-col justify-center items-center h-screen gap-4">
+        <div className="flex flex-col gap-4 w-full max-w-md">
+          <OAuthButton 
+            handleClick={handleGoogleAuth} 
+            action="Continue with" 
+            providerName="Google" 
+            icon={<FcGoogle className="absolute left-6"/>} 
+          />
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className="flex flex-col justify-center items-center h-screen gap-4">
-      <div className="flex flex-col gap-4 w-full max-w-md">
-          <OAuthButton handleClick={handleGoogleAuth} action="Continue with" providerName="Google" icon={<FcGoogle className="absolute left-6"/>} />
+    <div className="bg-grey flex flex-col w-full max-w-10xl h-screen">
+      <NavBar isSideBarOpen={isSideBarOpen} setIsSideBarOpen={setIsSideBarOpen}/>
+      <div className="h-screen max-w-10xl flex flex-grow overflow-y-auto">
+        <HomeSideBar isSideBarOpen={isSideBarOpen}/>
+        <HomeContent/>
       </div>
     </div>
-  
   );
 }

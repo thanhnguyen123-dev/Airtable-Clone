@@ -3,9 +3,10 @@ import Image from "next/image";
 import { FiHelpCircle } from "react-icons/fi";
 import { FaBell } from "react-icons/fa";
 import { RxHamburgerMenu } from "react-icons/rx";
-import HomeSearchBar from "./UI/HomeSearchBar";
+import HomeSearchBar from "./HomeSearchBar";
 import { useSession } from "next-auth/react";
-
+import { useState } from "react";
+import { signOut } from "next-auth/react";
 type Props = {
   isSideBarOpen: boolean;
   setIsSideBarOpen: (val: boolean) => void;
@@ -15,6 +16,9 @@ const NavBar = ({ isSideBarOpen, setIsSideBarOpen }: Props) => {
   const handleClick = () => {
     setIsSideBarOpen(!isSideBarOpen);
   };
+
+  const [isDropDownOpen, setIsDropDownOpen] = useState(false);
+  const toggleDropDown = () => setIsDropDownOpen(!isDropDownOpen);
 
   const { data: session } = useSession();
 
@@ -29,7 +33,7 @@ const NavBar = ({ isSideBarOpen, setIsSideBarOpen }: Props) => {
           alt="Airtable Logo"
           width={100}
           height={100}
-        />
+        />        
       </div>
 
       {/* Middle Section: Search Bar */}
@@ -65,7 +69,25 @@ const NavBar = ({ isSideBarOpen, setIsSideBarOpen }: Props) => {
           width={25}
           height={25}
           className="rounded-full cursor-pointer" 
+          onClick={toggleDropDown}
         />
+        
+        {isDropDownOpen && (
+          <div className="absolute right-4 top-11 w-48 bg-white border-2 rounded-lg shadow-md z-10">
+            <div className="px-4 py-2">
+              <p className="text-sm font-bold">{session?.user?.name}</p>
+              <p className="text-[0.75rem] text-gray-500">{session?.user?.email}</p>
+            </div>
+            <hr />
+              <button 
+                className="px-4 py-2 w-full text-sm hover:bg-gray-100 cursor-pointer text-red-500"
+                onClick={() => signOut()}
+              >
+                Sign Out
+              </button>
+          </div>
+          )
+        }
       </div>
     </nav>
   );
