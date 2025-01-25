@@ -5,7 +5,7 @@ import BaseCardGrid from '../BaseScreen/BaseCardGrid';
 
 const HomeContent = () => {
   return (
-    <div className="flex flex-col flex-auto px-12 py-8 w-full">
+    <div className="flex flex-col flex-auto px-12 py-8 w-full overflow-y-auto">
       <h1 className="text-[1.75rem] font-bold mb-4">Home</h1>
       <div className="flex flex-wrap gap-4">
         <HomeCard
@@ -119,11 +119,9 @@ const HomeContent = () => {
         </div>
       </div>
 
-      <div className='flex flex-col gap-2 w-full'>
-        <div className='flex flex-wrap gap-4 mt-2'>
-          <p>Today</p>
-        </div>
-        <div className='flex flex-wrap gap-4 mt-2'>
+      <div className="flex flex-col gap-4">
+        <p className="text-[0.8rem] font-medium text-gray-500">Recent</p>
+        <div className="base-grid">
           <BaseCardGrid/>
         </div>
       </div>

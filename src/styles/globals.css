@@ -2,8 +2,49 @@
 @tailwind components;
 @tailwind utilities;
 
+* {
+  box-sizing: border-box;
+}
+
 .bg-grey {
   background-color: #f8fafc;
+}
+
+.base-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+
+@media (min-width: 700px) {
+
+  .base-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+
+
+
+
+@media (min-width: 900px) {
+  .base-grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1200px) {
+  .base-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+}
+
+
+
+
+
+.base-card-style {
+  @apply flex flex-col gap-2 border-2 bg-white rounded-lg p-4 min-w-[250px] max-w-[450px] flex-1 hover:shadow-md hover:shadow-slate-200;
 }
 
 

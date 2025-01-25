@@ -11,6 +11,7 @@ const BaseCard = ({name, baseId} : BaseCardProps) => {
   const handleClick = () => {
     router.push(`/${baseId}`);
   }
+  const initials = name.slice(0, 2).charAt(0).toUpperCase() + name.slice(1, 2);
 
   return (
     <div
@@ -18,9 +19,16 @@ const BaseCard = ({name, baseId} : BaseCardProps) => {
       className="home-card-style"
       onClick={handleClick}
     >
-      <div className="flex flex-col gap-2 justify-center">
-        <p className="text-sm">{name}</p>
-        <p className="text-xs">Base</p>
+      <div className="flex gap-4">
+        <div className="flex items-center justify-center w-14 h-14 text-white bg-orange-500 rounded-lg">
+          <span className="text-2xl">{initials}</span>
+        </div>
+        
+        <div className="flex flex-col gap-1">
+          <p className="text-[0.8rem] font-medium mt-3">{name}</p>
+          <p className="text-[0.7rem] text-gray-500">Base</p>
+        </div>
+      
       </div>
     </div>
   );

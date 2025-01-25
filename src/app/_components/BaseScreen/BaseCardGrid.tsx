@@ -3,11 +3,11 @@ import { api } from "~/trpc/react";
 import BaseCard from "./BaseCard";
 
 const BaseCardGrid = () => {
-  const {data: bases, isLoading: isLoading, error: baseError} = api.base.getAll.useQuery();
+  const {data: bases, isLoading: isLoading, error: basesError} = api.base.getAll.useQuery();
   if (isLoading) {
     return <div>Loading...</div>
   }
-  if (baseError || !bases) {
+  if (basesError || !bases) {
     return <></>
   }
   
