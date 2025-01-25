@@ -3,6 +3,7 @@
 import React from "react";
 import { api } from "~/trpc/react";
 import BaseNavBar from "../_components/Base/BaseNavBar";
+import Loader from "../_components/Loader";
 
 interface BasePageProps {
   params: {
@@ -17,7 +18,7 @@ export default function BasePage({ params }: BasePageProps) {
   });
 
   if (isLoading) {
-    return <div className="p-4">Loading base...</div>;
+    return <Loader />;
   }
 
   if (!base) {
@@ -28,7 +29,6 @@ export default function BasePage({ params }: BasePageProps) {
     );
   }
 
-  // Once loaded, you can render the base’s “dummy content” or table or anything else
   return (
     <div className="bg-grey flex flex-col w-full max-w-10xl h-screen">
       <BaseNavBar/>

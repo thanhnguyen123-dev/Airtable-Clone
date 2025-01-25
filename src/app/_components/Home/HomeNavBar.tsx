@@ -5,6 +5,8 @@ import HomeSearchBar from "./HomeSearchBar";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import { signOut } from "next-auth/react";
+import DropDownMenu from "../DropDownMenu";
+
 type Props = {
   isSideBarOpen: boolean;
   setIsSideBarOpen: (val: boolean) => void;
@@ -70,22 +72,7 @@ const NavBar = ({ isSideBarOpen, setIsSideBarOpen }: Props) => {
           onClick={toggleDropDown}
         />
         
-        {isDropDownOpen && (
-          <div className="absolute right-4 top-11 w-48 bg-white border-2 rounded-lg shadow-md z-10">
-            <div className="px-4 py-2">
-              <p className="text-sm font-bold">{session?.user?.name}</p>
-              <p className="text-[0.75rem] text-gray-500">{session?.user?.email}</p>
-            </div>
-            <hr />
-              <button 
-                className="px-4 py-2 w-full text-sm hover:bg-gray-100 cursor-pointer text-red-500"
-                onClick={() => signOut()}
-              >
-                Sign Out
-              </button>
-          </div>
-          )
-        }
+        {isDropDownOpen && <DropDownMenu top="top-12"/>}
       </div>
     </nav>
   );

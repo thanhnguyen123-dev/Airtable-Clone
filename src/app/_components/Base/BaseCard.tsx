@@ -21,7 +21,9 @@ const BaseCard = ({name, baseId} : BaseCardProps) => {
       onClick={handleClick}
     >
       <div className="flex gap-4">
-        <div className="flex items-center justify-center w-14 h-14 text-white bg-orange-500 rounded-lg">
+        <div 
+          style={{backgroundColor: "var(--pale-teal-green"}}
+          className="flex items-center justify-center w-14 h-14 text-white rounded-lg">
           <span className="text-2xl">{initials}</span>
         </div>
         
