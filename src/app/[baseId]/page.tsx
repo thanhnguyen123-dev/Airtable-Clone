@@ -5,6 +5,8 @@ import { api } from "~/trpc/react";
 import BaseNavBar from "../_components/Base/BaseNavBar";
 import BaseToolBar from "../_components/Base/BaseToolBar";
 import Loader from "../_components/Loader";
+import TableToolBar from "../_components/Table/TableToolBar";
+import TableSideBar from "../_components/Table/TableSideBar";
 
 interface BasePageProps {
   params: {
@@ -32,9 +34,11 @@ export default function BasePage({ params }: BasePageProps) {
 
   return (
     <div className="bg-grey flex flex-col w-full max-w-10xl h-screen">
-      <BaseNavBar/>
-      <BaseToolBar/>
+      <BaseNavBar />
+      <BaseToolBar />
+      <TableToolBar />
       <div className="h-screen max-w-10xl flex flex-grow overflow-y-auto">
+        <TableSideBar />
       </div>
     </div>
   );
