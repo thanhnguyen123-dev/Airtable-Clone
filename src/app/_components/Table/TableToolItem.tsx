@@ -14,7 +14,7 @@ const TableToolItem = ({d, name, handleClick}: TableToolItemProps) => {
         height={16}
         viewBox="0 0 16 16"
         className="flex-none"
-        fill="rgb(71 85 105)"
+        fill="rgb(71, 85, 105)"
       >
         <path fill-rule="non-zero" d={d} />
       </svg>

@@ -21,10 +21,11 @@ const ViewSearchBar = () => {
           id="search"
           name="search"
           placeholder="Find a view"
-          className="outline-none w-[4/5] text-slate-600 placeholder-gray-500 bg-transparent"
+          className="outline-none w-[4/5] text-slate-600 placeholder-gray-500 text-sm bg-transparent"
         />
       </label>
       <svg
+        role="button"
         width={16}
         height={16}
         viewBox="0 0 16 16"

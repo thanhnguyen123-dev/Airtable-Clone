@@ -75,9 +75,17 @@ model VerificationToken {
 }
 
 model Base {
-    id        String   @id @default(cuid())
-    name      String   @default("Untitled Base")
-    createdAt DateTime @default(now())
-    createdBy      User     @relation(fields: [createdById], references: [id])
-    createdById   String   
+    id              String   @id @default(cuid())
+    name            String   @default("Untitled Base")
+    createdAt       DateTime @default(now())
+    createdBy       User     @relation(fields: [createdById], references: [id])
+    createdById     String   
+    tables          Table[]
+}
+
+model Table {
+    id              String @id @default (cuid())
+    name            String
+    base            Base   @relation(fields: [baseId], references: [id])
+    baseId          String
 }

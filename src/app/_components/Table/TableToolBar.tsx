@@ -3,8 +3,8 @@ import TableToolItem from './TableToolItem';
 
 const TableToolBar = () => {
   return (
-    <div className="flex items-center justify-between w-full h-[40px] border-2 px-4 py-3 sticky z-10">
-      <div className="flex items-center gap-2 text-xs">
+    <div className="flex items-center justify-between w-full border-b h-[40px] px-4 py-3 sticky z-10">
+      <div className="flex items-center gap-[0.375rem] text-xs">
         <div role='button' className='flex items-center justify-center gap-1 bg-slate-200 p-1.5 rounded-sm hover:border-1 hover:border-slate-600'>
           <svg
             width={16}
@@ -20,7 +20,7 @@ const TableToolBar = () => {
 
         <div className='separator'></div>
 
-        <div role='button' className='flex items-center gap-2 mr-2'>
+        <div role='button' className='flex items-center gap-2 mr-2 rounded-md px-2 py-1 hover:bg-slate-200'>
           <svg
             role='button'
             width={16}
