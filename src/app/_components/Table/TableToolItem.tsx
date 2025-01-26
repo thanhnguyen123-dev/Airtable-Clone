@@ -1,4 +1,4 @@
-import React, {type SVGProps } from 'react';
+import React from 'react';
 
 type TableToolItemProps = {
   d: string

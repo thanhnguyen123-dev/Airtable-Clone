@@ -13,7 +13,7 @@ const tableSideItems = [
 
 const TableSideBar = () => {
   return (
-    <div className='border w-[300px] min-w-[300px] flex flex-col items-start justify-between h-full'>
+    <div className='border-r w-[280px] min-w-[280px] flex flex-col justify-between h-full'>
       <ViewSearchBar />
       <div className='flex flex-col w-full p-4 gap-1'>
         <div className='flex flex-col'>
