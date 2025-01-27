@@ -4,22 +4,56 @@ import { useState } from "react";
 import { SiAirtable } from "react-icons/si";
 import Image from "next/image";
 import DropDownMenu from "../DropDownMenu";
+import {useRouter} from "next/navigation";
 
 const NavBar = () => {
   const {data: session } = useSession();
   const [isDropDownOpen, setIsDropDownOpen] = useState(false);
+  const [isHovering, setIsHovering] = useState(false);
+
   const toggleDropDown = () => setIsDropDownOpen(!isDropDownOpen);
+
+  const router = useRouter();
+
+  const handleHoverEffectAirTable = () => setIsHovering(!isHovering);
+
+  const handleClickAirTable = () => {
+    router.push("/");
+  }
 
   return (
     <nav className="flex items-center justify-between w-full px-4 py-3 pale-teal-green sticky top-0 z-30">
       {/** left portion */}
       <div className="flex items-center gap-4">
         <div className="flex items-center gap-2 text-white font-semibold">
-          <SiAirtable 
-            fill="white" 
-            size={20}
-            className="mr-2"
-          />
+          { isHovering ? (
+            <div 
+              role="button"
+              className="rounded-full bg-white p-1 mr-2"
+              onMouseLeave={handleHoverEffectAirTable}
+              onClick={handleClickAirTable}
+            >
+              <svg
+                width="12"
+                height="12"
+                viewBox="0 0 12 12"
+                fill="none"
+              >
+                <path fill-rule="evenodd" d="M5.64775 2.22725C5.86742 2.44692 5.86742 2.80308 5.64775 3.02275L3.233 5.4375H10.125C10.4357 5.4375 10.6875 5.68934 10.6875 6C10.6875 6.31066 10.4357 6.5625 10.125 6.5625H3.233L5.64775 8.97725C5.86742 9.19692 5.86742 9.55308 5.64775 9.77275C5.42808 9.99242 5.07192 9.99242 4.85225 9.77275L1.47725 6.39775C1.37176 6.29226 1.3125 6.14918 1.3125 6C1.3125 5.85082 1.37176 5.70774 1.47725 5.60225L4.85225 2.22725C5.07192 2.00758 5.42808 2.00758 5.64775 2.22725Z" fill="#407c4a"></path>
+              </svg>
+            </div>  
+          ) : (
+            <SiAirtable 
+              role="button"
+              size={20} 
+              fill="white"
+              className="mr-2"
+              onMouseEnter={handleHoverEffectAirTable}
+              onClick={handleClickAirTable}
+            />
+          )
+          }
+          
           <h1>Untitled base</h1>
           <svg
             role='button'

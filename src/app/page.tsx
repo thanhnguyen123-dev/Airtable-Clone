@@ -16,7 +16,11 @@ export default function Home() {
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
 
   const router = useRouter();
-  const createBaseMutation = api.base.create.useMutation();
+
+  const utils = api.useUtils();
+  const createBaseMutation = api.base.create.useMutation({
+  });
+
   const handleCreate = async () => {
     try {
       const base = await createBaseMutation.mutateAsync({ name: "Untitled Base", });
@@ -61,12 +65,13 @@ export default function Home() {
     <div className="bg-grey flex flex-col w-full max-w-10xl h-screen">
       <NavBar isSideBarOpen={isSideBarOpen} setIsSideBarOpen={setIsSideBarOpen}/>
       <div className="h-screen max-w-10xl flex flex-grow overflow-y-auto">
-        <HomeSideBar 
+        <HomeSideBar
           isSideBarOpen={isSideBarOpen}
           handleCreateBase={handleCreate}
           />
         <HomeContent handleCreateBase={handleCreate}/>
       </div>
     </div>
+
   );
 }
