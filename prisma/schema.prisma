@@ -84,8 +84,50 @@ model Base {
 }
 
 model Table {
-    id              String @id @default (cuid())
-    name            String
-    base            Base   @relation(fields: [baseId], references: [id])
-    baseId          String
+    id          String   @id @default(cuid())
+    name        String
+    base        Base     @relation(fields: [baseId], references: [id])
+    baseId      String
+    columns     Column[]
+    views       View[]
+    records     Record[]
+}
+
+model Column {
+    id          String     @id @default(cuid())
+    name        String
+    type        ColumnType
+    table       Table      @relation(fields: [tableId], references: [id])
+    tableId     String
+    cell       Cell[]
+}
+
+enum ColumnType {
+    TEXT
+    NUMBER
+}
+
+model Record {
+    id          String     @id @default(cuid())
+    table       Table      @relation(fields: [tableId], references: [id])
+    tableId     String
+    cells       Cell[]
+}
+
+model Cell {
+    id          String     @id @default(cuid())
+    column      Column     @relation(fields: [columnId], references: [id])
+    columnId    String
+    record      Record     @relation(fields: [recordId], references: [id])
+    recordId    String
+    textValue   String?
+    numberValue Float?
+    @@unique([recordId, columnId]) // One cell per column per record
+}
+
+model View {
+    id           String     @id @default(cuid())
+    name         String     
+    table        Table      @relation(fields: [tableId], references: [id])
+    tableId      String
 }

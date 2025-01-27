@@ -1,7 +1,7 @@
 "use client";
 import React, { type Dispatch, type SetStateAction } from 'react';
 import { api } from '~/trpc/react';
-import NavTableButton from './NavTableButton';
+import NavTableButton from '../Table/NavTableButton';
 import { type Table } from '@prisma/client';
 
 type BaseToolBarProps = {
