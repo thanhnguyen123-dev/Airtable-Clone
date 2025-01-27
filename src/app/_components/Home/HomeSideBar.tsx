@@ -1,7 +1,12 @@
 import HomeSideBarItem from "./HomeSideBarItem";
 import HomeCreateButton from "./HomeCreateButton";
 
-const HomeSideBar = ({isSideBarOpen}  : {isSideBarOpen: boolean}) => {
+type HomeSideBarProps = {
+  isSideBarOpen: boolean,
+  handleCreateBase: () => void
+}
+
+const HomeSideBar = ({isSideBarOpen, handleCreateBase} : HomeSideBarProps) => {
   return (
     <div
       className={`bg-white border-1 shadow-md duration-75 ${
@@ -76,7 +81,7 @@ const HomeSideBar = ({isSideBarOpen}  : {isSideBarOpen: boolean}) => {
                   title="Import" 
                   imagePath="/icons/icons_definitions.svg#Plus"
                 />
-                <HomeCreateButton/>
+                <HomeCreateButton handleCreateBase={handleCreateBase}/>
               </div>
             </div>
           ) 

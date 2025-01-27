@@ -7,7 +7,7 @@ import Loader from "../_components/Loader";
 import TableToolBar from "../_components/Table/TableToolBar";
 import TableSideBar from "../_components/Table/TableSideBar";
 import { FcBrokenLink } from "react-icons/fc";
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect } from "react";
 
 const BasePage = () => {
   // Call getById to load the base

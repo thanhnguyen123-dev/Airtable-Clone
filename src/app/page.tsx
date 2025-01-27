@@ -1,6 +1,7 @@
 "use client";
 import { useSession, signIn } from "next-auth/react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { FcGoogle } from "react-icons/fc";
 import { OAuthButton } from "./_components/AuthButton";
 import NavBar from "./_components/Home/HomeNavBar";
@@ -8,10 +9,22 @@ import HomeSideBar from "./_components/Home/HomeSideBar";
 import HomeContent from "./_components/Home/HomeContent";
 import Loader from "./_components/Loader";
 import Image from "next/image";
+import { api } from "~/trpc/react";
 
 export default function Home() {
   const { data: session, status } = useSession();
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
+
+  const router = useRouter();
+  const createBaseMutation = api.base.create.useMutation();
+  const handleCreate = async () => {
+    try {
+      const base = await createBaseMutation.mutateAsync({ name: "Untitled Base", });
+      router.push(`/${base.id}`);
+    } catch (error) {
+      console.error("Failed to create base:", error);
+    }
+  };
 
   const handleGoogleAuth = async () => {
     await signIn("google");
@@ -48,8 +61,11 @@ export default function Home() {
     <div className="bg-grey flex flex-col w-full max-w-10xl h-screen">
       <NavBar isSideBarOpen={isSideBarOpen} setIsSideBarOpen={setIsSideBarOpen}/>
       <div className="h-screen max-w-10xl flex flex-grow overflow-y-auto">
-        <HomeSideBar isSideBarOpen={isSideBarOpen}/>
-        <HomeContent/>
+        <HomeSideBar 
+          isSideBarOpen={isSideBarOpen}
+          handleCreateBase={handleCreate}
+          />
+        <HomeContent handleCreateBase={handleCreate}/>
       </div>
     </div>
   );

@@ -1,26 +1,15 @@
-"use client";
 
-import { api } from "~/trpc/react";
-import { useRouter } from "next/navigation";
 import React from "react";
 
+type HomeCreateButtonProps = {
+  handleCreateBase: () => void;
+};
 
-const HomeCreateButton = () => {
-  const router = useRouter();
-  const createBaseMutation = api.base.create.useMutation();
-  const handleCreate = async () => {
-    try {
-      const base = await createBaseMutation.mutateAsync({ name: "Untitled Base", });
-      router.push(`/${base.id}`);
-    } catch (error) {
-      console.error("Failed to create base:", error);
-    }
-  };
-
+const HomeCreateButton = ({handleCreateBase} : HomeCreateButtonProps) => {
   return (
     <button 
       className="bg-blue-600 w-full flex justify-center items-center p-[0.4rem] rounded-md gap-2 mt-2"
-      onClick={handleCreate}>
+      onClick={handleCreateBase}>
       <svg
         width="14"
         height="14"

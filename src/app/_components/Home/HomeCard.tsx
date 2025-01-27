@@ -2,11 +2,12 @@ type HomeCardProps = {
   children: React.ReactNode;
   title: string;
   description: string;
+  onClick?: () => void;
 }
 
-const HomeCard = ({children, title, description} : HomeCardProps) => {
+const HomeCard = ({children, title, description, onClick} : HomeCardProps) => {
   return (
-    <div role="button" className="home-card-style">
+    <div role="button" onClick={onClick} className="home-card-style">
       <div className="flex items-center gap-2">
         {children}
         <h2 className="font-medium">{title}</h2>

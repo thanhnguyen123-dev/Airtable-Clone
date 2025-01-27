@@ -1,9 +1,12 @@
 import HomeCard from './HomeCard';
 import React from 'react';
-import { api } from '~/trpc/react';
 import BaseCardGrid from '../Base/BaseCardGrid';
 
-const HomeContent = () => {
+type HomeContentProps = {
+  handleCreateBase: () => void;
+}
+
+const HomeContent = ({handleCreateBase} : HomeContentProps) => {
   return (
     <div className="flex flex-col flex-auto px-12 py-8 w-full overflow-y-auto">
       <h1 className="text-[1.75rem] font-bold mb-4">Home</h1>
@@ -52,6 +55,7 @@ const HomeContent = () => {
 
         <HomeCard
           title="Start from scratch"
+          onClick={handleCreateBase}
           description="Create a new blank base with custom tables, fields, and views.">
             <svg
               width="20"
