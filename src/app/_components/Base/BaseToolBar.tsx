@@ -31,23 +31,14 @@ const BaseToolBar = ({baseId, tables, currentTableId, handleTableSwitch} : BaseT
         className="flex items-center w-[88%] h-[2rem] px-4 sticky top-0 rounded-tr-md bg-dark-teal-green"
       >
         {/* Render table tabs */}
-        {tables.map((table, index) => {
-          return table.id === currentTableId ? (
-              <NavTableButton
-                key={index}
-                tableName={table.name}
-                isActive={true}
-                handleClick={() => handleTableSwitch(table.id)}
-              />
-          ) : (
-              <NavTableButton
-                key={index}
-                tableName={table.name}
-                isActive={false}
-                handleClick={() => handleTableSwitch(table.id)}
-              />
-          )
-        })}
+        {tables.map((table, index) => (
+          <NavTableButton
+            key={index}
+            tableName={table.name}
+            isActive={table.id === currentTableId}
+            handleClick={() => handleTableSwitch(table.id)}
+          />
+        ))}
 
         <div className='flex items-center gap-2'>
           <svg
