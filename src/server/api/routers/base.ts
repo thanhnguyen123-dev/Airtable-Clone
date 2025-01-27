@@ -44,12 +44,12 @@ export const baseRouter = createTRPCRouter({
 
   // Get single base by ID
   getById: protectedProcedure
-    .input(z.object({ baseId: z.string() }))
+    .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       try {
         const base = await ctx.db.base.findFirst({
           where: {
-            id: input.baseId,
+            id: input.id,
           },
         });
         return base;

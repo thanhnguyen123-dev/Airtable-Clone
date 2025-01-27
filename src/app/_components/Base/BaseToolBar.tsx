@@ -1,50 +1,88 @@
-import React from 'react'
+"use client";
+import React, { Dispatch, SetStateAction } from 'react';
+import { api } from '~/trpc/react';
+import NavTableButton from './NavTableButton';
+import { Table } from '@prisma/client';
 
-const BaseToolBar = () => {
+
+type BaseToolBarProps = {
+  baseId: string
+  tables: Table[],
+  currentTableId: string,
+  handleTableSwitch: Dispatch<SetStateAction<string | undefined>>
+}
+
+const BaseToolBar = ({baseId, tables, currentTableId, handleTableSwitch} : BaseToolBarProps) => {
+  const utils = api.useUtils()
+  const createTableMutation = api.table.create.useMutation();
+
+  const handleCreateTable = async () => {
+    const newTable: Table = await createTableMutation.mutateAsync({baseId});
+    const newTables = [...tables, newTable];
+    utils.table.getAll.setData({baseId}, newTables);
+
+    handleTableSwitch(newTable.id);
+  };
+
   return (
     <div 
-      style={{backgroundColor: 'var(--pale-teal-green)'}}
-      className="flex items-center justify-between w-full h-[2rem] sticky top-0 z-20"
+      className="flex items-center justify-between w-full h-[2rem] sticky top-0 z-20 bg-pale-teal-green"
     >
       <div 
-        style={{backgroundColor: "var(--dark-teal-green"}}
-        className="flex items-center gap-2 w-[88%] h-[2rem] px-4 sticky top-0 rounded-tr-md"
+        className="flex items-center w-[88%] h-[2rem] px-4 sticky top-0 rounded-tr-md bg-dark-teal-green"
       >
-        <div className="flex items-center justify-center bg-white border-none text-sm font-medium text-black p-3 h-full rounded-t-[0.25rem]"
-        >
-          <span className="text-xs">Table 1</span>
-        </div>
-        
-        <svg
-          role='button'
-          width={16}
-          height={16}
-          viewBox="0 0 16 16"
-          className="flex-none"
-          fill="white"
-        >
-          <use href="icons/icons_definitions.svg#ChevronDown"></use>
-        </svg>
+        {/* Render table tabs */}
+        {tables.map((table, index) => {
+          return table.id === currentTableId ? (
+              <NavTableButton
+                key={index}
+                tableName={table.name}
+                isActive={true}
+                handleClick={() => handleTableSwitch(table.id)}
+              />
+          ) : (
+              <NavTableButton
+                key={index}
+                tableName={table.name}
+                isActive={false}
+                handleClick={() => handleTableSwitch(table.id)}
+              />
+          )
+        })}
 
-        <div className="separator"></div>
-
-        <div role='button' className="flex items-center justify-center gap-2">
+        <div className='flex items-center gap-2'>
           <svg
+            role='button'
             width={16}
             height={16}
             viewBox="0 0 16 16"
-            className="flex-none"
+            className="flex-none ml-2"
             fill="white"
           >
-            <use href="icons/icons_definitions.svg#Plus"></use>
+            <use href="icons/icons_definitions.svg#ChevronDown"></use>
           </svg>
-          <span className="text-white text-xs">Add or import</span>
+          <div className="separator"></div>
+          <div
+            role='button'
+            className="flex items-center justify-center gap-2"
+            onClick={handleCreateTable}
+            >
+            <svg
+              width={16}
+              height={16}
+              viewBox="0 0 16 16"
+              className="flex-none"
+              fill="white"
+            >
+              <use href="icons/icons_definitions.svg#Plus"></use>
+            </svg>
+            <span className="text-white text-xs">Add or import</span>
+          </div>
         </div>
       </div>
 
       <div 
-        style={{backgroundColor: "var(--dark-teal-green"}}
-        className="flex text-white text-xs justify-between items-center w-[11.5%] h-[2rem] px-4 sticky top-0 rounded-tl-md"
+        className="flex text-white text-xs justify-between items-center w-[11.5%] h-[2rem] px-4 sticky top-0 rounded-tl-md bg-dark-teal-green"
       >
         <div role='button'>
           <span>Extensions</span>

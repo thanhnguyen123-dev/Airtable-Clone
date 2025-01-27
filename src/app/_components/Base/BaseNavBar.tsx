@@ -14,13 +14,15 @@ const NavBar = () => {
     <nav className="flex items-center justify-between w-full px-4 py-3 pale-teal-green sticky top-0 z-30">
       {/** left portion */}
       <div className="flex items-center gap-4">
-        <div className="flex items-center gap-4 text-white font-semibold">
+        <div className="flex items-center gap-2 text-white font-semibold">
           <SiAirtable 
             fill="white" 
             size={20}
+            className="mr-2"
           />
           <h1>Untitled base</h1>
           <svg
+            role='button'
             width="16"
             height="16"
             viewBox="0 0 16 16"

@@ -5,7 +5,9 @@
 :root {
   --pale-teal-green: #008080;
   --dark-teal-green: rgb(23, 114, 110);
+  --darker-teal-green: rgb(19, 96, 92);
 }
+
 
 * {
   box-sizing: border-box;
@@ -31,6 +33,11 @@
 
 .base-nav-item:hover {
   background-color: #037676;
+}
+
+
+.nav-table-btn:hover {
+  background-color: var(--dark-teal-green);
 }
 
 .separator {
