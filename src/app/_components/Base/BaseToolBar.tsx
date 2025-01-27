@@ -76,7 +76,7 @@ const BaseToolBar = ({baseId, tables, currentTableId, handleTableSwitch} : BaseT
             >
               <use href="icons/icons_definitions.svg#Plus"></use>
             </svg>
-            <span className="text-white text-xs">Add or import</span>
+            <span className="text-xs text-slate-100 hover:text-white">Add or import</span>
           </div>
         </div>
       </div>

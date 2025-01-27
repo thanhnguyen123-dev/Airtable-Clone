@@ -32,7 +32,7 @@ const NavBar = () => {
           </svg>
         </div>
 
-        <div className="text-[0.8rem] flex gap-4 items-center text-white">
+        <div className="text-[0.8rem] flex gap-4 items-center text-slate-100">
           <div role="button" className="flex justify-center items-center dark-teal-green rounded-2xl px-3 py-[0.4rem] text-white">
             <span>Data</span>
           </div>

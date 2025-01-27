@@ -15,7 +15,7 @@ const NavTableButton = ({tableName, isActive, handleClick} : NavTableButtonProps
         className={`flex items-center justify-center border-none text-sm font-medium 
         text-black p-3 h-full ${isActive ? "rounded-t-[0.20rem] bg-white" : "hover:bg-darker-teal-green bg-dark-teal-green text-white"}`}
       >
-        <span className={`text-xs ${isActive ? "font-bold" : "font-normal"}`}>{tableName}</span>
+        <span className={`text-xs ${isActive ? "font-bold" : "font-normal text-slate-100"}`}>{tableName}</span>
         {isActive && (
           <svg
             role='button'
