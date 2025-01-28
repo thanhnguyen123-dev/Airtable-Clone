@@ -8,7 +8,7 @@ type AddColumnProps = {
   onCreated?: (columnName: string) => void; 
 };
 
-export default function AddColumn({ tableId, onCreated }: AddColumnProps) {
+const AddColumn = ({ tableId, onCreated }: AddColumnProps) => {
   const [isAdding, setIsAdding] = useState(false);
   const [columnName, setColumnName] = useState("");
   const [columnType, setColumnType] = useState("TEXT");
@@ -61,10 +61,10 @@ export default function AddColumn({ tableId, onCreated }: AddColumnProps) {
     }, [isAdding]);
 
     return (
-      <div className="relative flex flex-col items-start gap-2">
+      <div className="relative flex items-start">
         <button
           onClick={() => setIsAdding(!isAdding)}
-          className="flex items-center justify-center bg-[#e7edf6] px-8 py-[0.35rem]"
+          className="flex items-center justify-center bg-[#e7edf6] px-8 py-1"
         >
           <svg
             width={16}
@@ -96,18 +96,18 @@ export default function AddColumn({ tableId, onCreated }: AddColumnProps) {
               <option value="TEXT">Single line text</option>
               <option value="NUMBER">Number</option>
             </select>
-            <div className="flex justify-between mt-2">
-              <button
-                onClick={handleCreate}
-                className="bg-blue-500 text-white px-4 py-1 rounded-md text-sm"
-              >
-                Add
-              </button>
+            <div className="flex justify-end gap-2 mt-1 text-xs">
               <button
                 onClick={() => setIsAdding(false)}
-                className="bg-gray-200 text-gray-600 px-4 py-1 rounded-md text-sm"
+                className="hover:bg-gray-100 text-gray-600 p-2 rounded-md"
               >
                 Cancel
+              </button>
+              <button
+                onClick={handleCreate}
+                className="bg-blue-600 text-white p-2 rounded-md font-medium"
+              >
+                Create field
               </button>
             </div>
           </div>
@@ -116,3 +116,4 @@ export default function AddColumn({ tableId, onCreated }: AddColumnProps) {
     );
 };
   
+export default AddColumn;

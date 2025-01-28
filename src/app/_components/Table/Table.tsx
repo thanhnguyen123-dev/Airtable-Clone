@@ -5,6 +5,8 @@ import React from "react";
 import { api } from "~/trpc/react";
 import AddColumn from "./AddColumn";
 import Loader from "../Loader";
+import TableHeader from "./TableHeader";
+import TableCell from "./TableCell";
 
 type TableProps = {
   tableId?: string; 
@@ -24,33 +26,28 @@ const Table = ({ tableId }: TableProps) => {
 
   // 3) Render
   return (
-    <div className="flex-grow overflow-auto bg-white">
+    <div className="flex w-full bg-white">
       {/* If still loading, show something */}
       {!table ? (
         <Loader />
       ) : (
         <>
-          {/* 4) AddColumn button, with a callback that refetches data */}
-          <div className="mb-4">
-            <AddColumn
-              tableId={tableId}
-              onCreated={() => {
-                // Once column is created, refetch table
-                void refetch();
-              }}
+          {table.columns.map((col) => (
+            <div key={col.id} className="flex flex-col min-w-[50px]">
+              <TableHeader name={col.name} />
+              <TableCell />
+              <TableCell />
+              <TableCell />
+            </div>
+          ))}
+          <AddColumn 
+            tableId={tableId} 
+            onCreated={() => {
+              void refetch();
+            }}
             />
-          </div>
-
-          {/* 5) Show the columns we have so far */}
-          <div>
-            <h3 className="font-medium">Columns:</h3>
-            <ul className="list-disc list-inside">
-              {table.columns.map((col) => (
-                <li key={col.id}>{col.name}</li>
-              ))}
-            </ul>
-          </div>
         </>
+
       )}
     </div>
   );
