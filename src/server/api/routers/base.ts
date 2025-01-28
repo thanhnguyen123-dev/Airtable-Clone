@@ -72,26 +72,6 @@ export const baseRouter = createTRPCRouter({
       return tables;
     }),
   
-  getRecords: protectedProcedure
-    .input(z.object({ tableId: z.string()}))
-    .query(async ({ ctx, input }) => {
-      const records = await ctx.db.record.findMany({
-        where: { tableId: input.tableId },
-        include: { cells: true },
-      });
-      
-      const transformedRecords = records.map((record) => {
-        const row: Record<string, string | number> = { id: record.id };
-        record.cells.forEach((cell) => {
-          row[cell.columnId] = cell.textValue ?? cell.numberValue ?? "";
-        });
-        return row;
-      });
-
-      return transformedRecords;
-    }),
-
-
 });
 
 
