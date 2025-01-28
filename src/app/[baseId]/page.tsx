@@ -58,7 +58,7 @@ const BasePage = () => {
       <TableToolBar />
       <div className="h-screen max-w-10xl flex flex-grow overflow-y-auto">
         <TableSideBar />
-        <Table />
+        <Table tableId={currentTableId}/>
       </div>
     </div>
   );

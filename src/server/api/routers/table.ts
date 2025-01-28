@@ -5,36 +5,17 @@ import { type Cell } from "@prisma/client";
 
 export const tableRouter = createTRPCRouter({
   create: protectedProcedure
-    .input(z.object({ baseId: z.string().min(1), name: z.string().min(1)}))
+    .input(z.object({ baseId: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
-      const existingColumn = await ctx.db.column.findFirst({
-        where: { tableId: input.baseId, name: input.name },
+      const tableCount = await ctx.db.table.count({
+        where: { baseId: input.baseId },
       });
-
-      if (existingColumn) {
-        throw new TRPCError({
-          code: "CONFLICT",
-          message: "Column with this name already exists",
-        });
-      }
 
       return ctx.db.table.create({
         data: {
-          name: input.name,
+          name: `Table ${tableCount + 1}`,
           baseId: input.baseId,
-          columns: {
-            create: [
-              { name: "Name" },
-              { name: "Notes" },
-              { name: "Assignee" },
-              { name: "Status" },
-            ],
-          },
-        },
-        include: {
-          records: true,
-          columns: true,
-        },
+        }
       });
     }),
   
@@ -61,22 +42,22 @@ export const tableRouter = createTRPCRouter({
     }),
 
   createColumn: protectedProcedure
-    .input(z.object({id: z.string().min(1), tableId: z.string().min(1), name: z.string().min(1)}))
+    .input(z.object({ tableId: z.string().min(1), name: z.string().min(1)}))
     .mutation(async ({ ctx, input }) => {
-      const existingColumn = await ctx.db.column.findFirst({
-        where: { tableId: input.tableId, name: input.name },
-      });
+      // const existingColumn = await ctx.db.column.findFirst({
+      //   where: { tableId: input.tableId, name: input.name },
+      // });
 
-      if (existingColumn) {
-        throw new TRPCError({
-          code: "CONFLICT",
-          message: "Column with this name already exists",
-        });
-      }
+      // if (existingColumn) {
+      //   throw new TRPCError({
+      //     code: "CONFLICT",
+      //     message: "Column with this name already exists",
+      //   });
+      // }
 
       const newColumn = await ctx.db.column.create({
         data: {
-          id: input.id,
+          // id: input.id,
           name: input.name,
           tableId: input.tableId,
         },
