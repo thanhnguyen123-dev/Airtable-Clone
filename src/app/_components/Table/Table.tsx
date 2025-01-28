@@ -1,6 +1,3 @@
-import TableCell from "./TableCell";
-import TableRow from "./TableRow";
-import TableHeader from "./AddColumn";
 
 const Table = () => {
   return (
