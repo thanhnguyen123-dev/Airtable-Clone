@@ -32,6 +32,7 @@ export const tableRouter = createTRPCRouter({
           },
         },
         include: {
+          records: true,
           columns: true,
         },
       });
@@ -40,16 +41,16 @@ export const tableRouter = createTRPCRouter({
   getAll: protectedProcedure
     .input(z.object({ baseId: z.string().min(1) }))
     .query(async ({ ctx, input }) => {
-      return ctx.db.column.findMany({
-        where: { tableId: input.baseId },
+      return ctx.db.table.findMany({
+        where: { baseId: input.baseId },
       });
     }),
   
   getById: protectedProcedure
-    .input(z.object({ id: z.string().min(1) }))
+    .input(z.object({ tableId: z.string().min(1) }))
     .query(async ({ ctx, input }) => {
       return ctx.db.table.findUnique({
-        where: { id: input.id },
+        where: { id: input.tableId },
         include: { 
           columns: true ,
           records: {
@@ -60,7 +61,7 @@ export const tableRouter = createTRPCRouter({
     }),
 
   createColumn: protectedProcedure
-    .input(z.object({ tableId: z.string().min(1), name: z.string().min(1), type: z.nativeEnum(ColumnType) }))
+    .input(z.object({id: z.string().min(1), tableId: z.string().min(1), name: z.string().min(1), type: z.nativeEnum(ColumnType) }))
     .mutation(async ({ ctx, input }) => {
       const existingColumn = await ctx.db.column.findFirst({
         where: { tableId: input.tableId, name: input.name },
@@ -75,6 +76,7 @@ export const tableRouter = createTRPCRouter({
 
       const newColumn = await ctx.db.column.create({
         data: {
+          id: input.id,
           name: input.name,
           type: input.type,
           tableId: input.tableId,
@@ -88,21 +90,24 @@ export const tableRouter = createTRPCRouter({
       if (records.length > 0) {
         await ctx.db.cell.createMany({
           data: records.map((record) => ({
+            id: `${record.id}-${newColumn.id}`,
             recordId: record.id,
             columnId: newColumn.id,
-            // textValue: newColumn.type === ColumnType.TEXT ? "" : null,
-            // numberValue: newColumn.type === ColumnType.NUMBER ? 0 : null,
+            data: "",
           })),
         });
       }
+
+      return {success: true};
     }),
 
   createRecord: protectedProcedure
-    .input(z.object({ tableId: z.string().min(1) }))
+    .input(z.object({ tableId: z.string().min(1), rowIndex: z.number().int() }))
     .mutation(async ({ ctx, input }) => {
       // create record
       const newRecord = await ctx.db.record.create({
         data: {
+          rowIndex: input.rowIndex,
           tableId: input.tableId,
         },
       });
@@ -127,7 +132,7 @@ export const tableRouter = createTRPCRouter({
   updateCell: protectedProcedure
   .input(
     z.object({
-      cellId: z.string().min(1),
+      recordId: z.string().min(1),
       columnId: z.string().min(1),
       columnType: z.nativeEnum(ColumnType),
       value: z.union([z.string(), z.number().optional()]),
@@ -136,18 +141,30 @@ export const tableRouter = createTRPCRouter({
   .mutation(async ({ ctx, input }) => {
     if (input.columnType === ColumnType.TEXT) {
       return ctx.db.cell.update({
-        where: { id: input.cellId },
+        where: { 
+          recordId_columnId: {
+            recordId: input.recordId,
+            columnId: input.columnId,
+          }
+        },
         data: {
           textValue: input.value as string,
         },
       });
     } 
     else {
-      let numberValue: number | null = null;
-      numberValue = input.value ? Number(input.value) : null;
+      let parsedValue: number | null = null;
+      parsedValue = input.value ? Number(input.value) : null;
       return ctx.db.cell.update({
-        where: { id: input.cellId },
-        data: {numberValue: numberValue ?? 0},
+        where: { 
+          recordId_columnId: {
+            recordId: input.recordId,
+            columnId: input.columnId,
+          }
+        },
+        data: {
+          numberValue: parsedValue,
+        }
       });
       }
     }),
