@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import ColumnType from "@prisma/client";
 import { api } from "~/trpc/react";
 
-interface TableCellProps {
+type TableCellProps = {
   value: string | number,
   columnId: string,
   recordId: string,
