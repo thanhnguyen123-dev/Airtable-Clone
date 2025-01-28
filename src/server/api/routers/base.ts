@@ -62,5 +62,36 @@ export const baseRouter = createTRPCRouter({
       }
     }),
 
+  getTables: protectedProcedure
+    .input(z.object({ baseId: z.string().min(1) }))
+    .query(async ({ ctx, input }) => {
+      const tables = await ctx.db.table.findMany({
+        where: { baseId: input.baseId },
+        include: { columns: true },
+      });
+      return tables;
+    }),
+  
+  getRecords: protectedProcedure
+    .input(z.object({ tableId: z.string()}))
+    .query(async ({ ctx, input }) => {
+      const records = await ctx.db.record.findMany({
+        where: { tableId: input.tableId },
+        include: { cells: true },
+      });
+      
+      const transformedRecords = records.map((record) => {
+        const row: Record<string, string | number> = { id: record.id };
+        record.cells.forEach((cell) => {
+          row[cell.columnId] = cell.textValue ?? cell.numberValue ?? "";
+        });
+        return row;
+      });
+
+      return transformedRecords;
+    }),
+
 
 });
+
+

@@ -8,6 +8,7 @@ import TableToolBar from "../_components/Table/TableToolBar";
 import TableSideBar from "../_components/Table/TableSideBar";
 import { FcBrokenLink } from "react-icons/fc";
 import React, { useState, useEffect } from "react";
+import Table from "../_components/Table/Table";
 
 const BasePage = () => {
   // Call getById to load the base
@@ -57,6 +58,7 @@ const BasePage = () => {
       <TableToolBar />
       <div className="h-screen max-w-10xl flex flex-grow overflow-y-auto">
         <TableSideBar />
+        <Table />
       </div>
     </div>
   );
