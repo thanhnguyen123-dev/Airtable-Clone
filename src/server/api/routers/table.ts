@@ -134,5 +134,51 @@ export const tableRouter = createTRPCRouter({
     });
     return updatedCellValue;
   }),
+
+  createDefaultTable: protectedProcedure
+    .input(z.object({ baseId: z.string().min(1), name: z.string().min(1) }))
+    .mutation(async ({ ctx, input }) => {
+      const table = await ctx.db.table.create({
+        data: {
+          baseId: input.baseId,
+          name: input.name,
+          records: {
+            create: [{rowIndex: 0}, {rowIndex: 1}, {rowIndex: 2}],
+          },
+          columns: {
+            create: [
+              { name: "Name" },
+              { name: "Notes" },
+              { name: "Assignee" },
+              { name: "Status" },
+            ],
+          }
+        },
+        include: {
+          records: true,
+          columns: true,
+        }
+      });
+      const cells = [];
+      for (const record of table.records) {
+        for (const column of table.columns) {
+          cells.push(
+            ctx.db.cell.create({
+              data: {
+                recordId: record.id,
+                columnId: column.id,
+                data: "",
+              }
+            })
+          );
+        }
+      }
+      await Promise.all(cells);
+      return {
+        sucess: true,
+        table,
+      }
+
+    })
   
 });

@@ -13,10 +13,14 @@ type BaseToolBarProps = {
 
 const BaseToolBar = ({baseId, tables, currentTableId, handleTableSwitch} : BaseToolBarProps) => {
   const utils = api.useUtils()
-  const createTableMutation = api.table.create.useMutation();
+  const createTableMutation = api.table.createDefaultTable.useMutation();
 
   const handleCreateTable = async () => {
-    const newTable: Table = await createTableMutation.mutateAsync({baseId});
+    const result = await createTableMutation.mutateAsync({
+      baseId: baseId,
+      name: `Table ${tables.length + 1}`
+    });
+    const newTable: Table = result.table;
     const newTables = [...tables, newTable];
     utils.table.getAll.setData({baseId}, newTables);
 

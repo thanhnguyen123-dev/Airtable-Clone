@@ -12,6 +12,8 @@
 * {
   box-sizing: border-box;
   border-collapse: collapse;
+  margin: 0;
+  padding: 0;
 }
 
 .bg-grey {

@@ -64,7 +64,7 @@ const AddColumn = ({ tableId, onCreated }: AddColumnProps) => {
       <div className="relative flex items-start">
         <button
           onClick={() => setIsAdding(!isAdding)}
-          className="flex items-center justify-center bg-[#e7edf6] px-8 py-1"
+          className="flex items-center justify-center bg-slate-200 border-slate-300 border px-8 py-[8px]"
         >
           <svg
             width={16}

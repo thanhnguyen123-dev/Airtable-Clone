@@ -8,20 +8,23 @@ import TableToolBar from "../_components/Table/TableToolBar";
 import TableSideBar from "../_components/Table/TableSideBar";
 import { FcBrokenLink } from "react-icons/fc";
 import React, { useState, useEffect } from "react";
-import Table from "../_components/Table/Table";
+import TanStackTable from "../_components/Table/Table";
+import type { Column, Record, Cell } from "@prisma/client"
 
 const BasePage = () => {
   // Call getById to load the base
   const baseId = usePathname().split("/")[1];
 
-
+  // Load the base
   const { data: base, isLoading: isBaseLoading } = api.base.getById.useQuery(
     { id: baseId! },
     { enabled: !!baseId }
   );
 
+  // extract all tables from the base
   const { data: tables, isLoading: isTablesLoading } = api.table.getAll.useQuery(
     { baseId: baseId! },
+    { enabled: !!baseId }
   );
 
   const [currentTableId, setCurrentTableId] = useState<string | undefined>(tables?.[0]?.id);
@@ -32,8 +35,15 @@ const BasePage = () => {
     }
   }, [tables, currentTableId]);
 
+  const [cellsRecord, setCellsRecord] = useState<Cell[]>([]);
 
-  if (isBaseLoading || isTablesLoading) {
+  const { data: table, isLoading: isTableLoading, refetch: refetchTable } = api.table.getById.useQuery(
+    { tableId: currentTableId! },
+    { enabled: !!currentTableId }
+  );
+
+
+  if (isBaseLoading || isTablesLoading || isTableLoading) {
     return <Loader />;
   }
 
@@ -58,7 +68,12 @@ const BasePage = () => {
       <TableToolBar />
       <div className="h-screen max-w-10xl flex flex-grow overflow-y-auto">
         <TableSideBar />
-        <Table tableId={currentTableId}/>
+        <TanStackTable 
+          tableId={currentTableId}
+          cellsRecord={cellsRecord}
+          setCellsRecord={setCellsRecord}
+          refetchTable={refetchTable}
+        />
       </div>
     </div>
   );
