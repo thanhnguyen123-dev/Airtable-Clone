@@ -1,5 +1,11 @@
+type TableCellProps = {
+  columnId: string;
+  recordId: string;
+  data: string;
+  rowIndex?: number
+}
 
-const TableCell = () => {
+const TableCell = ({ columnId, recordId, data, rowIndex }: TableCellProps) => {
   return (
     <div>
       <input

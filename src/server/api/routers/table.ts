@@ -175,10 +175,18 @@ export const tableRouter = createTRPCRouter({
       }
       await Promise.all(cells);
       return {
-        sucess: true,
+        success: true,
         table,
       }
 
-    })
+    }),
+
+  getTableHeaders: protectedProcedure
+    .input(z.object({ tableId: z.string().min(1) }))
+    .query(async ({ ctx, input }) => {
+      return ctx.db.column.findMany({
+        where: { tableId: input.tableId },
+      });
+    }),
   
 });

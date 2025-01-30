@@ -43,7 +43,7 @@ const TanStackTable = ({
         <>
           {table.columns.map((col) => (
             <div key={col.id} className="flex flex-col min-w-[50px]">
-              <TableHeader name={col.name} />
+              <TableHeader header={col.name} />
             </div>
           ))}
           <AddColumn
