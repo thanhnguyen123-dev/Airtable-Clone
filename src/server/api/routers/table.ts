@@ -81,10 +81,9 @@ export const tableRouter = createTRPCRouter({
       return {success: true};
     }),
 
-  createRecord: protectedProcedure
+    createRecord: protectedProcedure
     .input(z.object({ tableId: z.string().min(1), rowIndex: z.number().int() }))
     .mutation(async ({ ctx, input }) => {
-      // create record
       const record = await ctx.db.record.create({
         data: {
           rowIndex: input.rowIndex,
@@ -92,23 +91,26 @@ export const tableRouter = createTRPCRouter({
         },
       });
     
-      // find all columns and create cell for each column
       const columns = await ctx.db.column.findMany({
         where: { tableId: input.tableId },
       });
-
-      const cells : Cell[] = [];
-
-      for (const column of columns) { 
-        cells.push({
+  
+      await ctx.db.cell.createMany({
+        data: columns.map(column => ({
           id: `${record.id}-${column.id}`,
           recordId: record.id,
           columnId: column.id,
           data: "",
-        });
-      }
-      await Promise.all(cells);
-      return record;
+        }))
+      });
+  
+      // Return the complete record with its cells
+      return ctx.db.record.findUnique({
+        where: { id: record.id },
+        include: {
+          cells: true
+        }
+      });
     }),
   
   // update cell

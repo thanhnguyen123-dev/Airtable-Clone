@@ -7,7 +7,7 @@ type TableRowProps = {
 
 export default function TableRow({ children }: TableRowProps) {
   return (
-    <div className="flex min-h-[2rem] border-b border-gray-300">
+    <div className="flex border-b border-gray-300">
       {children}
     </div>
   );

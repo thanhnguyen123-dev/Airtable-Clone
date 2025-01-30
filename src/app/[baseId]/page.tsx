@@ -35,14 +35,47 @@ const BasePage = () => {
     }
   }, [tables, currentTableId]);
 
+  const [tableColumns, setTableColumns] = useState<Column[]>([]);
+  const [tableRecords, setTableRecords] = useState<Record[]>([]);
   const [cellsRecord, setCellsRecord] = useState<Cell[]>([]);
 
+  // Fetch table data
   const { data: table, isLoading: isTableLoading, refetch: refetchTable } = api.table.getById.useQuery(
     { tableId: currentTableId! },
     { enabled: !!currentTableId }
   );
 
+  const createColumnMutation = api.table.createColumn.useMutation({
+    onMutate: async (newColumn) => {
+      const tempId = Date.now().toString();
+      setTableColumns(prev => [...prev, { 
+        id: tempId, 
+        name: newColumn.name, 
+        tableId: currentTableId!,
+      }]);
+      
+      return { tempId };
+    },
+    onSuccess: (data, context) => {
+      // Replace temp ID with real ID
+      setTableColumns(prev => 
+        prev.map(col => 
+          col.id === context?.tempId ? { ...col, id: data.id } : col
+        )
+      );
+    },
+  });
 
+  const handleAddColumn = async (name: string) => {
+    if (!currentTableId) return;
+    
+    await createColumnMutation.mutateAsync({
+      tableId: currentTableId,
+      name: name
+    });
+    
+    await refetchTable();
+  };
   if (isBaseLoading || isTablesLoading || isTableLoading) {
     return <Loader />;
   }
@@ -66,14 +99,16 @@ const BasePage = () => {
         handleTableSwitch={setCurrentTableId}
       />
       <TableToolBar />
-      <div className="h-screen max-w-10xl flex flex-grow overflow-y-auto">
+      <div className="h-screen max-w-10xl flex flex-grow overflow-x-auto">
         <TableSideBar />
         <TanStackTable 
           tableId={currentTableId}
-          cellsRecord={cellsRecord}
-          setCellsRecord={setCellsRecord}
+          columns={tableColumns}
+          records={tableRecords}
+          cells={cellsRecord}
+          onAddColumn={handleAddColumn}
           refetchTable={refetchTable}
-        />
+    />
       </div>
     </div>
   );

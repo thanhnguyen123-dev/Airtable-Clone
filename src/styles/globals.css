@@ -16,6 +16,12 @@
   padding: 0;
 }
 
+table, tr, th {
+  box-sizing: border-box;
+  border: none;
+  border-collapse: collapse ;
+}
+
 .bg-grey {
   background-color: #f8fafc;
 }
