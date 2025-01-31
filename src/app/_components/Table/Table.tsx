@@ -170,7 +170,7 @@ const TanStackTable = ({
   }
 
   return (
-    <div className="flex w-full bg-white">
+    <div className="flex w-full bg-white overflow-y-auto">
       <div className="flex flex-col">
         <TableRow>
           {tableInstance.getHeaderGroups().flatMap(headerGroup =>

@@ -58,7 +58,7 @@ const BasePage = () => {
         handleTableSwitch={setCurrentTableId}
       />
       <TableToolBar />
-      <div className="h-screen max-w-10xl flex flex-grow overflow-x-auto">
+      <div className="h-screen max-w-10xl flex flex-grow overflow-y-auto">
         <TableSideBar />
         <Table 
           tableId={currentTableId}
