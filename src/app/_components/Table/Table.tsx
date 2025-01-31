@@ -13,9 +13,6 @@ import { useReactTable, type ColumnDef, getCoreRowModel, flexRender } from "@tan
 
 type TableProps = {
   tableId?: string;
-  cellsRecord: Cell[];
-  setCellsRecord: React.Dispatch<React.SetStateAction<Cell[]>>;
-  refetchTable: () => void;
 };
 
 const TanStackTable = ({
@@ -72,7 +69,7 @@ const TanStackTable = ({
       // return context so we can revert if needed
       return { prevColumns, newCells };
     },
-    onError: (err, newColumnInfo, context) => {
+    onError: (err, _, context) => {
       if (context?.prevColumns) {
         setColumns(context.prevColumns);
       }
@@ -122,13 +119,13 @@ const TanStackTable = ({
 
   const rowData = useMemo(() => {
     const map: Record<string, Record<string, string>> = {};
-    // fill in placeholders
     for (const r of records) {
       map[r.id] = { recordId: r.id };
     }
     for (const cell of cells) {
-      if (map[cell.recordId]) {
-        map[cell.recordId][cell.columnId] = cell.data;
+      const record = map[cell.recordId];
+      if (record) {
+        record[cell.columnId] = cell.data;
       }
     }
     return Object.values(map);
@@ -155,7 +152,6 @@ const TanStackTable = ({
     [columns]
   );
 
-  // 6) create TanStack Table
   const tableInstance = useReactTable({
     data: rowData,
     columns: columnDefs,
@@ -212,7 +208,7 @@ const TanStackTable = ({
               rowIndex: records.length,
             })}
             >
-              <span>add</span>
+              <span className="p-3 text-gray-500">add</span>
           </div>
       </div>
 

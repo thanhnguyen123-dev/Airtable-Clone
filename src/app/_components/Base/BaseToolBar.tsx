@@ -8,7 +8,7 @@ type BaseToolBarProps = {
   baseId: string
   tables: Table[],
   currentTableId: string,
-  handleTableSwitch: Dispatch<SetStateAction<string | undefined>>
+  handleTableSwitch: (id: string) => void
 }
 
 const BaseToolBar = ({baseId, tables, currentTableId, handleTableSwitch} : BaseToolBarProps) => {

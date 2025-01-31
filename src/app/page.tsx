@@ -16,14 +16,17 @@ export default function Home() {
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
 
   const router = useRouter();
-
-  const utils = api.useUtils();
   const createBaseMutation = api.base.create.useMutation({
   });
+  const createTableMutation = api.table.createDefaultTable.useMutation();
 
   const handleCreate = async () => {
     try {
       const base = await createBaseMutation.mutateAsync({ name: "Untitled Base", });
+      await createTableMutation.mutateAsync({
+        baseId: base.id,
+        name: `Table ${1}`
+      })
       router.push(`/${base.id}`);
     } catch (error) {
       console.error("Failed to create base:", error);

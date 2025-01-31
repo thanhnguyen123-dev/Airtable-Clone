@@ -74,7 +74,7 @@ const HomeSideBar = ({isSideBarOpen, handleCreateBase} : HomeSideBarProps) => {
 
                 <HomeSideBarItem 
                   title="Marketplace" 
-                  imagePath="/icons/icons_definitions.svg#ShoppingBag"
+                  imagePath="/icons/icons_definitions.svg#ShoppingBagOpen"
                 />
 
                 <HomeSideBarItem 
