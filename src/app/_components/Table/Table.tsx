@@ -10,6 +10,7 @@ import TableRow from "./TableRow"
 
 import type { Column, Cell, Record as _Record } from "@prisma/client";
 import { useReactTable, type ColumnDef, getCoreRowModel, flexRender } from "@tanstack/react-table";
+import { useVirtualizer } from '@tanstack/react-virtual';
 
 type TableProps = {
   tableId?: string;
@@ -29,6 +30,13 @@ const TanStackTable = ({
   const [columns, setColumns] = useState<Column[]>([]);
   const [records, setRecords] = useState<_Record[]>([]);
   const [cells, setCells] = useState<Cell[]>([]);
+
+  const [page, setPage] = useState(0);
+  const pageSize = 100;
+  const parentRef = React.useRef<HTMLDivElement>(null);
+
+
+  const createFakeRecordsMutation = api.table.createFakeRecords.useMutation();
 
   useEffect(() => {
     if (tableData) {
@@ -169,6 +177,23 @@ const TanStackTable = ({
     return <div>Table not found</div>;
   }
 
+  const handleAddRecord = () => {
+    createRecordMutation.mutate({
+      tableId: tableId,
+      rowIndex: records.length,
+    });
+  };
+
+  const handleAddFakeRecords = () => {
+    if (tableData.columns) {
+      const columnIds = tableData.columns.map((col) => col.id);
+      createFakeRecordsMutation.mutate({
+        tableId: tableId,
+        columnIds: columnIds,
+      });
+    }
+  };
+
   return (
     <div className="flex w-full bg-white overflow-y-auto">
       <div className="flex flex-col">
@@ -203,12 +228,17 @@ const TanStackTable = ({
         })}
           <div
             className={`flex pl-[0.1rem] h-8 items-center border-b border-r w-full border-gray-300 bg-white pr-5 text-left text-[13px] text-gray-500 hover:bg-gray-50`}
-            onClick={() => createRecordMutation.mutate({
-              tableId: tableId,
-              rowIndex: records.length,
-            })}
+            role="button"
+            onClick={handleAddRecord}
             >
-              <span className="p-3 text-gray-500">add</span>
+              <span className="p-3 text-gray-500">Add record</span>
+          </div>
+          <div
+            className={`flex pl-[0.1rem] h-8 items-center border-b border-r w-full border-gray-300 bg-white pr-5 text-left text-[13px] text-gray-500 hover:bg-gray-50`}
+            role="button"
+            onClick={handleAddFakeRecords}
+            >
+              <span className="p-3 text-gray-500">Add 15k records</span>
           </div>
       </div>
 

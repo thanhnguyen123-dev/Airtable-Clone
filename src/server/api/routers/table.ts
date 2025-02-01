@@ -2,6 +2,7 @@ import { z } from "zod";
 import { TRPCError } from "@trpc/server";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { type Cell } from "@prisma/client";
+import { faker } from '@faker-js/faker';
 
 export const tableRouter = createTRPCRouter({
   create: protectedProcedure
@@ -78,7 +79,7 @@ export const tableRouter = createTRPCRouter({
         });
       }
 
-      return {success: true};
+      return newColumn;
     }),
 
     createRecord: protectedProcedure
@@ -95,7 +96,7 @@ export const tableRouter = createTRPCRouter({
         where: { tableId: input.tableId },
       });
   
-      await ctx.db.cell.createMany({
+      const cells = await ctx.db.cell.createMany({
         data: columns.map(column => ({
           id: `${record.id}-${column.id}`,
           recordId: record.id,
@@ -111,6 +112,11 @@ export const tableRouter = createTRPCRouter({
           cells: true
         }
       });
+
+      // return {
+      //   ...record,
+      //   cells: cells
+      // }
     }),
   
   // update cell
@@ -190,5 +196,46 @@ export const tableRouter = createTRPCRouter({
         where: { tableId: input.tableId },
       });
     }),
+
+  createFakeRecords: protectedProcedure
+    .input(z.object({tableId: z.string().min(1), columnIds: z.array(z.string().min(1))}))
+    .mutation(async ({ ctx, input }) => {
+      const {tableId, columnIds} = input;
+
+      const currentCount = await ctx.db.record.count({
+        where: { tableId },
+      });
+
+      const records = Array.from({ length: 5000 }, (_, i) => ({
+        id: `${tableId}-${i + currentCount}`,
+        tableId: tableId,
+        rowIndex: i + currentCount,
+      }))
+
+      const recordsData = records.flatMap((record) => 
+        columnIds.map((columnId) => ({
+          id: `${record.id}-${columnId}`,
+          data: faker.person.fullName(),
+          recordId: record.id,
+          columnId: columnId,
+        })),
+      );
+
+      const result = await ctx.db.$transaction(
+        async (prisma) => {
+          await prisma.record.createMany({
+            data: records,
+          });
+          return await prisma.cell.createMany({
+            data: recordsData,
+          });
+        },
+        { timeout: 60000 },
+      );
+      return result;
+    }),
+  
+  
+
   
 });
