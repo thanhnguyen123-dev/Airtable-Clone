@@ -6,7 +6,8 @@ import Loader from "../Loader";
 import TableHeader from "./TableHeader";
 import TableCell from "./TableCell";
 import AddColumnButton from "./AddColumnButton";
-import TableRow from "./TableRow"
+import AddRecordButton from "./AddRecordButton";
+import TableRow from "./TableRow";
 
 import type { Column, Cell, Record as _Record } from "@prisma/client";
 import { useReactTable, type ColumnDef, getCoreRowModel, flexRender } from "@tanstack/react-table";
@@ -188,20 +189,14 @@ const TanStackTable = ({
             </TableRow>
           );
         })}
-          <div
-            className={`flex pl-[0.1rem] h-8 items-center border-b border-r w-full border-gray-300 bg-white pr-5 text-left text-[13px] text-gray-500 hover:bg-gray-50`}
-            role="button"
-            onClick={handleAddRecord}
-            >
-              <span className="p-3 text-gray-500">Add record</span>
-          </div>
-          <div
-            className={`flex pl-[0.1rem] h-8 items-center border-b border-r w-full border-gray-300 bg-white pr-5 text-left text-[13px] text-gray-500 hover:bg-gray-50`}
-            role="button"
-            onClick={handleAddFakeRecords}
-            >
-              <span className="p-3 text-gray-500">Add 15k records</span>
-          </div>
+        <AddRecordButton 
+          handleClick={handleAddRecord} 
+          text="Add record"
+        />
+        <AddRecordButton 
+          handleClick={handleAddFakeRecords} 
+          text="Add 15k records" 
+        />
       </div>
 
       <AddColumnButton
