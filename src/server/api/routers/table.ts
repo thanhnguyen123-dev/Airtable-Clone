@@ -1,7 +1,5 @@
 import { z } from "zod";
-import { TRPCError } from "@trpc/server";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
-import { type Cell } from "@prisma/client";
 import { faker } from '@faker-js/faker';
 
 export const tableRouter = createTRPCRouter({
@@ -43,22 +41,17 @@ export const tableRouter = createTRPCRouter({
     }),
 
   createColumn: protectedProcedure
-    .input(z.object({ tableId: z.string().min(1), name: z.string().min(1)}))
+    .input(
+      z.object({ 
+        tableId: z.string().min(1), 
+        name: z.string().min(1),
+        id: z.string().optional(),
+      })
+    )
     .mutation(async ({ ctx, input }) => {
-      // const existingColumn = await ctx.db.column.findFirst({
-      //   where: { tableId: input.tableId, name: input.name },
-      // });
-
-      // if (existingColumn) {
-      //   throw new TRPCError({
-      //     code: "CONFLICT",
-      //     message: "Column with this name already exists",
-      //   });
-      // }
-
       const newColumn = await ctx.db.column.create({
         data: {
-          // id: input.id,
+          id: input.id,
           name: input.name,
           tableId: input.tableId,
         },
@@ -83,10 +76,11 @@ export const tableRouter = createTRPCRouter({
     }),
 
     createRecord: protectedProcedure
-    .input(z.object({ tableId: z.string().min(1), rowIndex: z.number().int() }))
+    .input(z.object({ tableId: z.string().min(1), rowIndex: z.number().int(), id: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
       const record = await ctx.db.record.create({
         data: {
+          id: input.id,
           rowIndex: input.rowIndex,
           tableId: input.tableId,
         },
@@ -96,7 +90,7 @@ export const tableRouter = createTRPCRouter({
         where: { tableId: input.tableId },
       });
   
-      const cells = await ctx.db.cell.createMany({
+      await ctx.db.cell.createMany({
         data: columns.map(column => ({
           id: `${record.id}-${column.id}`,
           recordId: record.id,
@@ -106,17 +100,19 @@ export const tableRouter = createTRPCRouter({
       });
   
       // Return the complete record with its cells
-      return ctx.db.record.findUnique({
-        where: { id: record.id },
-        include: {
-          cells: true
-        }
-      });
+      // return ctx.db.record.findUnique({
+      //   where: { id: record.id },
+      //   include: {
+      //     cells: true
+      //   }
+      // });
 
       // return {
       //   ...record,
       //   cells: cells
       // }
+
+      return record;
     }),
   
   // update cell
@@ -206,7 +202,7 @@ export const tableRouter = createTRPCRouter({
         where: { tableId },
       });
 
-      const records = Array.from({ length: 5000 }, (_, i) => ({
+      const records = Array.from({ length: 15000 }, (_, i) => ({
         id: `${tableId}-${i + currentCount}`,
         tableId: tableId,
         rowIndex: i + currentCount,
@@ -235,7 +231,5 @@ export const tableRouter = createTRPCRouter({
       return result;
     }),
   
-  
-
   
 });

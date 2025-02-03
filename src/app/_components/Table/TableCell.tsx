@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { api } from "~/trpc/react";
 
 type TableCellProps = {
@@ -9,45 +9,44 @@ type TableCellProps = {
 
 const TableCell = ({ columnId, recordId, data }: TableCellProps) => {
   const [value, setValue] = useState(data);
-  const [isEditing, setIsEditing] = useState(false);
+  const [lastSaved, setLastSaved] = useState(data);
 
   const utils = api.useUtils();
   const updateCellMutation = api.table.updateCell.useMutation({
-    onMutate: async ({ data }) => {
-      await utils.table.getById.cancel();
+    onMutate: async ({ }) => {
+      await utils.table.getById.cancel(); 
       return { prevValue: value };
     },
     onError: (err, _, context) => {
       if (context?.prevValue) {
-        setValue(context.prevValue); // Revert value if error occurs
+        setValue(context.prevValue); 
       }
     },
-    onSettled: () => void utils.table.getById.invalidate(), // Ensure the UI stays in sync
+    onSettled: () => {
+      void utils.table.getById.invalidate(); 
+    },
   });
 
-  const handleBlur = () => {
-    setIsEditing(false);
-    if (value !== data) {
-      updateCellMutation.mutate({ columnId, recordId, data: value });
-    }
-  };
+  useEffect(() => {
+    if (value === lastSaved) return;
 
-  const handleKeyDown = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter") {
-      e.preventDefault();
-      handleBlur();
-    }
-  };
+    const timer = setTimeout(() => {
+      if (value !== lastSaved) {
+        updateCellMutation.mutate({ columnId, recordId, data: value });
+        setLastSaved(value);
+      }
+    }, 500);
+
+ 
+    return () => clearTimeout(timer);
+  }, [value, columnId, recordId, lastSaved, updateCellMutation]);
 
   return (
     <div className="h-[30px] w-[160px] border-r border-gray-300 text-xs">
       <input
         type="text"
         value={value}
-        onFocus={() => setIsEditing(true)}
         onChange={(e) => setValue(e.target.value)}
-        onBlur={handleBlur}
-        onKeyDown={handleKeyDown}
         className="w-full h-full px-2 bg-transparent focus:outline-blue-500"
       />
     </div>

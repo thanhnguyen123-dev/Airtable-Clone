@@ -10,7 +10,6 @@ import TableRow from "./TableRow"
 
 import type { Column, Cell, Record as _Record } from "@prisma/client";
 import { useReactTable, type ColumnDef, getCoreRowModel, flexRender } from "@tanstack/react-table";
-import { useVirtualizer } from '@tanstack/react-virtual';
 
 type TableProps = {
   tableId?: string;
@@ -31,12 +30,6 @@ const TanStackTable = ({
   const [records, setRecords] = useState<_Record[]>([]);
   const [cells, setCells] = useState<Cell[]>([]);
 
-  const [page, setPage] = useState(0);
-  const pageSize = 100;
-  const parentRef = React.useRef<HTMLDivElement>(null);
-
-
-  const createFakeRecordsMutation = api.table.createFakeRecords.useMutation();
 
   useEffect(() => {
     if (tableData) {
@@ -47,82 +40,9 @@ const TanStackTable = ({
     }
   }, [tableData]);
 
-  const utils = api.useUtils();
-  const createColumnMutation = api.table.createColumn.useMutation({
-    onMutate: async (newColumnInfo) => {
-      await utils.table.getById.cancel();
-
-      // snapshot old columns
-      const prevColumns = [...columns];
-      // create an optimistic column ID
-      const fakeId = `tmp-${Date.now()}`;
-      const optimisticColumn: Column = {
-        id: fakeId,
-        tableId: newColumnInfo.tableId,
-        name: newColumnInfo.name,
-      };
-
-      // add the new column to local state
-      setColumns((old) => [...old, optimisticColumn]);
-
-      // add an empty cell for each existing record
-      const newCells: Cell[] = records.map((rec) => ({
-        id: `${rec.id}-${fakeId}`,
-        recordId: rec.id,
-        columnId: fakeId,
-        data: "",
-      }));
-      setCells((old) => [...old, ...newCells]);
-
-      // return context so we can revert if needed
-      return { prevColumns, newCells };
-    },
-    onError: (err, _, context) => {
-      if (context?.prevColumns) {
-        setColumns(context.prevColumns);
-      }
-      if (context?.newCells) {
-        setCells((old) =>
-          old.filter((c) => !context.newCells.find((nc) => nc.id === c.id))
-        );
-      }
-    },
-    onSettled: () => {
-      void refetch();
-    },
-  });
-
-  const createRecordMutation = api.table.createRecord.useMutation({
-    onMutate: async () => {
-      await utils.table.getById.cancel();
-      const prevRecords = [...records];
-
-      const fakeId = `tmp-${Date.now()}`;
-      const optimisticRecord: _Record = {
-        id: fakeId,
-        tableId: tableId!,
-        rowIndex: records.length,
-      };
-
-      setRecords((old) => [...old, optimisticRecord]);
-
-      const newCells: Cell[] = columns.map((col) => ({
-        id: `${fakeId}-${col.id}`,
-        recordId: fakeId,
-        columnId: col.id,
-        data: "",
-      }));
-      setCells((old) => [...old, ...newCells]);
-
-      return { prevRecords, newCells };
-    },
-    onError: (err, _, context) => {
-      if (context?.prevRecords) setRecords(context.prevRecords);
-      if (context?.newCells) setCells((old) => old.filter((c) => !context.newCells.includes(c)));
-    },
-    onSettled: () => void refetch(),
-  });
-
+  const createFakeRecordsMutation = api.table.createFakeRecords.useMutation();
+  const createColumnMutation = api.table.createColumn.useMutation();
+  const createRecordMutation = api.table.createRecord.useMutation();
 
 
   const rowData = useMemo(() => {
@@ -177,13 +97,55 @@ const TanStackTable = ({
     return <div>Table not found</div>;
   }
 
-  const handleAddRecord = () => {
-    createRecordMutation.mutate({
-      tableId: tableId,
-      rowIndex: records.length,
-    });
+  const handleAddRecord = async () => {
+    try {
+      const newId = crypto.randomUUID();
+      const optimisticRecord: _Record = {
+        id: newId,
+        tableId: tableId,
+        rowIndex: records.length,
+      };
+      setRecords((old) => [...old, optimisticRecord]);
+  
+      await createRecordMutation.mutateAsync({
+        tableId,
+        rowIndex: records.length,
+        id: newId,
+      });
+  
+    } catch (error) {
+      console.error("Error creating record", error);    }
   };
 
+  const handleAddColumn = async (colName: string) => {
+    try {
+      const newColId = crypto.randomUUID();
+      const optimisticColumn: Column = {
+        id: newColId,
+        tableId: tableId,
+        name: colName,
+      };
+      setColumns((old) => [...old, optimisticColumn]);
+  
+      const newCells: Cell[] = records.map((record) => ({
+        id: `${record.id}-${newColId}`,
+        recordId: record.id,
+        columnId: newColId,
+        data: "",
+      }));
+      setCells((old) => [...old, ...newCells]);
+  
+      await createColumnMutation.mutateAsync({
+        tableId: tableId,
+        name: colName,
+        id: newColId, 
+      });
+    } catch (error) {
+      console.error("Error creating column", error);
+    }
+  };
+  
+  
   const handleAddFakeRecords = () => {
     if (tableData.columns) {
       const columnIds = tableData.columns.map((col) => col.id);
@@ -243,12 +205,7 @@ const TanStackTable = ({
       </div>
 
       <AddColumn
-        onCreated={(colName) => {
-          createColumnMutation.mutate({
-            tableId: tableId,
-            name: colName,
-          });
-        }}
+        onCreated={handleAddColumn}
       />
     </div>
   );
