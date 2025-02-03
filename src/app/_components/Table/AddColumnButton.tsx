@@ -6,7 +6,7 @@ type AddColumnProps = {
   onCreated?: (columnName: string) => void;
 };
 
-const AddColumn = ({ onCreated }: AddColumnProps) => {
+const AddColumnButton = ({ onCreated }: AddColumnProps) => {
   const [isAdding, setIsAdding] = useState(false);
   const [columnName, setColumnName] = useState("");
   const [columnType, setColumnType] = useState("TEXT");
@@ -89,4 +89,4 @@ const AddColumn = ({ onCreated }: AddColumnProps) => {
   );
 };
 
-export default AddColumn;
+export default AddColumnButton;

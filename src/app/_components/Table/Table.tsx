@@ -5,7 +5,7 @@ import { api } from "~/trpc/react";
 import Loader from "../Loader";
 import TableHeader from "./TableHeader";
 import TableCell from "./TableCell";
-import AddColumn from "./AddColumn";
+import AddColumnButton from "./AddColumnButton";
 import TableRow from "./TableRow"
 
 import type { Column, Cell, Record as _Record } from "@prisma/client";
@@ -204,7 +204,7 @@ const TanStackTable = ({
           </div>
       </div>
 
-      <AddColumn
+      <AddColumnButton
         onCreated={handleAddColumn}
       />
     </div>

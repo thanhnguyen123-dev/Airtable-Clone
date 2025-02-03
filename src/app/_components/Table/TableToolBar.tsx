@@ -55,6 +55,7 @@ const TableToolBar = () => {
 
 
       <div>
+        {/* Search button */}
         <svg
           role='button'
           width={16}
@@ -71,4 +72,4 @@ const TableToolBar = () => {
   )
 }
 
-export default TableToolBar
+export default TableToolBar;

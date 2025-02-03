@@ -231,5 +231,23 @@ export const tableRouter = createTRPCRouter({
       return result;
     }),
   
+  getSearchRecord: protectedProcedure
+    .input(z.object({ searchInput: z.string().min(1) }))
+    .query(async ({ ctx, input }) => {
+      return ctx.db.record.findFirst({
+        where: {
+          cells: {
+            some: {
+              data: {
+                contains: input.searchInput,
+              },
+            },
+          }
+        },
+        orderBy: {
+          rowIndex: "asc",
+        }
+      });
+    }),
   
 });
