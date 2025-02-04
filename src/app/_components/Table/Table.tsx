@@ -52,7 +52,6 @@ const TanStackTable = ({
     onSuccess: () => refetch(),
   });
 
-
   const rowData = useMemo(() => {
     const map: Record<string, Record<string, string>> = {};
     for (const r of records) {
@@ -66,7 +65,6 @@ const TanStackTable = ({
     }
     return Object.values(map);
   }, [records, cells]);
-
 
   const columnDefs = useMemo<ColumnDef<Record<string, string>>[]>(
     () =>

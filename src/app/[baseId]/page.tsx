@@ -68,7 +68,9 @@ const BasePage = () => {
         tableId={currentTableId ?? ""}
       />
       <div className="h-screen max-w-10xl flex flex-grow overflow-y-auto">
-        <TableSideBar />
+        <TableSideBar 
+          tableId={currentTableId ?? ""}
+        />
         <Table 
           tableId={currentTableId ?? ""}
           searchValue={searchValue}

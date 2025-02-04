@@ -3,10 +3,23 @@ import { useState, useEffect, SetStateAction, Dispatch } from "react";
 import { api } from "~/trpc/react";
 import TableSideItem from "./TableSideItem";
 
+type CreateViewButtonProps = {
+  tableId: string;
+};
 
-
-const CreateViewButton = () => {
+const CreateViewButton = ({ tableId } : CreateViewButtonProps) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [viewName, setViewName] = useState("Grid View");
+
+  const createViewMutation = api.table.createView.useMutation();
+
+  const handleCreateView = async () => {
+    await createViewMutation.mutateAsync({
+      name: viewName,
+      tableId: tableId
+    });
+  }
+
   return (
     <div className="flex flex-col gap-2">
       <Popover 
@@ -52,6 +65,7 @@ const CreateViewButton = () => {
               type="text"
               className="bg-gray-100 py-1 px-2"
               placeholder="Enter view name"
+              onChange={(e) => setViewName(e.target.value)}
             />
             <div className="flex justify-end gap-2 text-xs">
               <button
@@ -61,6 +75,7 @@ const CreateViewButton = () => {
               </button>
               <button
                 className="bg-blue-600 text-white p-2 rounded-md font-medium"
+                onClick={handleCreateView}
               >
                 Create new view
               </button>

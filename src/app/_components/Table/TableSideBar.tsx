@@ -12,7 +12,11 @@ const tableSideItems = [
   ,{name: "Gant", color: 'rgb(13, 127, 120)', d:"M0 3.5C0 2.67157 0.671573 2 1.5 2H11.5C12.3284 2 13 2.67157 13 3.5V5.5C13 6.32843 12.3284 7 11.5 7H4.5V10C4.5 10.5523 4.94771 11 5.5 11H7.5V10.5C7.5 9.67157 8.17157 9 9 9H14.5C15.3284 9 16 9.67157 16 10.5V12.5C16 13.3284 15.3284 14 14.5 14H9C8.17157 14 7.5 13.3284 7.5 12.5V12H5.5C4.39543 12 3.5 11.1046 3.5 10V7H1.5C0.671573 7 0 6.32843 0 5.5V3.5ZM8.5 12.5C8.5 12.7761 8.72386 13 9 13H14.5C14.7761 13 15 12.7761 15 12.5V10.5C15 10.2239 14.7761 10 14.5 10H9C8.72386 10 8.5 10.2239 8.5 10.5V12.5ZM1.5 3C1.22386 3 1 3.22386 1 3.5V5.5C1 5.77614 1.22386 6 1.5 6H11.5C11.7761 6 12 5.77614 12 5.5V3.5C12 3.22386 11.7761 3 11.5 3H1.5Z"}
 ]
 
-const TableSideBar = () => {
+type TableSideBarProps = {
+  tableId: string;
+}
+
+const TableSideBar = ({ tableId } : TableSideBarProps) => {
   return (
     <div className='border-r w-[280px] min-w-[280px] flex flex-col justify-between h-full'>
       <ViewSearchBar />
@@ -32,7 +36,9 @@ const TableSideBar = () => {
             </svg>
           </div>
         </div>
-        <CreateViewButton />
+        <CreateViewButton 
+          tableId={tableId}
+        />
         {tableSideItems.map((item, index) => (
           <TableSideItem
             key={index}
