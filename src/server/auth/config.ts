@@ -61,8 +61,10 @@ export const authConfig: NextAuthOptions = {
       return "/";
     }
   },
-  session: {
-    strategy: "jwt",
-  },  
+  pages: {
+    signIn: "/auth/signin",
+    signOut: "/auth/signout",
+    error: "/auth/error",
+  },
   secret: process.env.NEXTAUTH_SECRET,
 } satisfies NextAuthOptions;
