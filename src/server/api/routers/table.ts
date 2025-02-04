@@ -250,4 +250,17 @@ export const tableRouter = createTRPCRouter({
       });
     }),
   
+  createView: protectedProcedure
+    .input(
+      z.object({ 
+        tableId: z.string().min(1), name: z.string().min(1) 
+      }))
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.view.create({
+        data: {
+          name: input.name,
+          tableId: input.tableId,
+        }
+      })
+    })
 });

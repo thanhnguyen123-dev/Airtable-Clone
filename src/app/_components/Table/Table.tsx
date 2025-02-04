@@ -42,9 +42,15 @@ const TanStackTable = ({
     }
   }, [tableData]);
 
-  const createFakeRecordsMutation = api.table.createFakeRecords.useMutation();
-  const createColumnMutation = api.table.createColumn.useMutation();
-  const createRecordMutation = api.table.createRecord.useMutation();
+  const createFakeRecordsMutation = api.table.createFakeRecords.useMutation({
+    onSuccess: () => refetch(),
+  });
+  const createColumnMutation = api.table.createColumn.useMutation({
+    onSuccess: () => refetch(),
+  });
+  const createRecordMutation = api.table.createRecord.useMutation({
+    onSuccess: () => refetch(),
+  });
 
 
   const rowData = useMemo(() => {
@@ -195,10 +201,18 @@ const TanStackTable = ({
           handleClick={handleAddRecord} 
           text="Add record"
         />
-        <AddRecordButton 
-          handleClick={handleAddFakeRecords} 
-          text="Add 15k records" 
-        />
+        <div>
+          {createFakeRecordsMutation.isPending ? (
+            <div className={`flex pl-[0.1rem] h-8 items-center border-b border-r w-full border-gray-300 bg-white pr-5 text-left text-[13px] text-gray-500 hover:bg-gray-50`}>
+              <span className="p-3 text-gray-500">Adding fake records...</span>
+            </div>
+          ) : (
+            <AddRecordButton 
+              handleClick={handleAddFakeRecords} 
+              text="Add 500 fake records"
+            />
+          )}
+        </div>
       </div>
 
       <AddColumnButton
