@@ -10,6 +10,7 @@ import HomeContent from "./_components/Home/HomeContent";
 import Loader from "./_components/Loader";
 import Image from "next/image";
 import { api } from "~/trpc/react";
+import { redirect } from "next/navigation";
 
 export default function Home() {
   const { data: session, status } = useSession();
@@ -41,27 +42,30 @@ export default function Home() {
     return <Loader/>;
   }
 
+  // if (!session) {
+  //   return (
+  //     <div className="flex flex-col justify-center items-center h-screen gap-4">
+  //       <div className="flex flex-col  gap-4 w-full max-w-md">
+  //         <Image
+  //           src="/airtable-logo.svg"
+  //           alt="Airtable Logo"
+  //           width={100}
+  //           height={100}
+  //           className="mx-auto"
+  //         />
+  //         <span className="my-3 mx-auto text-3xl font-bold">You&apos;re almost there...</span>
+  //         <OAuthButton 
+  //           handleClick={handleGoogleAuth} 
+  //           action="Continue with" 
+  //           providerName="Google" 
+  //           icon={<FcGoogle className="absolute left-6"/>} 
+  //         />
+  //       </div>
+  //     </div>
+  //   );
+  // }
   if (!session) {
-    return (
-      <div className="flex flex-col justify-center items-center h-screen gap-4">
-        <div className="flex flex-col  gap-4 w-full max-w-md">
-          <Image
-            src="/airtable-logo.svg"
-            alt="Airtable Logo"
-            width={100}
-            height={100}
-            className="mx-auto"
-          />
-          <span className="my-3 mx-auto text-3xl font-bold">You&apos;re almost there...</span>
-          <OAuthButton 
-            handleClick={handleGoogleAuth} 
-            action="Continue with" 
-            providerName="Google" 
-            icon={<FcGoogle className="absolute left-6"/>} 
-          />
-        </div>
-      </div>
-    );
+    redirect("api/auth/signin");
   }
 
   return (

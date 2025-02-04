@@ -32,6 +32,7 @@ declare module "next-auth" {
  * @see https://next-auth.js.org/configuration/options
  */
 export const authConfig: NextAuthOptions = {
+  debug: true,
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -61,10 +62,10 @@ export const authConfig: NextAuthOptions = {
       return "/";
     }
   },
-  pages: {
-    signIn: "/auth/signin",
-    signOut: "/auth/signout",
-    error: "/auth/error",
-  },
+  // pages: {
+  //   signIn: "/auth/signin",
+  //   signOut: "/auth/signout",
+  //   error: "/auth/error",
+  // },
   secret: process.env.NEXTAUTH_SECRET,
 } satisfies NextAuthOptions;
