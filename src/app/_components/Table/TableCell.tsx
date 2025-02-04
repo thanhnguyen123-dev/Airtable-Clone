@@ -5,9 +5,10 @@ type TableCellProps = {
   columnId: string;
   recordId: string;
   data: string;
+  searchValue: string;
 };
 
-const TableCell = ({ columnId, recordId, data }: TableCellProps) => {
+const TableCell = ({ columnId, recordId, data, searchValue }: TableCellProps) => {
   const [value, setValue] = useState(data);
   const [lastSaved, setLastSaved] = useState(data);
 
@@ -42,7 +43,7 @@ const TableCell = ({ columnId, recordId, data }: TableCellProps) => {
   }, [value, columnId, recordId, lastSaved, updateCellMutation]);
 
   return (
-    <div className="h-[30px] w-[160px] border-r border-gray-300 text-xs">
+    <div className={`h-[30px] w-[160px] border-r border-gray-300 text-xs ${searchValue && value.includes(searchValue) ? "bg-yellow-200" : ""}`}>
       <input
         type="text"
         value={value}

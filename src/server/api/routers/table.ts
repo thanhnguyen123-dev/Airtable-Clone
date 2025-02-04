@@ -202,7 +202,7 @@ export const tableRouter = createTRPCRouter({
         where: { tableId },
       });
 
-      const records = Array.from({ length: 15000 }, (_, i) => ({
+      const records = Array.from({ length: 500 }, (_, i) => ({
         id: `${tableId}-${i + currentCount}`,
         tableId: tableId,
         rowIndex: i + currentCount,

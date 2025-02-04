@@ -7,7 +7,7 @@ import Loader from "../_components/Loader";
 import TableToolBar from "../_components/Table/TableToolBar";
 import TableSideBar from "../_components/Table/TableSideBar";
 import { FcBrokenLink } from "react-icons/fc";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Dispatch, SetStateAction } from "react";
 import Table from "../_components/Table/Table";
 
 const BasePage = () => {
@@ -27,12 +27,17 @@ const BasePage = () => {
   );
 
   const [currentTableId, setCurrentTableId] = useState<string | undefined>(tables?.[0]?.id);
+  const [searchValue, setSearchValue] = useState("");
 
   useEffect(() => {
     if (tables?.[0] && tables.length > 0 && !currentTableId) {
       setCurrentTableId(tables[0].id);
     }
   }, [tables, currentTableId]);
+
+  useEffect(() => {
+    setSearchValue("");
+  }, [currentTableId]);
 
 
   if (isBaseLoading || isTablesLoading) {
@@ -54,14 +59,19 @@ const BasePage = () => {
       <BaseToolBar 
         baseId={baseId!}
         tables={tables ?? []}
-        currentTableId={currentTableId!}
+        currentTableId={currentTableId ?? ""}
         handleTableSwitch={setCurrentTableId}
       />
-      <TableToolBar />
+      <TableToolBar 
+        searchValue={searchValue}
+        setSearchValue={setSearchValue}
+        tableId={currentTableId ?? ""}
+      />
       <div className="h-screen max-w-10xl flex flex-grow overflow-y-auto">
         <TableSideBar />
         <Table 
-          tableId={currentTableId}
+          tableId={currentTableId ?? ""}
+          searchValue={searchValue}
         />
       </div>
     </div>

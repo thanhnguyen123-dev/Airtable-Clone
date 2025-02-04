@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo } from "react";
+import React, { useEffect, useState, useMemo, Dispatch, SetStateAction } from "react";
 import { api } from "~/trpc/react";
 import Loader from "../Loader";
 import TableHeader from "./TableHeader";
@@ -13,16 +13,17 @@ import type { Column, Cell, Record as _Record } from "@prisma/client";
 import { useReactTable, type ColumnDef, getCoreRowModel, flexRender } from "@tanstack/react-table";
 
 type TableProps = {
-  tableId?: string;
+  tableId: string;
+  searchValue: string;
 };
 
 const TanStackTable = ({
-  tableId,
+  tableId, searchValue
 }: TableProps) => {
 
   // fetch the current table
   const { data: tableData, isLoading, refetch } = api.table.getById.useQuery(
-    { tableId: tableId! },
+    { tableId: tableId },
     { enabled: !!tableId }
   );
 
@@ -74,11 +75,12 @@ const TanStackTable = ({
               columnId={col.id}
               recordId={recId!}
               data={val}
+              searchValue={searchValue}
             />
           );
         },
       })),
-    [columns]
+    [columns, searchValue]
   );
 
   const tableInstance = useReactTable({
