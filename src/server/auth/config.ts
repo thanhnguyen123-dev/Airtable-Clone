@@ -58,9 +58,9 @@ export const authConfig: NextAuthOptions = {
       },
     }),
 
-    // async redirect() {
-    //   return "/";
-    // }
+    async redirect() {
+      return "/";
+    }
   },
   // pages: {
   //   signIn: "/auth/signin",
