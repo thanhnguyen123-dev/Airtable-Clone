@@ -1,3 +1,4 @@
+import { fi } from '@faker-js/faker';
 import React from 'react';
 
 type TableSideItemProps = {
@@ -5,9 +6,10 @@ type TableSideItemProps = {
   name: string,
   color?: string
   d?: string
+  fillRule?: string
 }
 
-const TableSideItem = ({handleClick, name, color, d} : TableSideItemProps) => {
+const TableSideItem = ({handleClick, name, color, d, fillRule} : TableSideItemProps) => {
   return (
     <div role='button' onClick={handleClick}  className='w-full flex items-center justify-between p-2 rounded-md hover:bg-slate-200'>
       <div className='flex items-center gap-2'>
@@ -18,6 +20,7 @@ const TableSideItem = ({handleClick, name, color, d} : TableSideItemProps) => {
           viewBox="0 0 16 16"
           className="flex-none"
           fill={color}
+          fill-rule={fillRule}
           >
           <path fill-rule="non-zero" d={d} />
           </svg>)}
