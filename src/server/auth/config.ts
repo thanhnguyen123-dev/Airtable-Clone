@@ -62,9 +62,9 @@ export const authConfig: NextAuthOptions = {
     }
   },
   pages: {
-    signIn: "/",
+    signIn: "/auth/signin",
     signOut: "/auth/signout",
-    error: "/",
+    error: "/auth/error",
   },
   secret: process.env.NEXTAUTH_SECRET,
 } satisfies NextAuthOptions;
