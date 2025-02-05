@@ -8,6 +8,7 @@ import TableCell from "./TableCell";
 import AddColumnButton from "./AddColumnButton";
 import AddRecordButton from "./AddRecordButton";
 import TableRow from "./TableRow";
+import { faker } from '@faker-js/faker';
 
 import type { Column, Cell, Record as _Record } from "@prisma/client";
 import { useReactTable, type ColumnDef, getCoreRowModel, flexRender } from "@tanstack/react-table";
@@ -156,9 +157,31 @@ const TanStackTable = ({
   const handleAddFakeRecords = () => {
     if (tableData.columns) {
       const columnIds = tableData.columns.map((col) => col.id);
+      const seed = Date.now().toString();
+      const count = 500;
+
+      const optimisticRecords = Array.from({ length: count }, (_, i) => ({
+        id: `optimistic-${seed}-${i}`,
+        tableId: tableId,
+        rowIndex: records.length + i,
+      }));
+      setRecords((prev) => [...prev, ...optimisticRecords]);
+
+      const optimisticCells = optimisticRecords.flatMap((record) => 
+        columnIds.map((colId) => ({
+          id: `${record.id}-${colId}`,
+          recordId: record.id,
+          columnId: colId,
+          data: faker.person.fullName(),
+        }))
+      )
+      setCells((prev) => [...prev, ...optimisticCells]);
+
       createFakeRecordsMutation.mutate({
         tableId: tableId,
         columnIds: columnIds,
+        seed: seed,
+        count: count,
       });
     }
   };

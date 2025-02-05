@@ -36,6 +36,7 @@ export const tableRouter = createTRPCRouter({
           records: {
             include: { cells: true },
           },
+          views: true
         },
       });
     }),
@@ -156,6 +157,11 @@ export const tableRouter = createTRPCRouter({
               { name: "Assignee" },
               { name: "Status" },
             ],
+          },
+          views: {
+            create: {
+              name: "Grid View default"
+            }
           }
         },
         include: {
@@ -178,6 +184,8 @@ export const tableRouter = createTRPCRouter({
         }
       }
       await Promise.all(cells);
+
+
       return {
         success: true,
         table,
@@ -194,15 +202,24 @@ export const tableRouter = createTRPCRouter({
     }),
 
   createFakeRecords: protectedProcedure
-    .input(z.object({tableId: z.string().min(1), columnIds: z.array(z.string().min(1))}))
+    .input(z.object({
+      tableId: z.string().min(1), 
+      columnIds: z.array(z.string().min(1)),
+      seed: z.string().optional(),
+      count: z.number().int().optional(),
+    }))
     .mutation(async ({ ctx, input }) => {
-      const {tableId, columnIds} = input;
+      const {tableId, columnIds, seed, count = 500} = input;
+
+      if (seed) {
+        faker.seed(Number(seed));
+      }
 
       const currentCount = await ctx.db.record.count({
         where: { tableId },
       });
 
-      const records = Array.from({ length: 500 }, (_, i) => ({
+      const records = Array.from({ length: count }, (_, i) => ({
         id: `${tableId}-${i + currentCount}`,
         tableId: tableId,
         rowIndex: i + currentCount,

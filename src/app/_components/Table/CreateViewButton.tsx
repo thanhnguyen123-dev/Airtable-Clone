@@ -5,20 +5,14 @@ import TableSideItem from "./TableSideItem";
 
 type CreateViewButtonProps = {
   tableId: string;
+  viewName: string;
+  setViewName:Dispatch<SetStateAction<string>>;
+  handleCreateView: () => void;
 };
 
-const CreateViewButton = ({ tableId } : CreateViewButtonProps) => {
+const CreateViewButton = ({ tableId, viewName, setViewName, handleCreateView  } : CreateViewButtonProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const [viewName, setViewName] = useState("Grid View");
 
-  const createViewMutation = api.table.createView.useMutation();
-
-  const handleCreateView = async () => {
-    await createViewMutation.mutateAsync({
-      name: viewName,
-      tableId: tableId
-    });
-  }
 
   return (
     <div className="flex flex-col gap-2">

@@ -28,6 +28,7 @@ const BasePage = () => {
 
   const [currentTableId, setCurrentTableId] = useState<string | undefined>(tables?.[0]?.id);
   const [searchValue, setSearchValue] = useState("");
+  const [currentView, setCurrentView] = useState("");
 
   useEffect(() => {
     if (tables?.[0] && tables.length > 0 && !currentTableId) {
@@ -70,6 +71,8 @@ const BasePage = () => {
       <div className="h-screen max-w-10xl flex flex-grow overflow-y-auto">
         <TableSideBar 
           tableId={currentTableId ?? ""}
+          currentView={currentView}
+          setCurrentView={setCurrentView}
         />
         <Table 
           tableId={currentTableId ?? ""}
