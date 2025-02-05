@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo, useRef, use } from "react";
+import React, { useEffect, useState, useMemo, useRef } from "react";
 import { api } from "~/trpc/react";
 import Loader from "../Loader";
 import TableHeader from "./TableHeader";
@@ -108,7 +108,7 @@ const TanStackTable = ({
   }
 
   if (isLoading) {
-    return <Loader />;
+    return <div className="flex p-2">Loading...</div>
   }
   if (!tableData) {
     return <div>Table not found</div>;
@@ -232,13 +232,13 @@ const TanStackTable = ({
         />
         <div>
           {createFakeRecordsMutation.isPending ? (
-            <div className={`flex pl-[0.1rem] h-8 items-center border-b border-r w-full border-gray-300 bg-white pr-5 text-left text-[13px] text-gray-500 hover:bg-gray-50`}>
-              <span className="p-3 text-gray-500">Adding fake records...</span>
+            <div className={`flex pl-[0.1rem] h-[30px] items-center border-b border-r w-full border-gray-300 bg-white pr-5 text-left text-[13px] text-gray-500 hover:bg-gray-50`}>
+              <span className="p-[15px] text-gray-500">Adding ${FAKER_RECORDS_COUNT} records...</span>
             </div>
           ) : (
             <AddRecordButton 
               handleClick={handleAddFakeRecords} 
-              text="Add 15000 fake records"
+              text={`Add ${FAKER_RECORDS_COUNT} records`}
             />
           )}
         </div>

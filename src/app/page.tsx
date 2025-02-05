@@ -10,15 +10,13 @@ import HomeContent from "./_components/Home/HomeContent";
 import Loader from "./_components/Loader";
 import Image from "next/image";
 import { api } from "~/trpc/react";
-import { redirect } from "next/navigation";
 
 export default function Home() {
   const { data: session, status } = useSession();
   const [isSideBarOpen, setIsSideBarOpen] = useState(false);
 
   const router = useRouter();
-  const createBaseMutation = api.base.create.useMutation({
-  });
+  const createBaseMutation = api.base.create.useMutation();
   const createTableMutation = api.table.createDefaultTable.useMutation();
 
   const handleCreate = async () => {
@@ -35,7 +33,7 @@ export default function Home() {
   };
 
   const handleGoogleAuth = async () => {
-    await signIn("google");
+    await signIn("google", { callbackUrl: "/" });
   };
 
   if (status === "loading") {
