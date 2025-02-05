@@ -7,14 +7,14 @@ type TableHeaderProps = {
 
 const TableHeader = ({ header, index }: TableHeaderProps) => {
   const isFirstCol = index === "0";
-  const containerWidth = isFirstCol ? "w-[12.2rem]" : "w-[159.3px]";
+  const containerWidth = isFirstCol ? "w-[230px]" : "w-[160px]";
 
   return (
-    <div className="flex h-8 items-center border-r border-gray-300 bg-gray-100">
-      <div className={`${containerWidth} flex items-center justify-between p-1`}>
+    <div className={`flex h-8 items-center ${containerWidth}  border-r border-gray-300 bg-gray-100`}>
+      <div className={`w-full flex items-center justify-between p-1`}>
         <div className="flex items-center gap-2">
           {isFirstCol && (
-            <div className="flex items-center justify-center pl-2">
+            <div className="flex items-center justify-center pl-[9px]">
               <input
                 type="checkbox"
                 name="select"

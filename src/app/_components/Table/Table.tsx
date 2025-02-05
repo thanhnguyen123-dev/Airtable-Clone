@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo, Dispatch, SetStateAction } from "react";
+import React, { useEffect, useState, useMemo, useRef, use } from "react";
 import { api } from "~/trpc/react";
 import Loader from "../Loader";
 import TableHeader from "./TableHeader";
@@ -12,6 +12,9 @@ import { faker } from '@faker-js/faker';
 
 import type { Column, Cell, Record as _Record } from "@prisma/client";
 import { useReactTable, type ColumnDef, getCoreRowModel, flexRender } from "@tanstack/react-table";
+import { useVirtualizer } from "@tanstack/react-virtual";
+
+const FAKER_RECORDS_COUNT = 1000;
 
 type TableProps = {
   tableId: string;
@@ -49,9 +52,7 @@ const TanStackTable = ({
   const createColumnMutation = api.table.createColumn.useMutation({
     onSuccess: () => refetch(),
   });
-  const createRecordMutation = api.table.createRecord.useMutation({
-    onSuccess: () => refetch(),
-  });
+  const createRecordMutation = api.table.createRecord.useMutation();
 
   const rowData = useMemo(() => {
     const map: Record<string, Record<string, string>> = {};
@@ -92,6 +93,14 @@ const TanStackTable = ({
     data: rowData,
     columns: columnDefs,
     getCoreRowModel: getCoreRowModel(),
+  });
+
+  const parentRef = useRef<HTMLDivElement>(null);
+  const rowVirtualizer = useVirtualizer({
+    count: rowData.length,
+    getScrollElement: () => parentRef.current!,
+    estimateSize: () => 40,
+    overscan: 5,
   });
 
   if (!tableId) {
@@ -158,9 +167,8 @@ const TanStackTable = ({
     if (tableData.columns) {
       const columnIds = tableData.columns.map((col) => col.id);
       const seed = Date.now().toString();
-      const count = 500;
 
-      const optimisticRecords = Array.from({ length: count }, (_, i) => ({
+      const optimisticRecords = Array.from({ length: FAKER_RECORDS_COUNT }, (_, i) => ({
         id: `optimistic-${seed}-${i}`,
         tableId: tableId,
         rowIndex: records.length + i,
@@ -181,13 +189,13 @@ const TanStackTable = ({
         tableId: tableId,
         columnIds: columnIds,
         seed: seed,
-        count: count,
+        count: FAKER_RECORDS_COUNT,
       });
     }
   };
 
   return (
-    <div className="flex w-full bg-white overflow-y-auto">
+    <div className="flex w-full bg-white overflow-y-auto overflow-x-auto">
       <div className="flex flex-col">
         <TableRow>
           {tableInstance.getHeaderGroups().flatMap(headerGroup =>
@@ -203,10 +211,10 @@ const TanStackTable = ({
             <TableRow key={index}>
               {row?.getVisibleCells().map((cell, colIndex) => {
                 return (
-                  <div key={cell.id} className="flex items-center justify-center m-0 p-0">
+                  <div key={cell.id} className={`flex items-center justify-center m-0 p-0 w-full`}>
                     {colIndex === 0 && (
-                      <div className="flex items-center justify-center w-9 pl-[0.1rem]">
-                        <span className="flex items-center justify-center text-center text-xs text-gray-500">
+                      <div className="flex items-center justify-start w-[70px] pl-[15px]">
+                        <span className="flex items-center justify-start text-xs text-gray-500">
                           {index + 1}
                         </span>
                       </div>
@@ -230,12 +238,11 @@ const TanStackTable = ({
           ) : (
             <AddRecordButton 
               handleClick={handleAddFakeRecords} 
-              text="Add 500 fake records"
+              text="Add 15000 fake records"
             />
           )}
         </div>
       </div>
-
       <AddColumnButton
         onCreated={handleAddColumn}
       />

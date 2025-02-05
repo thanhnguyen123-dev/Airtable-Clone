@@ -279,5 +279,24 @@ export const tableRouter = createTRPCRouter({
           tableId: input.tableId,
         }
       })
+    }),
+
+  getTableRecordValues: protectedProcedure
+  .input(
+    z.object({
+      tableId: z.string().min(1),
+      offset: z.number().int(),
+      limit: z.number().int(),
     })
+  )
+  .query(async ({ ctx, input }) => {
+    return ctx.db.record.findMany({
+      where: { tableId: input.tableId },
+      skip: input.offset,
+      take: input.limit,
+      include: { cells: true },
+      orderBy: { rowIndex: "asc" },
+    });
+  }),
+  
 });

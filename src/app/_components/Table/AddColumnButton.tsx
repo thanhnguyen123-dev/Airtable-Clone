@@ -40,10 +40,10 @@ const AddColumnButton = ({ onCreated }: AddColumnProps) => {
   }, [isAdding]);
 
   return (
-    <div className="relative ml-1 flex items-start">
+    <div className="relative top-0 h-[32.5px] border-b border-r border-gray-300 bg-gray-100 flex items-start">
       <button
         onClick={() => setIsAdding((prev) => !prev)}
-        className="flex items-center justify-center bg-slate-100 border-gray-300 border px-8 py-[8px]"
+        className="flex items-center justify-center px-8 py-[8px]"
       >
         <svg width={16} height={16} viewBox="0 0 16 16" fill="black">
           <use href="icons/icons_definitions.svg#Plus"></use>

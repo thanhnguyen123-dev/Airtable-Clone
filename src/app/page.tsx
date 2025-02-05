@@ -68,7 +68,7 @@ export default function Home() {
   return (
     <div className="bg-grey flex flex-col w-full max-w-10xl h-screen">
       <NavBar isSideBarOpen={isSideBarOpen} setIsSideBarOpen={setIsSideBarOpen}/>
-      <div className="h-screen max-w-10xl flex flex-grow overflow-y-auto">
+      <div className="h-screen max-w-10xl flex flex-grow overflow-y-auto overflow-x-auto">
         <HomeSideBar
           isSideBarOpen={isSideBarOpen}
           handleCreateBase={handleCreate}
