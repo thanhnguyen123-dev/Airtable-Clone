@@ -19,10 +19,11 @@ const FAKER_RECORDS_COUNT = 1000;
 type TableProps = {
   tableId: string;
   searchValue: string;
+  currentView: string;
 };
 
 const TanStackTable = ({
-  tableId, searchValue
+  tableId, searchValue, currentView
 }: TableProps) => {
 
   // fetch the current table
@@ -108,7 +109,7 @@ const TanStackTable = ({
   }
 
   if (isLoading) {
-    return <div className="flex p-2">Loading...</div>
+    return <div className="">Loading...</div>
   }
   if (!tableData) {
     return <div>Table not found</div>;
@@ -230,22 +231,16 @@ const TanStackTable = ({
           handleClick={handleAddRecord} 
           text="Add record"
         />
-        <div>
-          {createFakeRecordsMutation.isPending ? (
-            <div className={`flex pl-[0.1rem] h-[30px] items-center border-b border-r w-full border-gray-300 bg-white pr-5 text-left text-[13px] text-gray-500 hover:bg-gray-50`}>
-              <span className="p-[15px] text-gray-500">Adding ${FAKER_RECORDS_COUNT} records...</span>
-            </div>
-          ) : (
-            <AddRecordButton 
-              handleClick={handleAddFakeRecords} 
-              text={`Add ${FAKER_RECORDS_COUNT} records`}
-            />
-          )}
-        </div>
+        <AddRecordButton 
+          handleClick={handleAddFakeRecords} 
+          text={`Add ${FAKER_RECORDS_COUNT} records`}
+        />
+
       </div>
       <AddColumnButton
         onCreated={handleAddColumn}
       />
+      <div className="px-3">current view: {currentView}</div>
     </div>
   );
 };

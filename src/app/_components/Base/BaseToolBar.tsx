@@ -1,5 +1,5 @@
 "use client";
-import React, { type Dispatch, type SetStateAction } from 'react';
+import React from 'react';
 import { api } from '~/trpc/react';
 import NavTableButton from '../Table/NavTableButton';
 import { type Table } from '@prisma/client';
@@ -8,10 +8,10 @@ type BaseToolBarProps = {
   baseId: string
   tables: Table[],
   currentTableId: string,
-  handleTableSwitch: (id: string) => void
+  handleTableSwitch: (id: string) => void,
 }
 
-const BaseToolBar = ({baseId, tables, currentTableId, handleTableSwitch} : BaseToolBarProps) => {
+const BaseToolBar = ({baseId, tables, currentTableId, handleTableSwitch } : BaseToolBarProps) => {
   const utils = api.useUtils()
   const createTableMutation = api.table.createDefaultTable.useMutation();
 
@@ -21,10 +21,10 @@ const BaseToolBar = ({baseId, tables, currentTableId, handleTableSwitch} : BaseT
       name: `Table ${tables.length + 1}`
     });
     const newTable: Table = result.table;
-    const newTables = [...tables, newTable];
+    const newTables: Table[] = [...tables, newTable];
     utils.table.getAll.setData({baseId}, newTables);
 
-    handleTableSwitch(newTable.id);
+    handleTableSwitch(result.table.id);
   };
 
   return (

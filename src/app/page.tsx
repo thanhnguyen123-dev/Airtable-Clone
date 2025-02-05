@@ -33,7 +33,7 @@ export default function Home() {
   };
 
   const handleGoogleAuth = async () => {
-    await signIn("google", { callbackUrl: "/" });
+    await signIn("google");
   };
 
   if (status === "loading") {

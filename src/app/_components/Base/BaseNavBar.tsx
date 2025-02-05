@@ -144,8 +144,8 @@ const NavBar = () => {
             <Image
               src={session?.user?.image ?? "/favicon.ico"}
               alt="profile-image"
-              width={26}
-              height={26}
+              width={29}
+              height={29}
               className="rounded-full cursor-pointer"
               onClick={toggleDropDown}
             />

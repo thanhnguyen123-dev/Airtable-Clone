@@ -10,7 +10,7 @@ const AddRecordButton = ({ handleClick, text } : AddRecordButtonProps) => {
     role="button"
     onClick={handleClick}
     > 
-      <div className="flex items-center w-[230px] h-full border-r border-gray-300 pl-[15px]">
+      <div className="flex items-center w-[230px] h-full border-r border-gray-300 pl-[13px]">
         <svg
           width="16"
           height="16"

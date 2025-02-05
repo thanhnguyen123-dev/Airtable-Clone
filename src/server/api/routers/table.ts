@@ -160,7 +160,7 @@ export const tableRouter = createTRPCRouter({
           },
           views: {
             create: {
-              name: "Grid View default"
+              name: "Grid View"
             }
           }
         },

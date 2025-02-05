@@ -2,7 +2,7 @@ import React from 'react';
 import TableSideItem from './TableSideItem';
 import ViewSearchBar from './ViewSearchBar';
 import CreateViewButton from './CreateViewButton';
-import { useState, useEffect, Dispatch, SetStateAction } from 'react';
+import { useState, useEffect, type Dispatch, type SetStateAction } from 'react';
 import { api } from '~/trpc/react';
 import NavViewButton from './NavViewButton';
 import Loader from '../Loader';
@@ -27,6 +27,12 @@ const TableSideBar = ({ tableId, currentView, setCurrentView } : TableSideBarPro
     tableId: tableId
   });
 
+  useEffect(() => {
+    if (!isLoading && table?.views && table.views.length > 0 && !currentView && table.views[0]?.id) {
+      setCurrentView(table.views[0].id);
+    }
+  }, [table, isLoading, currentView, setCurrentView]);
+
   const [viewName, setViewName] = useState("Grid View");
 
   const createViewMutation = api.table.createView.useMutation({
@@ -49,7 +55,7 @@ const TableSideBar = ({ tableId, currentView, setCurrentView } : TableSideBarPro
 
   return (
     <div className='border-r w-[280px] min-w-[280px] flex flex-col justify-between h-full'>
-      <div className='flex flex-col w-full p-3'>
+      <div className='flex flex-col w-full px-3'>
         <ViewSearchBar />
         <div className='flex flex-col'>
             {table?.views.map((view, index) => {
