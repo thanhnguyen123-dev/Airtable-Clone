@@ -30,6 +30,9 @@ const BasePage = () => {
   const [searchValue, setSearchValue] = useState("");
   const [currentView, setCurrentView] = useState("");
 
+  const [sort, setSort] = useState<string>("");
+  const [sortColumnId, setSortColumnId] = useState<string>("");
+
   useEffect(() => {
     if (tables?.[0] && tables.length > 0 && !currentTableId) {
       setCurrentTableId(tables[0].id);
@@ -72,6 +75,10 @@ const BasePage = () => {
         searchValue={searchValue}
         setSearchValue={setSearchValue}
         tableId={currentTableId ?? ""}
+        sort={sort}
+        setSort={setSort}
+        sortColumnId={sortColumnId}
+        setSortColumnId={setSortColumnId}
       />
       <div className="h-screen max-w-10xl flex flex-grow overflow-y-auto">
         <TableSideBar 

@@ -1,14 +1,31 @@
 import {Popover, PopoverTrigger, PopoverContent} from "@heroui/popover";
 import { useState, useEffect, SetStateAction, Dispatch } from "react";
 import { api } from "~/trpc/react";
+import SortColumnDropdown from "./SortColumnDropDown";
 
+type SearchRecordButtonProps = {
+  tableId: string;
+  sort: string;
+  setSort: Dispatch<SetStateAction<string>>;
+  sortColumnId: string;
+  setSortColumnId: Dispatch<SetStateAction<string>>;
+}
 
-
-const SortButton = () => {
+const SortButton = (
+  { tableId, sort, setSort, sortColumnId, setSortColumnId } : SearchRecordButtonProps
+) => {
   const [isOpen, setIsOpen] = useState(false);
+  const { data: columns, isLoading: isColumnsLoading } = api.table.getTableHeaders.useQuery(
+    { tableId: tableId },
+    { enabled: !!tableId }
+  );
 
+  const [colIndex, setColIndex] = useState(() => 
+    columns?.findIndex((col) => col.id === sortColumnId) ?? 0
+  );
+
+  
   return (
-
     <Popover 
       isOpen={isOpen} 
       onOpenChange={(open) => setIsOpen(open)} 
@@ -20,7 +37,10 @@ const SortButton = () => {
       }}
       >
       <PopoverTrigger>
-        <div role='button' className='flex justify-center items-center gap-1 rounded-md px-2 py-1 hover:bg-slate-200'>
+        <div 
+          role='button' 
+          className='flex justify-center items-center gap-1 rounded-md px-2 py-1 hover:bg-slate-200'
+        >
           <svg
             width={16}
             height={16}
@@ -33,9 +53,40 @@ const SortButton = () => {
           <span className='text-slate-600'>Sort</span>
         </div>
       </PopoverTrigger>
-      <PopoverContent>
-        <div className="px-1 py-2">
-          sth here
+      <PopoverContent
+        className="w-[450px]"
+      >
+        <div className="flex flex-col gap-2 p-2 w-full">
+          <div className="flex items-center gap-1">
+            <span className="text-[13px] font-medium text-slate-500">Sort by</span>
+            <svg
+              width={14}
+              height={14}
+              viewBox="0 0 16 16"
+              className="flex-none"
+              fill="gray"
+            >
+              <use href="icons/icons_definitions.svg#Question"></use>
+            </svg>
+          </div>
+          <hr className="mb-2" />
+          <div className="flex items-center gap-2">
+            <SortColumnDropdown
+              columns={columns ?? []}
+              selectedColumnIndex={colIndex}
+              setSelectedColumnIndex={setColIndex}
+            />
+            <svg
+              role="button"
+              width={16}
+              height={16}
+              viewBox="0 0 16 16"
+              className="flex-none"
+              fill="gray"
+            >
+              <use href="icons/icons_definitions.svg#X"></use>
+            </svg>
+          </div>
         </div>
       </PopoverContent>
     </Popover>

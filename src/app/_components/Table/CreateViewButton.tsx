@@ -26,11 +26,11 @@ const CreateViewButton = ({ tableId, viewName, setViewName, handleCreateView  } 
             if (open) setViewName("Grid View");
           }
         } 
-        offset={30}
-        placement={"bottom-end"}
+        offset={10}
+        placement={"right-start"}
         classNames={{
           content: [
-            "rounded-md shadow-none border border-gray-300",
+            "rounded-md shadow-none border border-gray-300 ",
           ]
         }}
         >
@@ -64,7 +64,7 @@ const CreateViewButton = ({ tableId, viewName, setViewName, handleCreateView  } 
           <div className="flex flex-col p-2 gap-4">
             <input 
               type="text"
-              className="bg-gray-100 py-1 px-2"
+              className="bg-gray-100 py-1 px-2 border rounded-md focus:outline-gray-300"
               placeholder="Enter view name"
               value={viewName}
               onChange={(e) => setViewName(e.target.value)}

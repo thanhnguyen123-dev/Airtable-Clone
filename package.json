@@ -22,6 +22,7 @@
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.7.2",
+    "@heroui/dropdown": "^2.3.10",
     "@heroui/popover": "^2.3.10",
     "@heroui/system": "^2.4.7",
     "@heroui/theme": "^2.4.6",
