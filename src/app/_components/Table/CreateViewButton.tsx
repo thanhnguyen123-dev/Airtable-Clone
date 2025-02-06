@@ -1,7 +1,5 @@
 import {Popover, PopoverTrigger, PopoverContent} from "@heroui/popover";
-import { useState, useEffect, SetStateAction, Dispatch } from "react";
-import { api } from "~/trpc/react";
-import TableSideItem from "./TableSideItem";
+import { useState, type SetStateAction, type Dispatch } from "react";
 
 type CreateViewButtonProps = {
   tableId: string;
@@ -22,7 +20,12 @@ const CreateViewButton = ({ tableId, viewName, setViewName, handleCreateView  } 
     <div className="flex flex-col gap-2">
       <Popover 
         isOpen={isOpen} 
-        onOpenChange={(open) => setIsOpen(open)} 
+        onOpenChange={
+          (open) => {
+            setIsOpen(open);
+            if (open) setViewName("Grid View");
+          }
+        } 
         offset={30}
         placement={"bottom-end"}
         classNames={{
@@ -63,11 +66,13 @@ const CreateViewButton = ({ tableId, viewName, setViewName, handleCreateView  } 
               type="text"
               className="bg-gray-100 py-1 px-2"
               placeholder="Enter view name"
+              value={viewName}
               onChange={(e) => setViewName(e.target.value)}
             />
             <div className="flex justify-end gap-2 text-xs">
               <button
                 className="hover:bg-gray-100 text-gray-600 p-2 rounded-md"
+                onClick={() => setIsOpen(false)}
               >
                 Cancel
               </button>
