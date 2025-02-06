@@ -13,6 +13,10 @@ type CreateViewButtonProps = {
 const CreateViewButton = ({ tableId, viewName, setViewName, handleCreateView  } : CreateViewButtonProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
+  const handleCreateViewAndClose = () => {
+    handleCreateView();
+    setIsOpen(false);
+  }
 
   return (
     <div className="flex flex-col gap-2">
@@ -69,7 +73,7 @@ const CreateViewButton = ({ tableId, viewName, setViewName, handleCreateView  } 
               </button>
               <button
                 className="bg-blue-600 text-white p-2 rounded-md font-medium"
-                onClick={handleCreateView}
+                onClick={handleCreateViewAndClose}
               >
                 Create new view
               </button>

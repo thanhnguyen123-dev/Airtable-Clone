@@ -10,7 +10,6 @@ type SearchRecordButtonProps = {
 
 const SearchRecordButton = ( {searchValue, setSearchValue, tableId} : SearchRecordButtonProps ) => {
   const [isOpen, setIsOpen] = useState(false);
-  // const { data: record } = api.table.getSearchRecord.useQuery({ searchInput: searchValue });
 
   return (
     <div className="flex flex-col gap-2">

@@ -9,7 +9,6 @@ import TableSideBar from "../_components/Table/TableSideBar";
 import { FcBrokenLink } from "react-icons/fc";
 import React, { useState, useEffect, Dispatch, SetStateAction } from "react";
 import Table from "../_components/Table/Table";
-import { set } from "zod";
 
 const BasePage = () => {
   // extract the base id based on url
