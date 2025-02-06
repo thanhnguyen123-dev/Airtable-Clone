@@ -90,6 +90,8 @@ const BasePage = () => {
           tableId={currentTableId ?? ""}
           currentView={currentView}
           searchValue={searchValue}
+          sortColumnId={sortColumnId}
+          sort={sort}
         />
       </div>
     </div>

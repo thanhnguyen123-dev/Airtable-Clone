@@ -160,7 +160,9 @@ export const tableRouter = createTRPCRouter({
           },
           views: {
             create: {
-              name: "Grid View"
+              name: "Grid View",
+              sortColumnId: "",
+              sortOrder: "",
             }
           }
         },
@@ -170,8 +172,8 @@ export const tableRouter = createTRPCRouter({
         }
       });
       const cells = [];
-      for (const record of table.records) {
-        for (const column of table.columns) {
+      for (const record of table.records as { id: string }[]) {
+        for (const column of table.columns as { id: string }[]) {
           cells.push(
             ctx.db.cell.create({
               data: {
@@ -277,11 +279,13 @@ export const tableRouter = createTRPCRouter({
         data: {
           name: input.name,
           tableId: input.tableId,
+          sortColumnId: "",
+          sortOrder: "",
         }
       })
     }),
 
-  getTableRecordValues: protectedProcedure
+  getRecords: protectedProcedure
   .input(
     z.object({
       tableId: z.string().min(1),
@@ -298,5 +302,59 @@ export const tableRouter = createTRPCRouter({
       orderBy: { rowIndex: "asc" },
     });
   }),
-  
+
+  getSortedRecords: protectedProcedure
+  .input(
+    z.object({
+      tableId: z.string().min(1),
+      sortColumnId: z.string().min(1),
+      sortOrder: z.enum(["asc", "desc"]),
+    })
+  )
+  .query(async ({ ctx, input }) => {
+    const records = await ctx.db.record.findMany({
+      where: { tableId: input.tableId },
+      include: { 
+        cells: {
+          where: { columnId: input.sortColumnId },
+        },
+      },
+    });
+
+    records.sort((a, b) => {
+      const aValue = a.cells[0]?.data ?? "";
+      const bValue = b.cells[0]?.data ?? "";
+      return input.sortOrder === "asc" ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
+    })
+
+    return records;
+  }),
+
+  getTableView: protectedProcedure
+    .input(z.object({ tableId: z.string().min(1) }))
+    .query(async ({ ctx, input }) => {
+      return ctx.db.view.findMany({
+        where: { tableId: input.tableId },
+      });
+    }),
+
+  updateTableView: protectedProcedure
+    .input(
+      z.object({ 
+        viewId: z.string().min(1), 
+        sortColumnId: z.string().min(1),
+        sortOrder: z.string().min(1),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      return ctx.db.view.update({
+        where: { id: input.viewId },
+        data: {
+          sortColumnId: input.sortColumnId,
+          sortOrder: input.sortOrder,
+        }
+      });
+    }),
+
+
 });

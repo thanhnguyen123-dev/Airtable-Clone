@@ -20,16 +20,29 @@ type TableProps = {
   tableId: string;
   searchValue: string;
   currentView: string;
+  sortColumnId: string;
+  sort: string;
 };
 
 const TanStackTable = ({
-  tableId, searchValue, currentView
+  tableId, searchValue, currentView, sortColumnId, sort
 }: TableProps) => {
 
   // fetch the current table
   const { data: tableData, isLoading, refetch } = api.table.getById.useQuery(
     { tableId: tableId },
     { enabled: !!tableId }
+  );
+
+  const { data: sortedRecords, refetch: refetchSortedRecords } = api.table.getSortedRecords.useQuery(
+    { 
+      tableId: tableId,
+      sortColumnId: sortColumnId,
+      sortOrder: sort === "A - Z" ? "asc" : "desc",
+    },
+    {
+      enabled: !!tableId && !!sortColumnId && !!sort,
+    }
   );
 
   // local states for optimistic updates
@@ -55,9 +68,27 @@ const TanStackTable = ({
   });
   const createRecordMutation = api.table.createRecord.useMutation();
 
+  useEffect(() => {
+    if (sort && sortColumnId) {
+      void refetchSortedRecords();
+    }
+  }, [sort, sortColumnId, refetchSortedRecords]);
+
+  const updateTableViewMutation = api.table.updateTableView.useMutation();
+  useEffect(() => {
+    if (currentView && sortColumnId && sort !== "") {
+      void updateTableViewMutation.mutateAsync({
+        viewId: currentView,
+        sortColumnId: sortColumnId,
+        sortOrder: sort === "A - Z" ? "asc" : "desc",
+      });
+    }
+  }, [currentView, sortColumnId, sort, updateTableViewMutation]);
+
   const rowData = useMemo(() => {
+    const recordsToUse = sortedRecords ?? records;
     const map: Record<string, Record<string, string>> = {};
-    for (const r of records) {
+    for (const r of recordsToUse) {
       map[r.id] = { recordId: r.id };
     }
     for (const cell of cells) {
@@ -67,7 +98,7 @@ const TanStackTable = ({
       }
     }
     return Object.values(map);
-  }, [records, cells]);
+  }, [records, sortedRecords, cells]);
 
   const columnDefs = useMemo<ColumnDef<Record<string, string>>[]>(
     () =>

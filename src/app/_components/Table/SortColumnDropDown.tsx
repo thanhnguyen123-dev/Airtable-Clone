@@ -43,7 +43,7 @@ const SortColumnDropdown = ({
         </div>
       </PopoverTrigger>
       <PopoverContent
-        className="p-0 text-xs"
+        className="p-0 text-xs w-[250px]"
       >
         {columns.map((col, index) => {
           return (
@@ -54,7 +54,7 @@ const SortColumnDropdown = ({
                 setSelectedColumnIndex(index);
                 setIsOpen(false);
               }}
-              className={`flex items-center justify-start p-2 w-[250px] hover:bg-slate-200
+              className={`flex items-center justify-start p-2 w-full hover:bg-slate-100
                 ${index === 0 ? "rounded-t-md " : ""}
                 ${index === columns.length - 1 ? "rounded-b-md " : ""}
               `}
