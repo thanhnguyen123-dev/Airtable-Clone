@@ -3,7 +3,6 @@ import { useSession, signIn } from "next-auth/react";
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { FcGoogle } from "react-icons/fc";
-import { FaGithub } from "react-icons/fa";
 import { OAuthButton } from "./_components/AuthButton";
 import NavBar from "./_components/Home/HomeNavBar";
 import HomeSideBar from "./_components/Home/HomeSideBar";
@@ -37,10 +36,6 @@ export default function Home() {
     await signIn("google");
   };
 
-  const handleGithubAuth = async () => {
-    await signIn("github");
-  }
-
   if (status === "loading") {
     return <Loader/>;
   }
@@ -62,12 +57,6 @@ export default function Home() {
             action="Continue with" 
             providerName="Google" 
             icon={<FcGoogle className="absolute left-6"/>} 
-          />
-          <OAuthButton 
-            handleClick={handleGithubAuth} 
-            action="Continue with" 
-            providerName="Github" 
-            icon={<FaGithub className="absolute left-6"/>}
           />
         </div>
       </div>
