@@ -1,7 +1,8 @@
 import {Popover, PopoverTrigger, PopoverContent} from "@heroui/popover";
-import { useState, useEffect, SetStateAction, Dispatch } from "react";
+import { useState, useEffect, type SetStateAction, type Dispatch } from "react";
 import { api } from "~/trpc/react";
 import SortColumnDropdown from "./SortColumnDropDown";
+import SortOrderDropdown from "./SortOrderDropDown";
 
 type SearchRecordButtonProps = {
   tableId: string;
@@ -58,7 +59,7 @@ const SortButton = (
       >
         <div className="flex flex-col gap-2 p-2 w-full">
           <div className="flex items-center gap-1">
-            <span className="text-[13px] font-medium text-slate-500">Sort by</span>
+            <span className="text-xs font-medium text-slate-500">Sort by</span>
             <svg
               width={14}
               height={14}
@@ -70,11 +71,15 @@ const SortButton = (
             </svg>
           </div>
           <hr className="mb-2" />
-          <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between gap-2 text-xs">
             <SortColumnDropdown
               columns={columns ?? []}
               selectedColumnIndex={colIndex}
               setSelectedColumnIndex={setColIndex}
+            />
+            <SortOrderDropdown 
+              sortOrder={sort}
+              setSortOrder={setSort}
             />
             <svg
               role="button"
@@ -86,6 +91,18 @@ const SortButton = (
             >
               <use href="icons/icons_definitions.svg#X"></use>
             </svg>
+          </div>
+          <div role="button" className="flex justify-start gap-2 text-xs my-2">
+            <svg
+              width={14}
+              height={14}
+              viewBox="0 0 16 16"
+              className="flex-none"
+              fill="gray"
+            >
+              <use href="icons/icons_definitions.svg#Plus"></use>
+            </svg>
+            <span className="text-slate-500">Add another sort</span>
           </div>
         </div>
       </PopoverContent>

@@ -2,18 +2,17 @@ import {Popover, PopoverTrigger, PopoverContent} from "@heroui/popover";
 import { type Column } from "@prisma/client";
 import { useState, type Dispatch, type SetStateAction } from "react";
 
-type SortColumnDropdownProps = {
-  columns: Column[];
-  selectedColumnIndex: number;
-  setSelectedColumnIndex: Dispatch<SetStateAction<number>>;
+type SortOrderDropdownProps = {
+  sortOrder: string;
+  setSortOrder: Dispatch<SetStateAction<string>>;
 }
 
-const SortColumnDropdown = ({
-  columns, selectedColumnIndex, setSelectedColumnIndex
-} : SortColumnDropdownProps) => {
-  const [isOpen, setIsOpen] = useState(false);
+const orders = ["A - Z", "Z - A"];
 
-  const selectedColumnName: string = columns?.[selectedColumnIndex]?.name ?? "error 404";
+const SortOrderDropdown = ({
+  sortOrder, setSortOrder
+} : SortOrderDropdownProps) => {
+  const [isOpen, setIsOpen] = useState(false);
 
   return (
     <Popover 
@@ -27,10 +26,10 @@ const SortColumnDropdown = ({
       >
         <div 
           role='button' 
-          className="flex justify-between items-center gap-1 rounded-md px-2 py-1
-          hover:bg-slate-50 border-slate-200 border w-[250px]"
+          className="flex justify-between items-center rounded-md px-2 py-1 
+          hover:bg-slate-50 border-slate-200 border w-[120px]"
         >
-          <span>{selectedColumnName}</span>
+          <span>{sortOrder === "" ? "Order by" : sortOrder}</span>
           <svg
             width={16}
             height={16}
@@ -45,21 +44,21 @@ const SortColumnDropdown = ({
       <PopoverContent
         className="p-0 text-xs"
       >
-        {columns.map((col, index) => {
+        {orders.map((order, index) => {
           return (
             <div 
               key={index}
               role="button"
               onClick={() => {
-                setSelectedColumnIndex(index);
                 setIsOpen(false);
+                setSortOrder(order);
               }}
-              className={`flex items-center justify-start p-2 w-[250px] hover:bg-slate-200
+              className={`flex items-center justify-start p-2 w-[120px] hover:bg-slate-200
                 ${index === 0 ? "rounded-t-md " : ""}
-                ${index === columns.length - 1 ? "rounded-b-md " : ""}
-              `}
+                ${index === orders.length - 1 ? "rounded-b-md " : ""}
+                `}
             >
-              <span>{col.name}</span>
+              <span>{order}</span>
             </div>
           );
         })}
@@ -69,4 +68,4 @@ const SortColumnDropdown = ({
   );
 }
 
-export default SortColumnDropdown;
+export default SortOrderDropdown;
