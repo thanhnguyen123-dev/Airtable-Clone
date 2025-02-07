@@ -315,15 +315,14 @@ export const tableRouter = createTRPCRouter({
     const records = await ctx.db.record.findMany({
       where: { tableId: input.tableId },
       include: { 
-        cells: {
-          where: { columnId: input.sortColumnId },
-        },
+        cells: true
       },
+      orderBy: { rowIndex: "asc" },
     });
 
     records.sort((a, b) => {
-      const aValue = a.cells[0]?.data ?? "";
-      const bValue = b.cells[0]?.data ?? "";
+      const aValue = a.cells.find(cell => cell.columnId === input.sortColumnId)?.data ?? "";
+      const bValue = b.cells.find(cell => cell.columnId === input.sortColumnId)?.data ?? "";
       return input.sortOrder === "asc" ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
     })
 
