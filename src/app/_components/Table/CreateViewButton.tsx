@@ -1,5 +1,6 @@
 import {Popover, PopoverTrigger, PopoverContent} from "@heroui/popover";
 import { useState, type SetStateAction, type Dispatch } from "react";
+import { api } from "~/trpc/react";
 
 type CreateViewButtonProps = {
   tableId: string;
@@ -10,11 +11,14 @@ type CreateViewButtonProps = {
 
 const CreateViewButton = ({ tableId, viewName, setViewName, handleCreateView  } : CreateViewButtonProps) => {
   const [isOpen, setIsOpen] = useState(false);
-
+  
   const handleCreateViewAndClose = () => {
     handleCreateView();
     setIsOpen(false);
   }
+
+  const createViewMutation = api.table.createView.useMutation();
+  
 
   return (
     <div className="flex flex-col gap-2">

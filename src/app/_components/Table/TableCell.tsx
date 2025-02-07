@@ -46,7 +46,6 @@ const TableCell = ({ columnId, recordId, data, searchValue }: TableCellProps) =>
     <div 
       className={`h-[30px] w-[160px] border-r border-gray-300 text-xs 
         ${searchValue && value.includes(searchValue) ? "bg-yellow-200" : ""}`}
-      onClick={() => setValue(data)}
       >
       <input
         type="text"

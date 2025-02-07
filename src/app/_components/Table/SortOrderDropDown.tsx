@@ -29,7 +29,7 @@
             className="flex justify-between items-center rounded-md px-2 py-1 
             hover:bg-slate-50 border-slate-200 border w-[120px]"
           >
-            <span>{sortOrder === "" ? "A-Z" : sortOrder}</span>
+            <span>{sortOrder}</span>
             <svg
               width={16}
               height={16}

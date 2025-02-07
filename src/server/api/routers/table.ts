@@ -307,8 +307,8 @@ export const tableRouter = createTRPCRouter({
   .input(
     z.object({
       tableId: z.string().min(1),
-      sortColumnId: z.string().min(1),
-      sortOrder: z.enum(["asc", "desc"]),
+      sortColumnId: z.string().min(0),
+      sortOrder: z.string()
     })
   )
   .query(async ({ ctx, input }) => {
@@ -319,21 +319,36 @@ export const tableRouter = createTRPCRouter({
       },
       orderBy: { rowIndex: "asc" },
     });
+    if (!input.sortColumnId || input.sortColumnId === "") {
+      return records;
+    }
 
-    records.sort((a, b) => {
-      const aValue = a.cells.find(cell => cell.columnId === input.sortColumnId)?.data ?? "";
-      const bValue = b.cells.find(cell => cell.columnId === input.sortColumnId)?.data ?? "";
-      return input.sortOrder === "asc" ? aValue.localeCompare(bValue) : bValue.localeCompare(aValue);
-    })
-
+    switch (input.sortOrder) {
+      case "A - Z":
+        records.sort((a, b) => {
+          const valA = a.cells.find(cell => cell.columnId === input.sortColumnId)?.data ?? "";
+          const valB = b.cells.find(cell => cell.columnId === input.sortColumnId)?.data ?? "";
+          return valA.localeCompare(valB);
+        });
+        break;
+      case "Z - A":
+        records.sort((a, b) => {
+          const valA = a.cells.find(cell => cell.columnId === input.sortColumnId)?.data ?? "";
+          const valB = b.cells.find(cell => cell.columnId === input.sortColumnId)?.data ?? "";
+          return valA.localeCompare(valB);
+        });
+        break;
+      default:
+        break;
+    }
     return records;
   }),
 
   getTableView: protectedProcedure
-    .input(z.object({ tableId: z.string().min(1) }))
+    .input(z.object({ viewId: z.string().min(1) }))
     .query(async ({ ctx, input }) => {
-      return ctx.db.view.findMany({
-        where: { tableId: input.tableId },
+      return ctx.db.view.findUnique({
+        where: { id: input.viewId },
       });
     }),
 
@@ -341,8 +356,8 @@ export const tableRouter = createTRPCRouter({
     .input(
       z.object({ 
         viewId: z.string().min(1), 
-        sortColumnId: z.string().min(1),
-        sortOrder: z.string().min(1),
+        sortColumnId: z.string().min(0),
+        sortOrder: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {

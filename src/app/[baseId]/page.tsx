@@ -9,6 +9,8 @@ import TableSideBar from "../_components/Table/TableSideBar";
 import { FcBrokenLink } from "react-icons/fc";
 import React, { useState, useEffect, Dispatch, SetStateAction } from "react";
 import Table from "../_components/Table/Table";
+import { table } from "console";
+import { set } from "zod";
 
 const BasePage = () => {
   // extract the base id based on url
@@ -26,12 +28,20 @@ const BasePage = () => {
     { enabled: !!baseId }
   );
 
+
   const [currentTableId, setCurrentTableId] = useState<string | undefined>(tables?.[0]?.id);
   const [searchValue, setSearchValue] = useState("");
   const [currentView, setCurrentView] = useState("");
 
+  const { data: view, isLoading: isViewLoading, isFetching: isViewFetching, refetch: refetchView } 
+  = api.table.getTableView.useQuery(
+    { viewId: currentView },
+  );
+
   const [sort, setSort] = useState<string>("");
   const [sortColumnId, setSortColumnId] = useState<string>("");
+
+  const [hasView, setHasView] = useState(false);
 
   useEffect(() => {
     if (tables?.[0] && tables.length > 0 && !currentTableId) {
@@ -45,9 +55,24 @@ const BasePage = () => {
 
   useEffect(() => {
     setCurrentView("");
+    setSort("");
+    setSortColumnId("");
   }, [currentTableId]);
 
 
+  useEffect(() => {
+    if (view && !isViewFetching && !isViewLoading) {
+      setHasView(true);
+      setSort(view.sortOrder);
+      setSortColumnId(view.sortColumnId);
+    }
+  }, [view, isViewFetching, isViewLoading]);
+
+  useEffect(() => {
+    if (currentView) {
+      void refetchView();
+    }
+  }, [currentView, refetchView]);
 
   if (isBaseLoading || isTablesLoading) {
     return <Loader />
@@ -92,6 +117,9 @@ const BasePage = () => {
           searchValue={searchValue}
           sortColumnId={sortColumnId}
           sort={sort}
+          setSort={setSort}
+          setSortColumnId={setSortColumnId}
+          hasView={hasView}
         />
       </div>
     </div>

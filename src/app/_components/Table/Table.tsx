@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo, useRef } from "react";
+import React, { useEffect, useState, useMemo, useRef, type Dispatch, type } from "react";
 import { api } from "~/trpc/react";
 import Loader from "../Loader";
 import TableHeader from "./TableHeader";
@@ -22,10 +22,13 @@ type TableProps = {
   currentView: string;
   sortColumnId: string;
   sort: string;
+  setSort: React.Dispatch<React.SetStateAction<string>>;
+  setSortColumnId: React.Dispatch<React.SetStateAction<string>>;
+  hasView: boolean;
 };
 
 const TanStackTable = ({
-  tableId, searchValue, currentView, sortColumnId, sort
+  tableId, searchValue, currentView, sortColumnId, sort, setSort, setSortColumnId, hasView
 }: TableProps) => {
 
   // fetch the current table
@@ -34,14 +37,18 @@ const TanStackTable = ({
     { enabled: !!tableId }
   );
 
-  const { data: sortedRecords, refetch: refetchSortedRecords } = api.table.getSortedRecords.useQuery(
+  const { 
+    data: sortedRecords, 
+    isLoading: isRecordsLoading, isFetching: 
+    isRecordsFetching, 
+    refetch: refetchSortedRecords } = api.table.getSortedRecords.useQuery(
     { 
       tableId: tableId,
       sortColumnId: sortColumnId,
-      sortOrder: sort === "A - Z" ? "asc" : "desc",
+      sortOrder: sort,
     },
     {
-      enabled: !!tableId && !!sortColumnId && !!sort,
+      enabled: hasView,
     }
   );
 
@@ -54,11 +61,11 @@ const TanStackTable = ({
   useEffect(() => {
     if (tableData) {
       setColumns(tableData.columns);
-      setRecords(tableData.records);
-      const combined = tableData.records.flatMap((rec) => rec.cells);
+      setRecords(sortedRecords ?? tableData.records);
+      const combined = (sortedRecords ?? tableData.records).flatMap((rec) => rec.cells);
       setCells(combined);
     }
-  }, [tableData]);
+  }, [tableData, sortedRecords]);
 
   const createFakeRecordsMutation = api.table.createFakeRecords.useMutation({
     onSuccess: () => refetch(),
@@ -74,21 +81,10 @@ const TanStackTable = ({
     }
   }, [sort, sortColumnId, refetchSortedRecords]);
 
-  const updateTableViewMutation = api.table.updateTableView.useMutation();
-  useEffect(() => {
-    if (currentView && sortColumnId && sort !== "") {
-      void updateTableViewMutation.mutateAsync({
-        viewId: currentView,
-        sortColumnId: sortColumnId,
-        sortOrder: sort === "A - Z" ? "asc" : "desc",
-      });
-    }
-  }, [currentView, sortColumnId, sort, updateTableViewMutation]);
 
   const rowData = useMemo(() => {
-    const recordsToUse = sortedRecords ?? records;
     const map: Record<string, Record<string, string>> = {};
-    for (const r of recordsToUse) {
+    for (const r of records) {
       map[r.id] = { recordId: r.id };
     }
     for (const cell of cells) {
@@ -98,7 +94,7 @@ const TanStackTable = ({
       }
     }
     return Object.values(map);
-  }, [records, sortedRecords, cells]);
+  }, [records, cells]);
 
   const columnDefs = useMemo<ColumnDef<Record<string, string>>[]>(
     () =>
@@ -120,6 +116,29 @@ const TanStackTable = ({
       })),
     [columns, searchValue]
   );
+
+  const updateTableViewMutation = api.table.updateTableView.useMutation();
+  const updateTableView = async () => {
+    await updateTableViewMutation.mutateAsync({
+      viewId: currentView,
+      sortColumnId: sortColumnId,
+      sortOrder: sort,
+    }).then(async () => {
+      await refetchSortedRecords();
+    })
+
+  }
+
+  useEffect(() => { 
+    if (hasView) {
+      void updateTableView();
+    }
+  }, [sort, sortColumnId]);
+
+  useEffect(() => {
+    setSort("");
+    setSortColumnId("");
+  }, [currentView]);
 
   const tableInstance = useReactTable({
     data: rowData,

@@ -3,6 +3,7 @@ import { useState, useEffect, type SetStateAction, type Dispatch } from "react";
 import { api } from "~/trpc/react";
 import SortColumnDropdown from "./SortColumnDropDown";
 import SortOrderDropdown from "./SortOrderDropDown";
+import { set } from "zod";
 
 type SearchRecordButtonProps = {
   tableId: string;
@@ -25,7 +26,27 @@ const SortButton = (
     columns?.findIndex((col) => col.id === sortColumnId) ?? 0
   );
 
+  const [sortOp, setSortOp] = useState(sort === "" ? "A - Z" : sort);
+  const [hasSort, setHasSort] = useState(false);
   
+
+  const handleClick = () => {
+    setIsOpen(false);
+    setSortColumnId(columns?.[colIndex]?.id ?? "");
+    setSort(sortOp);
+    setHasSort(true);
+  }
+
+  const removeSort = () => {  
+    setSort("");
+    setSortColumnId("");
+    setHasSort(false);
+  }
+
+  useEffect(() => {
+    setHasSort(sortColumnId !== "");
+  }, [sortColumnId]);
+
   return (
     <Popover 
       isOpen={isOpen} 
@@ -78,31 +99,30 @@ const SortButton = (
               setSelectedColumnIndex={setColIndex}
             />
             <SortOrderDropdown 
-              sortOrder={sort}
-              setSortOrder={setSort}
+              sortOrder={sortOp}
+              setSortOrder={setSortOp}
             />
-            <svg
-              role="button"
-              width={16}
-              height={16}
-              viewBox="0 0 16 16"
-              className="flex-none"
-              fill="gray"
-            >
-              <use href="icons/icons_definitions.svg#X"></use>
-            </svg>
+            {hasSort && (
+              <svg
+                role="button"
+                width={16}
+                height={16}
+                viewBox="0 0 16 16"
+                className="flex-none"
+                onClick={removeSort}
+                fill="currentColor"
+              >
+                <use
+                  href="/icons/icons_definitions.svg#X"
+                ></use>
+              </svg>
+            )}
           </div>
-          <div role="button" className="flex justify-start gap-2 text-xs my-2">
-            <svg
-              width={14}
-              height={14}
-              viewBox="0 0 16 16"
-              className="flex-none"
-              fill="gray"
-            >
-              <use href="icons/icons_definitions.svg#Plus"></use>
-            </svg>
-            <span className="text-slate-500">Add another sort</span>
+          <div className="">
+            <button onClick={handleClick} className="bg-blue-600 text-xs my-2 py-1 px-2 hover:bg-blue-500 text-white rounded-md">
+              Sort
+            </button>
+
           </div>
         </div>
       </PopoverContent>
