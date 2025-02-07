@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo, useRef, type Dispatch, type } from "react";
+import React, { useEffect, useState, useMemo, useRef, type Dispatch } from "react";
 import { api } from "~/trpc/react";
 import Loader from "../Loader";
 import TableHeader from "./TableHeader";
