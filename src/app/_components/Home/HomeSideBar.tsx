@@ -9,7 +9,7 @@ type HomeSideBarProps = {
 const HomeSideBar = ({isSideBarOpen, handleCreateBase} : HomeSideBarProps) => {
   return (
     <div
-      className={`bg-white border-1 shadow-md duration-75 ${
+      className={`bg-white border-r shadow-md duration-75 ${
         isSideBarOpen ? "w-[300px] min-w-[300px] translate-x-0" : "w-12"
       } flex flex-col items-start h-full`}
     >
