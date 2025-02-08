@@ -5,7 +5,7 @@ import SortColumnDropdown from "./SortColumnDropDown";
 import SortOrderDropdown from "./SortOrderDropDown";
 import { set } from "zod";
 
-type SearchRecordButtonProps = {
+type SortButtonProps = {
   tableId: string;
   sort: string;
   setSort: Dispatch<SetStateAction<string>>;
@@ -14,7 +14,7 @@ type SearchRecordButtonProps = {
 }
 
 const SortButton = (
-  { tableId, sort, setSort, sortColumnId, setSortColumnId } : SearchRecordButtonProps
+  { tableId, sort, setSort, sortColumnId, setSortColumnId } : SortButtonProps
 ) => {
   const [isOpen, setIsOpen] = useState(false);
   const { data: columns, isLoading: isColumnsLoading } = api.table.getTableHeaders.useQuery(
@@ -54,7 +54,7 @@ const SortButton = (
       placement={"bottom-start"}
       classNames={{
         content: [
-          "rounded-sm shadow-none border border-gray-300",
+          "no-animation rounded-md shadow-none border border-gray-300",
         ]
       }}
       >

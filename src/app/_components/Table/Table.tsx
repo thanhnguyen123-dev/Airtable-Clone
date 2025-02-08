@@ -31,25 +31,10 @@ const TanStackTable = ({
   tableId, searchValue, currentView, sortColumnId, sort, setSort, setSortColumnId, hasView
 }: TableProps) => {
 
-  // fetch the current table
-  const { data: tableData, isLoading, refetch } = api.table.getById.useQuery(
+   // fetch the current table
+   const { data: tableData, isLoading, refetch } = api.table.getById.useQuery(
     { tableId: tableId },
     { enabled: !!tableId }
-  );
-
-  const { 
-    data: sortedRecords, 
-    isLoading: isRecordsLoading, isFetching: 
-    isRecordsFetching, 
-    refetch: refetchSortedRecords } = api.table.getSortedRecords.useQuery(
-    { 
-      tableId: tableId,
-      sortColumnId: sortColumnId,
-      sortOrder: sort,
-    },
-    {
-      enabled: hasView,
-    }
   );
 
   // local states for optimistic updates
@@ -61,11 +46,11 @@ const TanStackTable = ({
   useEffect(() => {
     if (tableData) {
       setColumns(tableData.columns);
-      setRecords(sortedRecords ?? tableData.records);
-      const combined = (sortedRecords ?? tableData.records).flatMap((rec) => rec.cells);
+      setRecords(tableData.records);
+      const combined = tableData.records.flatMap((rec) => rec.cells);
       setCells(combined);
     }
-  }, [tableData, sortedRecords]);
+  }, [tableData]);
 
   const createFakeRecordsMutation = api.table.createFakeRecords.useMutation({
     onSuccess: () => refetch(),
@@ -74,13 +59,6 @@ const TanStackTable = ({
     onSuccess: () => refetch(),
   });
   const createRecordMutation = api.table.createRecord.useMutation();
-
-  useEffect(() => {
-    if (sort && sortColumnId) {
-      void refetchSortedRecords();
-    }
-  }, [sort, sortColumnId, refetchSortedRecords]);
-
 
   const rowData = useMemo(() => {
     const map: Record<string, Record<string, string>> = {};
@@ -116,29 +94,6 @@ const TanStackTable = ({
       })),
     [columns, searchValue]
   );
-
-  const updateTableViewMutation = api.table.updateTableView.useMutation();
-  const updateTableView = async () => {
-    await updateTableViewMutation.mutateAsync({
-      viewId: currentView,
-      sortColumnId: sortColumnId,
-      sortOrder: sort,
-    }).then(async () => {
-      await refetchSortedRecords();
-    })
-
-  }
-
-  useEffect(() => { 
-    if (hasView) {
-      void updateTableView();
-    }
-  }, [sort, sortColumnId]);
-
-  useEffect(() => {
-    setSort("");
-    setSortColumnId("");
-  }, [currentView]);
 
   const tableInstance = useReactTable({
     data: rowData,

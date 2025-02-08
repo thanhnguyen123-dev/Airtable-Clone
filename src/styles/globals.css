@@ -8,6 +8,10 @@
   --darker-teal-green: rgb(19, 96, 92);
 }
 
+.no-animation {
+  transition: none !important;
+}
+
 
 * {
   box-sizing: border-box;

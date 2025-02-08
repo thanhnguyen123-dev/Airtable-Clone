@@ -21,6 +21,11 @@ const SortColumnDropdown = ({
       onOpenChange={(open) => setIsOpen(open)} 
       placement={"bottom"}
       offset={0}
+      classNames={{
+        content: [
+          "rounded-md shadow-none border border-gray-300",
+        ]
+      }}
       >
       <PopoverTrigger
 

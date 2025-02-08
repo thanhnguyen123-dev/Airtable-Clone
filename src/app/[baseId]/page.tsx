@@ -60,19 +60,19 @@ const BasePage = () => {
   }, [currentTableId]);
 
 
-  useEffect(() => {
-    if (view && !isViewFetching && !isViewLoading) {
-      setHasView(true);
-      setSort(view.sortOrder);
-      setSortColumnId(view.sortColumnId);
-    }
-  }, [view, isViewFetching, isViewLoading]);
+  // useEffect(() => {
+  //   if (view && !isViewFetching && !isViewLoading) {
+  //     setHasView(true);
+  //     setSort(view.sortOrder);
+  //     setSortColumnId(view.sortColumnId);
+  //   }
+  // }, [view, isViewFetching, isViewLoading]);
 
-  useEffect(() => {
-    if (currentView) {
-      void refetchView();
-    }
-  }, [currentView, refetchView]);
+  // useEffect(() => {
+  //   if (currentView) {
+  //     void refetchView();
+  //   }
+  // }, [currentView, refetchView]);
 
   if (isBaseLoading || isTablesLoading) {
     return <Loader />
