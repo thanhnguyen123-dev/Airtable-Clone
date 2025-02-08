@@ -28,15 +28,9 @@ const BasePage = () => {
     { enabled: !!baseId }
   );
 
-
   const [currentTableId, setCurrentTableId] = useState<string | undefined>(tables?.[0]?.id);
   const [searchValue, setSearchValue] = useState("");
   const [currentView, setCurrentView] = useState("");
-
-  const { data: view, isLoading: isViewLoading, isFetching: isViewFetching, refetch: refetchView } 
-  = api.table.getTableView.useQuery(
-    { viewId: currentView },
-  );
 
   const [sort, setSort] = useState<string>("");
   const [sortColumnId, setSortColumnId] = useState<string>("");
@@ -55,24 +49,9 @@ const BasePage = () => {
 
   useEffect(() => {
     setCurrentView("");
-    setSort("");
-    setSortColumnId("");
   }, [currentTableId]);
 
 
-  // useEffect(() => {
-  //   if (view && !isViewFetching && !isViewLoading) {
-  //     setHasView(true);
-  //     setSort(view.sortOrder);
-  //     setSortColumnId(view.sortColumnId);
-  //   }
-  // }, [view, isViewFetching, isViewLoading]);
-
-  // useEffect(() => {
-  //   if (currentView) {
-  //     void refetchView();
-  //   }
-  // }, [currentView, refetchView]);
 
   if (isBaseLoading || isTablesLoading) {
     return <Loader />
