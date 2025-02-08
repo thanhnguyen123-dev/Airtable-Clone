@@ -1,6 +1,6 @@
 import {Popover, PopoverTrigger, PopoverContent} from "@heroui/popover";
 import { useState, type SetStateAction, type Dispatch } from "react";
-import { api } from "~/trpc/react";
+
 
 type CreateViewButtonProps = {
   tableId: string;

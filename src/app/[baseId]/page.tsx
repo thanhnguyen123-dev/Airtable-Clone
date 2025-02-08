@@ -7,10 +7,8 @@ import Loader from "../_components/Loader";
 import TableToolBar from "../_components/Table/TableToolBar";
 import TableSideBar from "../_components/Table/TableSideBar";
 import { FcBrokenLink } from "react-icons/fc";
-import React, { useState, useEffect, Dispatch, SetStateAction } from "react";
+import React, { useState, useEffect } from "react";
 import Table from "../_components/Table/Table";
-import { table } from "console";
-import { set } from "zod";
 
 const BasePage = () => {
   // extract the base id based on url
@@ -77,9 +75,9 @@ const BasePage = () => {
     return <Loader />
   }
 
-  if (isViewLoading) {
-    return <Loader />
-  }
+  // if (isViewLoading) {
+  //   return <Loader />
+  // }
 
   if (!base?.id) {
     return (
