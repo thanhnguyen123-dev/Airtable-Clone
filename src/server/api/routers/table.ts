@@ -27,9 +27,13 @@ export const tableRouter = createTRPCRouter({
     }),
   
   getById: protectedProcedure
-    .input(z.object({ tableId: z.string().min(1) }))
+    .input(z.object({ 
+      tableId: z.string().min(1),
+      sortColumnId: z.string().optional(),
+      sortOrder: z.string().optional(),
+    }))
     .query(async ({ ctx, input }) => {
-      return ctx.db.table.findUnique({
+      const table = await ctx.db.table.findUnique({
         where: { id: input.tableId },
         include: { 
           columns: true ,
@@ -39,6 +43,21 @@ export const tableRouter = createTRPCRouter({
           views: true
         },
       });
+
+      if (input.sortColumnId && input.sortOrder) {
+        table?.records.sort((a, b) => {
+          const valA = a.cells.find(cell => cell.columnId === input.sortColumnId)?.data ?? "";
+          const valB = b.cells.find(cell => cell.columnId === input.sortColumnId)?.data ?? "";
+          if (input.sortOrder === "A - Z") {
+            return valA.localeCompare(valB);
+          } else if (input.sortOrder === "Z - A") {
+            return valB.localeCompare(valA);
+          }
+          return 0;
+        });
+      }
+
+      return table;
     }),
 
   createColumn: protectedProcedure
@@ -335,7 +354,7 @@ export const tableRouter = createTRPCRouter({
         records.sort((a, b) => {
           const valA = a.cells.find(cell => cell.columnId === input.sortColumnId)?.data ?? "";
           const valB = b.cells.find(cell => cell.columnId === input.sortColumnId)?.data ?? "";
-          return valA.localeCompare(valB);
+          return valB.localeCompare(valA);
         });
         break;
       default:

@@ -17,9 +17,6 @@ const CreateViewButton = ({ tableId, viewName, setViewName, handleCreateView  } 
     setIsOpen(false);
   }
 
-  const createViewMutation = api.table.createView.useMutation();
-  
-
   return (
     <div className="flex flex-col gap-2">
       <Popover 

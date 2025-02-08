@@ -11,10 +11,11 @@ type SortButtonProps = {
   setSort: Dispatch<SetStateAction<string>>;
   sortColumnId: string;
   setSortColumnId: Dispatch<SetStateAction<string>>;
+  currentView: string;
 }
 
 const SortButton = (
-  { tableId, sort, setSort, sortColumnId, setSortColumnId } : SortButtonProps
+  { tableId, sort, setSort, sortColumnId, setSortColumnId, currentView } : SortButtonProps
 ) => {
   const [isOpen, setIsOpen] = useState(false);
   const { data: columns, isLoading: isColumnsLoading } = api.table.getTableHeaders.useQuery(
@@ -29,23 +30,42 @@ const SortButton = (
   const [sortOp, setSortOp] = useState(sort === "" ? "A - Z" : sort);
   const [hasSort, setHasSort] = useState(false);
   
+  const updateTableViewMutation = api.table.updateTableView.useMutation();
 
   const handleClick = () => {
     setIsOpen(false);
+    const newSortColumnId = columns?.[colIndex]?.id ?? "";
     setSortColumnId(columns?.[colIndex]?.id ?? "");
     setSort(sortOp);
     setHasSort(true);
+
+    if (currentView) {
+      updateTableViewMutation.mutate({
+        viewId: currentView,
+        sortOrder: sortOp,
+        sortColumnId: newSortColumnId
+      });
+    }
   }
 
   const removeSort = () => {  
     setSort("");
     setSortColumnId("");
     setHasSort(false);
+    if (currentView) {
+      updateTableViewMutation.mutate({
+        viewId: currentView,
+        sortOrder: "",
+        sortColumnId: ""
+      });
+    }
+    
   }
 
   useEffect(() => {
     setHasSort(sortColumnId !== "");
   }, [sortColumnId]);
+
 
   return (
     <Popover 
@@ -61,7 +81,9 @@ const SortButton = (
       <PopoverTrigger>
         <div 
           role='button' 
-          className='flex justify-center items-center gap-1 rounded-md px-2 py-1 hover:bg-slate-200'
+          className={`flex justify-center items-center gap-1 rounded-md px-2 py-1
+            ${(sortColumnId !== "" && sort !== "") ? "bg-orange-300 hover:bg-orange-200" : "hover:bg-slate-200"}
+          `}
         >
           <svg
             width={16}

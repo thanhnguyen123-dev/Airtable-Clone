@@ -33,7 +33,11 @@ const TanStackTable = ({
 
    // fetch the current table
    const { data: tableData, isLoading, refetch } = api.table.getById.useQuery(
-    { tableId: tableId },
+    { 
+      tableId: tableId, 
+      sortColumnId: sortColumnId,
+      sortOrder: sort,
+    },
     { enabled: !!tableId }
   );
 
@@ -78,21 +82,32 @@ const TanStackTable = ({
     () =>
       columns.map((col) => ({
         accessorKey: col.id,
-        header: ({column}) => <TableHeader header={col.name} index={String(column.getIndex() ?? "")}/>,
+        header: ({column}) => {
+          const isSorted = (col.id === sortColumnId);
+          return (
+            <TableHeader 
+              header={col.name} 
+              index={String(column.getIndex() ?? "")}
+              isSorted={isSorted}
+            />
+          );
+        },
         cell: ({ row }) => {
           const val = row.original[col.id] ?? "";
           const recId = row.original.recordId;
+          const isSorted = (col.id === sortColumnId);
           return (
             <TableCell
               columnId={col.id}
               recordId={recId!}
               data={val}
               searchValue={searchValue}
+              isSorted={isSorted}
             />
           );
         },
       })),
-    [columns, searchValue]
+    [columns, searchValue, sortColumnId]
   );
 
   const tableInstance = useReactTable({

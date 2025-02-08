@@ -28,6 +28,7 @@ const BasePage = () => {
     { enabled: !!baseId }
   );
 
+
   const [currentTableId, setCurrentTableId] = useState<string | undefined>(tables?.[0]?.id);
   const [searchValue, setSearchValue] = useState("");
   const [currentView, setCurrentView] = useState("");
@@ -36,6 +37,22 @@ const BasePage = () => {
   const [sortColumnId, setSortColumnId] = useState<string>("");
 
   const [hasView, setHasView] = useState(false);
+
+  const { 
+    data: view,
+    isLoading: isViewLoading
+  } = api.table.getTableView.useQuery(
+    { viewId: currentView },
+    { staleTime: 0, refetchOnMount: true}
+  );
+
+  useEffect(() => { 
+    if (view?.id) {
+      setHasView(true);
+      setSort(view.sortOrder);
+      setSortColumnId(view.sortColumnId);
+    }
+  }, [view]);
 
   useEffect(() => {
     if (tables?.[0] && tables.length > 0 && !currentTableId) {
@@ -49,11 +66,18 @@ const BasePage = () => {
 
   useEffect(() => {
     setCurrentView("");
+    setSort("");
+    setSortColumnId("");
+    setCurrentView("");
   }, [currentTableId]);
 
 
 
   if (isBaseLoading || isTablesLoading) {
+    return <Loader />
+  }
+
+  if (isViewLoading) {
     return <Loader />
   }
 
@@ -83,6 +107,7 @@ const BasePage = () => {
         setSort={setSort}
         sortColumnId={sortColumnId}
         setSortColumnId={setSortColumnId}
+        currentView={currentView}
       />
       <div className="h-screen max-w-10xl flex flex-grow overflow-y-auto">
         <TableSideBar 
