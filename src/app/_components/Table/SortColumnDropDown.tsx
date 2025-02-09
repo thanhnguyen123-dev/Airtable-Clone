@@ -13,7 +13,7 @@ const SortColumnDropdown = ({
 } : SortColumnDropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const selectedColumnName: string = columns?.[selectedColumnIndex]?.name ?? "error 404";
+  const selectedColumnName: string = columns?.[selectedColumnIndex]?.name ?? "";
 
   return (
     <Popover 

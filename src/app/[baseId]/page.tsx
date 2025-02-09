@@ -34,6 +34,10 @@ const BasePage = () => {
   const [sort, setSort] = useState<string>("");
   const [sortColumnId, setSortColumnId] = useState<string>("");
 
+  const [filter, setFilter] = useState("");
+  const [filterColumnId, setFilterColumnId] = useState("contains");
+  const [filterValue, setFilterValue] = useState("");
+
   const [hasView, setHasView] = useState(false);
 
   const { 
@@ -106,6 +110,12 @@ const BasePage = () => {
         sortColumnId={sortColumnId}
         setSortColumnId={setSortColumnId}
         currentView={currentView}
+        filter={filter}
+        setFilter={setFilter}
+        filterColumnId={filterColumnId}
+        setFilterColumnId={setFilterColumnId}
+        filterValue={filterValue}
+        setFilterValue={setFilterValue}
       />
       <div className="h-screen max-w-10xl flex flex-grow overflow-y-auto">
         <TableSideBar 
@@ -122,6 +132,12 @@ const BasePage = () => {
           setSort={setSort}
           setSortColumnId={setSortColumnId}
           hasView={hasView}
+          filter={filter}
+          filterColumnId={filterColumnId}
+          filterValue={filterValue}
+          setFilter={setFilter}
+          setFilterColumnId={setFilterColumnId}
+          setFilterValue={setFilterValue}
         />
       </div>
     </div>

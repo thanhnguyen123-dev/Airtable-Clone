@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo, useRef, type Dispatch } from "react";
+import React, { useEffect, useState, useMemo, useRef, type Dispatch, type SetStateAction } from "react";
 import { api } from "~/trpc/react";
 import Loader from "../Loader";
 import TableHeader from "./TableHeader";
@@ -22,13 +22,32 @@ type TableProps = {
   currentView: string;
   sortColumnId: string;
   sort: string;
-  setSort: React.Dispatch<React.SetStateAction<string>>;
-  setSortColumnId: React.Dispatch<React.SetStateAction<string>>;
+  setSort: Dispatch<SetStateAction<string>>;
+  setSortColumnId: Dispatch<SetStateAction<string>>;
   hasView: boolean;
+  filter: string;
+  setFilter: Dispatch<SetStateAction<string>>;
+  filterColumnId: string;
+  setFilterColumnId: Dispatch<SetStateAction<string>>;
+  filterValue: string;
+  setFilterValue: Dispatch<SetStateAction<string>>;
 };
 
 const TanStackTable = ({
-  tableId, searchValue, currentView, sortColumnId, sort, setSort, setSortColumnId, hasView
+  tableId, 
+  searchValue, 
+  currentView, 
+  sortColumnId, 
+  sort, 
+  setSort, 
+  setSortColumnId, 
+  hasView,
+  filter,
+  setFilter,
+  filterColumnId,
+  setFilterColumnId,
+  filterValue,
+  setFilterValue,
 }: TableProps) => {
 
    // fetch the current table
@@ -37,6 +56,9 @@ const TanStackTable = ({
       tableId: tableId, 
       sortColumnId: sortColumnId,
       sortOrder: sort,
+      filterColumnId: filterColumnId,
+      filterCond: filter,
+      filterValue: filterValue,
     },
     { enabled: !!tableId }
   );

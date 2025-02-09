@@ -31,6 +31,9 @@ export const tableRouter = createTRPCRouter({
       tableId: z.string().min(1),
       sortColumnId: z.string().optional(),
       sortOrder: z.string().optional(),
+      filterColumnId: z.string().optional(),
+      filterCond: z.string().optional(),
+      filterValue: z.string().optional(),
     }))
     .query(async ({ ctx, input }) => {
       const table = await ctx.db.table.findUnique({
@@ -182,6 +185,9 @@ export const tableRouter = createTRPCRouter({
               name: "Grid View",
               sortColumnId: "",
               sortOrder: "",
+              filterColumnId: "",
+              filterCond: "",
+              filterValue: "",
             }
           }
         },
@@ -214,7 +220,7 @@ export const tableRouter = createTRPCRouter({
 
     }),
 
-  getTableHeaders: protectedProcedure
+  getColumns: protectedProcedure
     .input(z.object({ tableId: z.string().min(1) }))
     .query(async ({ ctx, input }) => {
       return ctx.db.column.findMany({
@@ -300,6 +306,9 @@ export const tableRouter = createTRPCRouter({
           tableId: input.tableId,
           sortColumnId: "",
           sortOrder: "",
+          filterColumnId: "",
+          filterCond: "",
+          filterValue: "",
         }
       })
     }),
@@ -322,47 +331,6 @@ export const tableRouter = createTRPCRouter({
     });
   }),
 
-  getSortedRecords: protectedProcedure
-  .input(
-    z.object({
-      tableId: z.string().min(1),
-      sortColumnId: z.string().min(0),
-      sortOrder: z.string()
-    })
-  )
-  .query(async ({ ctx, input }) => {
-    const records = await ctx.db.record.findMany({
-      where: { tableId: input.tableId },
-      include: { 
-        cells: true
-      },
-      orderBy: { rowIndex: "asc" },
-    });
-    if (!input.sortColumnId || input.sortColumnId === "") {
-      return records;
-    }
-
-    switch (input.sortOrder) {
-      case "A - Z":
-        records.sort((a, b) => {
-          const valA = a.cells.find(cell => cell.columnId === input.sortColumnId)?.data ?? "";
-          const valB = b.cells.find(cell => cell.columnId === input.sortColumnId)?.data ?? "";
-          return valA.localeCompare(valB);
-        });
-        break;
-      case "Z - A":
-        records.sort((a, b) => {
-          const valA = a.cells.find(cell => cell.columnId === input.sortColumnId)?.data ?? "";
-          const valB = b.cells.find(cell => cell.columnId === input.sortColumnId)?.data ?? "";
-          return valB.localeCompare(valA);
-        });
-        break;
-      default:
-        break;
-    }
-    return records;
-  }),
-
   getTableView: protectedProcedure
     .input(z.object({ viewId: z.string().min(1) }))
     .query(async ({ ctx, input }) => {
@@ -375,8 +343,11 @@ export const tableRouter = createTRPCRouter({
     .input(
       z.object({ 
         viewId: z.string().min(1), 
-        sortColumnId: z.string().min(0),
+        sortColumnId: z.string(),
         sortOrder: z.string(),
+        filterColumnId: z.string(),
+        filterCond: z.string(),
+        filterValue: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -385,6 +356,9 @@ export const tableRouter = createTRPCRouter({
         data: {
           sortColumnId: input.sortColumnId,
           sortOrder: input.sortOrder,
+          filterColumnId: input.filterColumnId,
+          filterCond: input.filterCond,
+          filterValue: input.filterValue,
         }
       });
     }),

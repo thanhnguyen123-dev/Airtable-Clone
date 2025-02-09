@@ -3,7 +3,6 @@ import { useState, useEffect, type SetStateAction, type Dispatch } from "react";
 import { api } from "~/trpc/react";
 import SortColumnDropdown from "./SortColumnDropDown";
 import SortOrderDropdown from "./SortOrderDropDown";
-import { set } from "zod";
 
 type SortButtonProps = {
   tableId: string;
@@ -12,13 +11,26 @@ type SortButtonProps = {
   sortColumnId: string;
   setSortColumnId: Dispatch<SetStateAction<string>>;
   currentView: string;
+  filter: string;
+  filterColumnId: string;
+  filterValue: string;
 }
 
 const SortButton = (
-  { tableId, sort, setSort, sortColumnId, setSortColumnId, currentView } : SortButtonProps
+  { 
+    tableId, 
+    sort, 
+    setSort, 
+    sortColumnId, 
+    setSortColumnId, 
+    currentView,
+    filter,
+    filterColumnId,
+    filterValue
+   } : SortButtonProps
 ) => {
   const [isOpen, setIsOpen] = useState(false);
-  const { data: columns, isLoading: isColumnsLoading } = api.table.getTableHeaders.useQuery(
+  const { data: columns, isLoading: isColumnsLoading } = api.table.getColumns.useQuery(
     { tableId: tableId },
     { enabled: !!tableId }
   );
@@ -43,7 +55,10 @@ const SortButton = (
       updateTableViewMutation.mutate({
         viewId: currentView,
         sortOrder: sortOp,
-        sortColumnId: newSortColumnId
+        sortColumnId: newSortColumnId,
+        filterCond: filter,
+        filterColumnId: filterColumnId,
+        filterValue: filterValue
       });
     }
   }
@@ -56,7 +71,10 @@ const SortButton = (
       updateTableViewMutation.mutate({
         viewId: currentView,
         sortOrder: "",
-        sortColumnId: ""
+        sortColumnId: "",
+        filterCond: filter,
+        filterColumnId: filterColumnId,
+        filterValue: filterValue
       });
     }
     
