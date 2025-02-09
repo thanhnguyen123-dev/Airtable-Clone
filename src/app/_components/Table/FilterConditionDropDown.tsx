@@ -32,7 +32,7 @@ const FilterConditionDropdown = ({
         <div 
           role='button' 
           className="flex justify-between items-center gap-1 px-2 py-1
-          hover:bg-slate-50 border-slate-200 border-t border-b w-[124px]"
+          hover:bg-slate-50 border-slate-200 border-y w-[124px]"
         >
           <span className="text-slate-600 text-xs">{(filterCondition === "does not contain" ? "does not con..." : filterCondition)}</span>
           <svg

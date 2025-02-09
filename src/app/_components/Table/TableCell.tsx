@@ -7,9 +7,10 @@ type TableCellProps = {
   data: string;
   searchValue: string;
   isSorted: boolean;
+  isFiltered: boolean;
 };
 
-const TableCell = ({ columnId, recordId, data, searchValue, isSorted }: TableCellProps) => {
+const TableCell = ({ columnId, recordId, data, searchValue, isSorted, isFiltered }: TableCellProps) => {
   const [value, setValue] = useState(data);
   const [lastSaved, setLastSaved] = useState(data);
 
@@ -48,6 +49,7 @@ const TableCell = ({ columnId, recordId, data, searchValue, isSorted }: TableCel
       className={`h-[30px] w-[160px] border-r border-gray-300 text-xs 
         ${searchValue && value.includes(searchValue) ? "bg-yellow-200" : ""}
         ${isSorted ? "bg-orange-100" : ""}
+        ${isFiltered ? "bg-green-100" : ""}
         `}
       >
       <input

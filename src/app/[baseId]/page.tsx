@@ -7,7 +7,7 @@ import Loader from "../_components/Loader";
 import TableToolBar from "../_components/Table/TableToolBar";
 import TableSideBar from "../_components/Table/TableSideBar";
 import { FcBrokenLink } from "react-icons/fc";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Table from "../_components/Table/Table";
 
 const BasePage = () => {
@@ -31,18 +31,16 @@ const BasePage = () => {
   const [searchValue, setSearchValue] = useState("");
   const [currentView, setCurrentView] = useState("");
 
-  const [sort, setSort] = useState<string>("");
-  const [sortColumnId, setSortColumnId] = useState<string>("");
-
-  const [filter, setFilter] = useState("");
-  const [filterColumnId, setFilterColumnId] = useState("contains");
+  const [sort, setSort] = useState("");
+  const [sortColumnId, setSortColumnId] = useState("");
+  const [filter, setFilter] = useState("contains");
+  const [filterColumnId, setFilterColumnId] = useState("");
   const [filterValue, setFilterValue] = useState("");
 
   const [hasView, setHasView] = useState(false);
 
   const { 
     data: view,
-    isLoading: isViewLoading
   } = api.table.getTableView.useQuery(
     { viewId: currentView },
     { staleTime: 0, refetchOnMount: true}
@@ -53,6 +51,13 @@ const BasePage = () => {
       setHasView(true);
       setSort(view.sortOrder);
       setSortColumnId(view.sortColumnId);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      setFilter(view.filterCond);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      setFilterColumnId(view.filterColumnId);
+      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
+      setFilterValue(view.filterValue);
+
     }
   }, [view]);
 
@@ -66,22 +71,26 @@ const BasePage = () => {
     setSearchValue("");
   }, [currentTableId]);
 
+  const isFirstRender = useRef(true);
+
   useEffect(() => {
-    setCurrentView("");
-    setSort("");
-    setSortColumnId("");
-    setCurrentView("");
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+    }
+    else {
+      setCurrentView("");
+      setSort("");
+      setSortColumnId("");
+      setFilter("");
+      setFilterColumnId("");
+      setFilterValue("");
+ 
+    }
   }, [currentTableId]);
-
-
 
   if (isBaseLoading || isTablesLoading) {
     return <Loader />
   }
-
-  // if (isViewLoading) {
-  //   return <Loader />
-  // }
 
   if (!base?.id) {
     return (

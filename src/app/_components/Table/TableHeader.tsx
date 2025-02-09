@@ -4,15 +4,17 @@ type TableHeaderProps = {
   header: string;
   index?: string;
   isSorted: boolean;
+  isFiltered: boolean;
 };
 
-const TableHeader = ({ header, index, isSorted }: TableHeaderProps) => {
+const TableHeader = ({ header, index, isSorted, isFiltered }: TableHeaderProps) => {
   const isFirstCol = index === "0";
   const containerWidth = isFirstCol ? "w-[230px]" : "w-[160px]";
 
   return (
     <div className={`flex h-8 items-center ${containerWidth}  border-r border-gray-300
       ${isSorted ? "bg-orange-100" : "bg-gray-100"}
+      ${isFiltered ? "bg-green-100" : ""}
     `}>
       <div className={`w-full flex items-center justify-between p-1`}>
         <div className="flex items-center gap-2">

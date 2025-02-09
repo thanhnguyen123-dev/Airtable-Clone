@@ -8,6 +8,7 @@ import TableCell from "./TableCell";
 import AddColumnButton from "./AddColumnButton";
 import AddRecordButton from "./AddRecordButton";
 import TableRow from "./TableRow";
+import LoaderTable from "./LoaderTable";
 import { faker } from '@faker-js/faker';
 
 import type { Column, Cell, Record as _Record } from "@prisma/client";
@@ -51,7 +52,7 @@ const TanStackTable = ({
 }: TableProps) => {
 
    // fetch the current table
-   const { data: tableData, isLoading, refetch } = api.table.getById.useQuery(
+   const { data: tableData, isLoading: isTablesLoading, isRefetching: isTableRefetching, refetch } = api.table.getById.useQuery(
     { 
       tableId: tableId, 
       sortColumnId: sortColumnId,
@@ -106,11 +107,13 @@ const TanStackTable = ({
         accessorKey: col.id,
         header: ({column}) => {
           const isSorted = (col.id === sortColumnId);
+          const isFiltered = (col.id === filterColumnId);
           return (
             <TableHeader 
               header={col.name} 
               index={String(column.getIndex() ?? "")}
               isSorted={isSorted}
+              isFiltered={isFiltered}
             />
           );
         },
@@ -118,6 +121,7 @@ const TanStackTable = ({
           const val = row.original[col.id] ?? "";
           const recId = row.original.recordId;
           const isSorted = (col.id === sortColumnId);
+          const isFiltered = (col.id === filterColumnId);
           return (
             <TableCell
               columnId={col.id}
@@ -125,6 +129,7 @@ const TanStackTable = ({
               data={val}
               searchValue={searchValue}
               isSorted={isSorted}
+              isFiltered={isFiltered}
             />
           );
         },
@@ -150,8 +155,8 @@ const TanStackTable = ({
     return <div className="flex-grow bg-white p-4">No table selected</div>;
   }
 
-  if (isLoading) {
-    return <div className="">Loading...</div>
+  if (isTablesLoading) {
+    return <LoaderTable />;
   }
   if (!tableData) {
     return <div>Table not found</div>;

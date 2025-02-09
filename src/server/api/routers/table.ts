@@ -47,6 +47,32 @@ export const tableRouter = createTRPCRouter({
         },
       });
 
+      if (input.filterColumnId !== "") {
+        table!.records = table!.records.filter((record) => {
+          return record.cells.some((cell) => {
+            if (cell.columnId !== input.filterColumnId) return false;
+      
+            switch (input.filterCond) {
+              case "contains":
+                return cell.data.includes(input.filterValue ?? "");
+              case "does not contain":
+                return !cell.data.includes(input.filterValue ?? "");
+              case "is":
+                return cell.data === input.filterValue;
+              case "is not":
+                return cell.data !== input.filterValue;
+              case "is empty":
+                return cell.data === "";
+              case "is not empty":
+                return cell.data !== "";
+              default:
+                return false;
+            }
+          });
+        });
+      }
+      
+
       if (input.sortColumnId && input.sortOrder) {
         table?.records.sort((a, b) => {
           const valA = a.cells.find(cell => cell.columnId === input.sortColumnId)?.data ?? "";

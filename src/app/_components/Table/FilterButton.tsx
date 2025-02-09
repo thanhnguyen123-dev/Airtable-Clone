@@ -33,58 +33,74 @@ const FilterButton = ({
     sort,
     sortColumnId,
   } : FilterButtonProps) => {
-  const [isOpen, setIsOpen] = useState(false);
-
   const { data: columns } = api.table.getColumns.useQuery(
     { tableId: tableId },
-    { enabled: !!tableId }
+    { refetchOnWindowFocus: false }
   );
+
+  const [isOpen, setIsOpen] = useState(false);
 
   const [colIndex, setColIndex] = useState(() =>
     columns?.findIndex((col) => col.id === filterColumnId) ?? 0
   );
 
   const [filterOp, setFilterOp] = useState(filter === "" ? "contains" : filter);
+  const [inputValue, setInputValue] = useState(filterValue);
+
   const [hasFilter, setHasFilter] = useState(false);
 
-  const updateTableViewMutation = api.table.updateTableView.useMutation();
-  
-  const handleClick = () => {
+  const updateViewMutation = api.table.updateTableView.useMutation();
+
+  const handleFilter = () => {
     setIsOpen(false);
     const newFilterColumnId = columns?.[colIndex]?.id ?? "";
-    setFilterColumnId(newFilterColumnId);
+    setFilterColumnId(columns?.[colIndex]?.id ?? "");
     setFilter(filterOp);
-    setFilterValue(filterValue);
+    setFilterValue(inputValue);
     setHasFilter(true);
 
     if (currentView) {
-      updateTableViewMutation.mutate({
+      updateViewMutation.mutate({
         viewId: currentView,
+        sortOrder: sort,
+        sortColumnId: sortColumnId,
         filterCond: filterOp,
         filterColumnId: newFilterColumnId,
-        filterValue: filterValue,
-        sortColumnId: sortColumnId,
-        sortOrder: sort
+        filterValue: inputValue,
       });
     }
   }
 
   const removeFilter = () => {
-    setFilter("");
+    setIsOpen(false);
+    setFilter("contains");
     setFilterColumnId("");
     setFilterValue("");
     setHasFilter(false);
+
     if (currentView) {
-      updateTableViewMutation.mutate({
+      updateViewMutation.mutate({
         viewId: currentView,
-        filterCond: "",
+        sortOrder: sort,
+        sortColumnId: sortColumnId,
+        filterCond: "contains",
         filterColumnId: "",
         filterValue: "",
-        sortOrder: sort,
-        sortColumnId: sortColumnId
       });
     }
   }
+
+  useEffect(() => {
+    setInputValue(filterValue);
+  }, [filterValue]);
+
+  useEffect(() => {
+    setFilterOp(filter);
+  }, [filter]);
+
+  useEffect(() => {
+    setHasFilter(sortColumnId !== "");
+  }, [sortColumnId]);
 
   return (
     <Popover
@@ -101,7 +117,8 @@ const FilterButton = ({
         <div
           role="button"
           className={`flex justify-center items-center gap-1 rounded-md px-2 py-1
-            
+            hover:bg-slate-200
+            ${hasFilter ? "bg-green-300 hover:bg-green-200" : ""}
           `}
         >
           <svg
@@ -120,9 +137,9 @@ const FilterButton = ({
           <span className="text-slate-600">Filter</span>
         </div>
       </PopoverTrigger>
-      <PopoverContent className={`${hasFilter ? "w-[560px]" : "w-[327px]"}`}>
+      <PopoverContent className={`${true ? "w-[560px]" : "w-[327px]"}`}>
         <div className="flex flex-col gap-2 p-2 w-full">
-          {!hasFilter ? (
+          {false ? (
             <>
               <div className="flex items-center gap-2">
                 <span className="text-xs text-slate-400 font-light">No filter conditions are applied</span>
@@ -139,7 +156,9 @@ const FilterButton = ({
               <div 
                 role="button" 
                 className="flex items-center mt-1"
-                onClick={() => setHasFilter(true)}
+                onClick={() => {
+                  setHasFilter(true);
+                }}
               >
                 <div className="flex items-center gap-1">
                   <svg
@@ -177,8 +196,8 @@ const FilterButton = ({
                     <input
                       type="text"
                       className="w-full text-xs text-slate-600 focus:outline-none"
-                      value={filterValue}
-                      onChange={(e) => setFilterValue(e.target.value)}
+                      value={inputValue}
+                      onChange={(e) => setInputValue(e.target.value)}
                       placeholder="Enter value"
                     />
                   </div>
@@ -213,8 +232,11 @@ const FilterButton = ({
                   </div>
                 </div>
               </div>
-              <div className="flex items-center gap-1">
-                <svg
+              <div 
+                role="button"
+                onClick={handleFilter}
+                className="flex items-center gap-1">
+                {/* <svg
                   width={12}
                   height={12}
                   viewBox="0 0 16 16"
@@ -222,8 +244,8 @@ const FilterButton = ({
                   fill="rgb(71, 85, 105)"
                 >
                   <use href="icons/icons_definitions.svg#Plus"></use>
-                </svg>
-                <span className="text-blue-500 text-xs font-semibold">Add a condition</span>
+                </svg> */}
+                <span className="text-blue-500 text-xs font-semibold">Filter</span>
               </div>
             </>
           )}
