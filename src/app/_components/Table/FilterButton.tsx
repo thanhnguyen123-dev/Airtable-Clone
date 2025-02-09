@@ -3,6 +3,8 @@ import { useState, useEffect, type SetStateAction, type Dispatch } from "react";
 import { api } from "~/trpc/react";
 import FilterColumnDropdown from "./FilterColumnDropDown";
 import FilterConditionDropdown from "./FilterConditionDropDown";
+import { Span } from "next/dist/trace";
+import { set } from "zod";
 
 type FilterButtonProps = {
   tableId: string;
@@ -118,37 +120,123 @@ const FilterButton = ({
           <span className="text-slate-600">Filter</span>
         </div>
       </PopoverTrigger>
-      <PopoverContent className="w-[590px]">
+      <PopoverContent className={`${hasFilter ? "w-[560px]" : "w-[327px]"}`}>
         <div className="flex flex-col gap-2 p-2 w-full">
-          <div className="text-xs font-normal text-slate-500">
-            <span>In this view, show records</span>
-          </div>
-          <div className="flex items-center">
-            <span className="text-xs mr-3 text-slate-600">Where</span>
-            <FilterColumnDropdown 
-              columns={columns ?? []}
-              selectedColumnIndex={colIndex}
-              setSelectedColumnIndex={setColIndex}
-            />
-            <FilterConditionDropdown  
-              filterCondition={filterOp}
-              setFilterCondition={setFilterOp}
-            />
-            <div className="flex items-center px-2 h-[25.6px] w-[124px] border-slate-200 border">
-              <input 
-                type="text" 
-                className="w-full text-xs text-slate-600 focus:outline-none"
-                value={filterValue}
-                onChange={(e) => setFilterValue(e.target.value)}
-                placeholder="Enter value"
-              />
-            </div>
-          </div>
+          {!hasFilter ? (
+            <>
+              <div className="flex items-center gap-2">
+                <span className="text-xs text-slate-400 font-light">No filter conditions are applied</span>
+                <svg
+                  width={16}
+                  height={16}
+                  viewBox="0 0 16 16"
+                  className="flex-none"
+                  fill="#94a3b8"
+                >
+                  <use href="icons/icons_definitions.svg#Question"></use>
+                </svg>
+              </div>
+              <div 
+                role="button" 
+                className="flex items-center mt-1"
+                onClick={() => setHasFilter(true)}
+              >
+                <div className="flex items-center gap-1">
+                  <svg
+                    width={12}
+                    height={12}
+                    viewBox="0 0 16 16"
+                    className="flex-none"
+                    fill="rgb(71, 85, 105)"
+                  >
+                    <use href="icons/icons_definitions.svg#Plus"></use>
+                  </svg>
+                  <span className="text-slate-500 text-xs font-semibold">Add a condition</span>
+                </div>
+              </div>
+            </>
+          ) : 
+          (
+            <>
+              <div className="text-xs font-normal text-slate-500">
+                <span>In this view, show records</span>
+              </div>
+              <div className="flex items-center justify-center gap-2">
+                <span className="text-xs mr-3 text-slate-600">Where</span>
+                <div className="flex items-center justify-center">
+                  <FilterColumnDropdown
+                    columns={columns ?? []}
+                    selectedColumnIndex={colIndex}
+                    setSelectedColumnIndex={setColIndex}
+                  />
+                  <FilterConditionDropdown
+                    filterCondition={filterOp}
+                    setFilterCondition={setFilterOp}
+                  />
+                  <div className="flex items-center px-2 h-[25.6px] w-[124px] border-slate-200 border">
+                    <input
+                      type="text"
+                      className="w-full text-xs text-slate-600 focus:outline-none"
+                      value={filterValue}
+                      onChange={(e) => setFilterValue(e.target.value)}
+                      placeholder="Enter value"
+                    />
+                  </div>
+                  <div
+                    role="button"
+                    className="flex items-center justify-center px-2 h-[25.6px] w-[30px] border-y hover:bg-gray-100"
+                    onClick={removeFilter}
+                  >
+                    <svg
+                      width={14}
+                      height={14}
+                      viewBox="0 0 16 16"
+                      className="flex-none"
+                      fill="rgb(71, 85, 105)"
+                    >
+                      <use href="icons/icons_definitions.svg#Trash"></use>
+                    </svg>
+                  </div>
+                  <div
+                    role="button"
+                    className="flex items-center justify-center px-2 h-[25.6px] w-[30px] border rounded-r-sm hover:bg-gray-100"
+                  >
+                    <svg
+                      width={14}
+                      height={14}
+                      viewBox="0 0 16 16"
+                      className="flex-none"
+                      fill="rgb(71, 85, 105)"
+                    >
+                      <use href="icons/icons_definitions.svg#DotsSixVertical"></use>
+                    </svg>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center gap-1">
+                <svg
+                  width={12}
+                  height={12}
+                  viewBox="0 0 16 16"
+                  className="flex-none"
+                  fill="rgb(71, 85, 105)"
+                >
+                  <use href="icons/icons_definitions.svg#Plus"></use>
+                </svg>
+                <span className="text-blue-500 text-xs font-semibold">Add a condition</span>
+              </div>
+            </>
+          )}
+          
         </div>
        </PopoverContent> 
     </Popover>
   );
 }
+
+
+
+
 
 export default FilterButton;
 
