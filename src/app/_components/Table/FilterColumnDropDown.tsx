@@ -5,18 +5,18 @@ import { type Column } from "@prisma/client";
 
 type FilterColumnDropdownProps = {
   columns: Column[];
-  column: Column | undefined;
-  setColumn: Dispatch<SetStateAction<Column | undefined>>;
+  selectedColumnIndex: number;
+  setSelectedColumnIndex: Dispatch<SetStateAction<number>>;
 }
 
 const FilterColumnDropdown = ({
   columns, 
-  column, 
-  setColumn
+  selectedColumnIndex, 
+  setSelectedColumnIndex
 } : FilterColumnDropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
-  const selectedColumnName: string = column?.name ?? "Name";
+  const selectedColumnName: string = columns?.[selectedColumnIndex]?.name ?? "";
 
   return (
     <Popover 
@@ -58,7 +58,7 @@ const FilterColumnDropdown = ({
               key={index}
               role="button"
               onClick={() => {
-                setColumn(col);
+                setSelectedColumnIndex(index);
                 setIsOpen(false);
               }}
               className={`flex items-center justify-start p-2 w-full hover:bg-slate-100

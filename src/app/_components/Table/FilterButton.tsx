@@ -35,11 +35,14 @@ const FilterButton = ({
   } : FilterButtonProps) => {
   const { data: columns } = api.table.getColumns.useQuery(
     { tableId: tableId },
-    { refetchOnWindowFocus: true }
+    { refetchOnWindowFocus: false }
   );
 
   const [isOpen, setIsOpen] = useState(false);
-  const [column, setColumn] = useState(columns?.[0]);
+
+  const [colIndex, setColIndex] = useState(() =>
+    columns?.findIndex((col) => col.id === filterColumnId) ?? 0
+  );
 
   const [filterOp, setFilterOp] = useState(filter === "" ? "contains" : filter);
   const [inputValue, setInputValue] = useState(filterValue);
@@ -49,9 +52,9 @@ const FilterButton = ({
   const updateViewMutation = api.table.updateTableView.useMutation();
 
   const handleFilter = () => {
-    if (filterValue === inputValue && filterOp === filter && filterColumnId === column?.id) return;
     setIsOpen(false);
-    setFilterColumnId(column?.id ?? "");
+    const newFilterColumnId = columns?.[colIndex]?.id ?? "";
+    setFilterColumnId(columns?.[colIndex]?.id ?? "");
     setFilter(filterOp);
     setFilterValue(inputValue);
     setHasFilter(true);
@@ -62,7 +65,7 @@ const FilterButton = ({
         sortOrder: sort,
         sortColumnId: sortColumnId,
         filterCond: filterOp,
-        filterColumnId: column?.id ?? "",
+        filterColumnId: newFilterColumnId,
         filterValue: inputValue,
       });
     }
@@ -182,8 +185,8 @@ const FilterButton = ({
                 <div className="flex items-center justify-center">
                   <FilterColumnDropdown
                     columns={columns ?? []}
-                    column={column}
-                    setColumn={setColumn}
+                    selectedColumnIndex={colIndex}
+                    setSelectedColumnIndex={setColIndex}
                   />
                   <FilterConditionDropdown
                     filterCondition={filterOp}
@@ -258,4 +261,3 @@ const FilterButton = ({
 
 
 export default FilterButton;
-
