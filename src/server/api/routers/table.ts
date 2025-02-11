@@ -89,7 +89,7 @@ export const tableRouter = createTRPCRouter({
       return table;
     }),
 
-  getRecords: protectedProcedure
+    getRecords: protectedProcedure
     .input(
       z.object({ 
         tableId: z.string().min(1),
@@ -98,20 +98,19 @@ export const tableRouter = createTRPCRouter({
         filterColumnId: z.string().optional(),
         filterCond: z.string().optional(),
         filterValue: z.string().optional(),
-        cursor: z.string().optional(),
-        limit: z.number().int().default(50),
+        skip: z.number().int().optional(),
+        take: z.number().int().optional(),
       })
     )
     .query(async ({ ctx, input }) => {
-      const { cursor, limit } = input;
       let records = await ctx.db.record.findMany({
         where: { tableId: input.tableId },
         include: { cells: true },
         orderBy: { rowIndex: "asc" },
-        take: limit + 1,
-        cursor: cursor ? { id: cursor} : undefined
+        skip: input.skip,
+        take: input.take,
       });
-
+  
       if (input.filterColumnId !== "") {
         records = records.filter((record) => {
           return record.cells.some((cell) => {
@@ -149,16 +148,10 @@ export const tableRouter = createTRPCRouter({
           return 0;
         });
       }
-
-      let nextCursor: string | null = null;
-      if (records.length > limit) {
-        const nextRecord = records.pop();
-        nextCursor = nextRecord?.id ?? null;
-      }
-
-      return { records, nextCursor };
+  
+      return records;
     }),
-
+  
 
   createColumn: protectedProcedure
     .input(

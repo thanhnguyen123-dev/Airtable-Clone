@@ -108,10 +108,9 @@ const TanStackTable = ({
 
   useEffect(() => {
     if (tableData && tableRecords) {
-      const recs = tableRecords.records;
       setColumns(tableData.columns);
-      setRecords(recs);
-      const combined = recs.flatMap((rec) => rec.cells);
+      setRecords(tableRecords);
+      const combined = tableRecords.flatMap((rec) => rec.cells);
       setCells(combined);
     }
   }, [tableData, tableRecords]);
@@ -254,22 +253,22 @@ const TanStackTable = ({
       const columnIds = tableData.columns.map((col) => col.id);
       const seed = crypto.randomUUID();
 
-      const optimisticRecords = Array.from({ length: FAKER_RECORDS_COUNT }, (_, i) => ({
-        id: `optimistic-${seed}-${i}`,
-        tableId: tableId,
-        rowIndex: records.length + i,
-      }));
-      setRecords((prev) => [...prev, ...optimisticRecords]);
+      // const optimisticRecords = Array.from({ length: FAKER_RECORDS_COUNT }, (_, i) => ({
+      //   id: `optimistic-${seed}-${i}`,
+      //   tableId: tableId,
+      //   rowIndex: records.length + i,
+      // }));
+      // setRecords((prev) => [...prev, ...optimisticRecords]);
 
-      const optimisticCells = optimisticRecords.flatMap((record) => 
-        columnIds.map((colId) => ({
-          id: `${record.id}-${colId}`,
-          recordId: record.id,
-          columnId: colId,
-          data: faker.person.fullName(),
-        }))
-      )
-      setCells((prev) => [...prev, ...optimisticCells]);
+      // const optimisticCells = optimisticRecords.flatMap((record) => 
+      //   columnIds.map((colId) => ({
+      //     id: `${record.id}-${colId}`,
+      //     recordId: record.id,
+      //     columnId: colId,
+      //     data: faker.person.fullName(),
+      //   }))
+      // )
+      // setCells((prev) => [...prev, ...optimisticCells]);
 
       createFakeRecordsMutation.mutate({
         tableId: tableId,
