@@ -306,7 +306,6 @@ const TanStackTable = ({
       <AddColumnButton
         onCreated={handleAddColumn}
       />
-      <div className="px-3">current view: {currentView}</div>
     </div>
   );
 };
