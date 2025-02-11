@@ -34,6 +34,30 @@ type TableProps = {
   setFilterValue: Dispatch<SetStateAction<string>>;
 };
 
+const isFiltering = (
+  colId1: string, 
+  colId2: string, 
+  filter: string, 
+  filterValue: string) => {
+  const matchesColId = colId1 === colId2;
+  switch (filter) {
+    case "contains":
+      return matchesColId && filterValue !== "";
+    case "does not contain":
+      return matchesColId && filterValue !== "";
+    case "is":
+      return matchesColId && filterValue !== "";
+    case "is not":
+      return matchesColId && filterValue !== "";
+    case "is empty":
+      return matchesColId;
+    case "is not empty":
+      return matchesColId;
+    default:
+      return false;
+  }
+}
+
 const TanStackTable = ({
   tableId, 
   searchValue, 
@@ -64,23 +88,6 @@ const TanStackTable = ({
     { enabled: !!tableId }
   );
 
-  const { data: tableRecords, isLoading: isRecordsLoading, refetch: refetchRecords } = api.table.getRecords.useQuery(
-    { 
-      tableId: tableId,
-      sortColumnId: sortColumnId,
-      sortOrder: sort,
-      filterColumnId: filterColumnId,
-      filterCond: filter,
-      filterValue: filterValue,
-    },
-    { enabled: !!tableId }
-  );
-
-  const { data: tableColumns, isLoading: isColumnsLoading, refetch: refetchColumns } = api.table.getColumns.useQuery(
-    { tableId: tableId },
-    { enabled: !!tableId }
-  );
-
   // local states for optimistic updates
   const [columns, setColumns] = useState<Column[]>([]);
   const [records, setRecords] = useState<_Record[]>([]);
@@ -88,23 +95,22 @@ const TanStackTable = ({
 
 
   useEffect(() => {
-
-    setColumns(tableColumns ?? []);
-    setRecords(tableRecords?.records ?? []);
-    const combined = (tableRecords?.records ?? []).flatMap((rec) => rec.cells);
-    setCells(combined);
-  
-  }, [tableRecords, tableColumns]);
+    if (tableData) {
+      setColumns(tableData.columns);
+      setRecords(tableData.records);
+      const combined = tableData.records.flatMap((rec) => rec.cells);
+      setCells(combined);
+    }
+  }, [tableData]);
 
   const createFakeRecordsMutation = api.table.createFakeRecords.useMutation({
     onSuccess: () => refetch(),
   });
   const createColumnMutation = api.table.createColumn.useMutation({
-    onSuccess: () => refetchColumns(),
+    onSuccess: () => refetch(),
   });
-  const createRecordMutation = api.table.createRecord.useMutation({
-    onSuccess: () => refetchRecords(),
-  });
+  const createRecordMutation = api.table.createRecord.useMutation();
+
 
   const rowData = useMemo(() => {
     const map: Record<string, Record<string, string>> = {};
@@ -125,8 +131,8 @@ const TanStackTable = ({
       columns.map((col) => ({
         accessorKey: col.id,
         header: ({column}) => {
-          const isSorted = (col.id === sortColumnId);
-          const isFiltered = (col.id === filterColumnId);
+          const isSorted = (col.id === sortColumnId && sort !== "");
+          const isFiltered = isFiltering(col.id, filterColumnId, filter, filterValue);
           return (
             <TableHeader 
               header={col.name} 
@@ -139,8 +145,8 @@ const TanStackTable = ({
         cell: ({ row }) => {
           const val = row.original[col.id] ?? "";
           const recId = row.original.recordId;
-          const isSorted = (col.id === sortColumnId);
-          const isFiltered = (col.id === filterColumnId);
+          const isSorted = (col.id === sortColumnId && sort !== "");
+          const isFiltered = isFiltering(col.id, filterColumnId, filter, filterValue);
           return (
             <TableCell
               columnId={col.id}
@@ -153,7 +159,7 @@ const TanStackTable = ({
           );
         },
       })),
-    [columns, searchValue, sortColumnId, filterColumnId]
+    [columns, searchValue, sortColumnId, sort, filterColumnId, filter, filterValue]
   );
 
   const tableInstance = useReactTable({
@@ -231,8 +237,8 @@ const TanStackTable = ({
   
   
   const handleAddFakeRecords = () => {
-    if (tableColumns) {
-      const columnIds = tableColumns.map((col) => col.id);
+    if (tableData.columns) {
+      const columnIds = tableData.columns.map((col) => col.id);
       const seed = Date.now().toString();
 
       const optimisticRecords = Array.from({ length: FAKER_RECORDS_COUNT }, (_, i) => ({

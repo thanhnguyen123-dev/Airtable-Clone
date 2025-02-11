@@ -102,6 +102,24 @@ const FilterButton = ({
     setHasFilter(sortColumnId !== "");
   }, [sortColumnId]);
 
+  const isFiltering = (filter: string, filterVal: string) => {
+    switch (filter) {
+      case "contains":
+        return filterVal !== "";
+      case "does not contain":
+        return filterVal !== "";
+      case "is":
+        return filterVal !== "";
+      case "is not":
+        return filterVal !== "";
+      case "is empty":
+        return true;
+      case "is not empty":
+        return true;
+      default:
+        return false;
+    }
+  }
   return (
     <Popover
     isOpen={isOpen}
@@ -118,7 +136,7 @@ const FilterButton = ({
           role="button"
           className={`flex justify-center items-center gap-1 rounded-md px-2 py-1
             hover:bg-slate-200
-            ${hasFilter ? "bg-green-300 hover:bg-green-200" : ""}
+            ${isFiltering(filterOp, filterValue) ? "bg-green-300 hover:bg-green-200" : ""}
           `}
         >
           <svg
