@@ -88,6 +88,18 @@ const TanStackTable = ({
     { enabled: !!tableId }
   );
 
+  const { data: tableRecords, isLoading: isRecordsLoading, refetch: refetchRecords } = api.table.getRecords.useQuery(
+    { 
+      tableId: tableId, 
+      sortColumnId: sortColumnId,
+      sortOrder: sort,
+      filterColumnId: filterColumnId,
+      filterCond: filter,
+      filterValue: filterValue,
+    },
+    { enabled: !!tableId }
+  );
+
   // local states for optimistic updates
   const [columns, setColumns] = useState<Column[]>([]);
   const [records, setRecords] = useState<_Record[]>([]);
@@ -95,13 +107,14 @@ const TanStackTable = ({
 
 
   useEffect(() => {
-    if (tableData) {
+    if (tableData && tableRecords) {
+      const recs = tableRecords.records;
       setColumns(tableData.columns);
-      setRecords(tableData.records);
-      const combined = tableData.records.flatMap((rec) => rec.cells);
+      setRecords(recs);
+      const combined = recs.flatMap((rec) => rec.cells);
       setCells(combined);
     }
-  }, [tableData]);
+  }, [tableData, tableRecords]);
 
   const createFakeRecordsMutation = api.table.createFakeRecords.useMutation({
     onSuccess: () => refetch(),
@@ -239,7 +252,7 @@ const TanStackTable = ({
   const handleAddFakeRecords = () => {
     if (tableData.columns) {
       const columnIds = tableData.columns.map((col) => col.id);
-      const seed = Date.now().toString();
+      const seed = crypto.randomUUID();
 
       const optimisticRecords = Array.from({ length: FAKER_RECORDS_COUNT }, (_, i) => ({
         id: `optimistic-${seed}-${i}`,
