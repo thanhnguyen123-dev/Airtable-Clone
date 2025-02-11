@@ -64,6 +64,23 @@ const TanStackTable = ({
     { enabled: !!tableId }
   );
 
+  const { data: tableRecords, isLoading: isRecordsLoading, refetch: refetchRecords } = api.table.getRecords.useQuery(
+    { 
+      tableId: tableId,
+      sortColumnId: sortColumnId,
+      sortOrder: sort,
+      filterColumnId: filterColumnId,
+      filterCond: filter,
+      filterValue: filterValue,
+    },
+    { enabled: !!tableId }
+  );
+
+  const { data: tableColumns, isLoading: isColumnsLoading, refetch: refetchColumns } = api.table.getColumns.useQuery(
+    { tableId: tableId },
+    { enabled: !!tableId }
+  );
+
   // local states for optimistic updates
   const [columns, setColumns] = useState<Column[]>([]);
   const [records, setRecords] = useState<_Record[]>([]);
@@ -71,21 +88,23 @@ const TanStackTable = ({
 
 
   useEffect(() => {
-    if (tableData) {
-      setColumns(tableData.columns);
-      setRecords(tableData.records);
-      const combined = tableData.records.flatMap((rec) => rec.cells);
-      setCells(combined);
-    }
-  }, [tableData]);
+
+    setColumns(tableColumns ?? []);
+    setRecords(tableRecords?.records ?? []);
+    const combined = (tableRecords?.records ?? []).flatMap((rec) => rec.cells);
+    setCells(combined);
+  
+  }, [tableRecords, tableColumns]);
 
   const createFakeRecordsMutation = api.table.createFakeRecords.useMutation({
     onSuccess: () => refetch(),
   });
   const createColumnMutation = api.table.createColumn.useMutation({
-    onSuccess: () => refetch(),
+    onSuccess: () => refetchColumns(),
   });
-  const createRecordMutation = api.table.createRecord.useMutation();
+  const createRecordMutation = api.table.createRecord.useMutation({
+    onSuccess: () => refetchRecords(),
+  });
 
   const rowData = useMemo(() => {
     const map: Record<string, Record<string, string>> = {};
@@ -134,7 +153,7 @@ const TanStackTable = ({
           );
         },
       })),
-    [columns, searchValue, sortColumnId]
+    [columns, searchValue, sortColumnId, filterColumnId]
   );
 
   const tableInstance = useReactTable({
@@ -212,8 +231,8 @@ const TanStackTable = ({
   
   
   const handleAddFakeRecords = () => {
-    if (tableData.columns) {
-      const columnIds = tableData.columns.map((col) => col.id);
+    if (tableColumns) {
+      const columnIds = tableColumns.map((col) => col.id);
       const seed = Date.now().toString();
 
       const optimisticRecords = Array.from({ length: FAKER_RECORDS_COUNT }, (_, i) => ({

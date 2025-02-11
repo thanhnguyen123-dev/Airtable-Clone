@@ -89,6 +89,77 @@ export const tableRouter = createTRPCRouter({
       return table;
     }),
 
+  getRecords: protectedProcedure
+    .input(
+      z.object({ 
+        tableId: z.string().min(1),
+        sortColumnId: z.string().optional(),
+        sortOrder: z.string().optional(),
+        filterColumnId: z.string().optional(),
+        filterCond: z.string().optional(),
+        filterValue: z.string().optional(),
+        cursor: z.string().optional(),
+        limit: z.number().int().default(50),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const { cursor, limit } = input;
+      let records = await ctx.db.record.findMany({
+        where: { tableId: input.tableId },
+        include: { cells: true },
+        orderBy: { rowIndex: "asc" },
+        take: limit + 1,
+        cursor: cursor ? { id: cursor} : undefined
+      });
+
+      if (input.filterColumnId !== "") {
+        records = records.filter((record) => {
+          return record.cells.some((cell) => {
+            if (cell.columnId !== input.filterColumnId) return false;
+      
+            switch (input.filterCond) {
+              case "contains":
+                return cell.data.includes(input.filterValue ?? "");
+              case "does not contain":
+                return !cell.data.includes(input.filterValue ?? "");
+              case "is":
+                return cell.data === input.filterValue;
+              case "is not":
+                return cell.data !== input.filterValue;
+              case "is empty":
+                return cell.data === "";
+              case "is not empty":
+                return cell.data !== "";
+              default:
+                return false;
+            }
+          });
+        });
+      }
+      
+      if (input.sortColumnId && input.sortOrder) {
+        records.sort((a, b) => {
+          const valA = a.cells.find(cell => cell.columnId === input.sortColumnId)?.data ?? "";
+          const valB = b.cells.find(cell => cell.columnId === input.sortColumnId)?.data ?? "";
+          if (input.sortOrder === "A - Z") {
+            return valA.localeCompare(valB);
+          } else if (input.sortOrder === "Z - A") {
+            return valB.localeCompare(valA);
+          }
+          return 0;
+        });
+      }
+
+      let nextCursor: string | null = null;
+      if (records.length > limit) {
+        const nextRecord = records.pop();
+        nextCursor = nextRecord?.id ?? null;
+      }
+
+      return { records, nextCursor };
+    }),
+
+
   createColumn: protectedProcedure
     .input(
       z.object({ 
