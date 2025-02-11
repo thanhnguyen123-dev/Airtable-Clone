@@ -2,20 +2,17 @@
 
 import React, { useEffect, useState, useMemo, useRef, type Dispatch, type SetStateAction } from "react";
 import { api } from "~/trpc/react";
-import Loader from "../Loader";
 import TableHeader from "./TableHeader";
 import TableCell from "./TableCell";
 import AddColumnButton from "./AddColumnButton";
 import AddRecordButton from "./AddRecordButton";
 import TableRow from "./TableRow";
 import LoaderTable from "./LoaderTable";
-import { faker } from '@faker-js/faker';
 
 import type { Column, Cell, Record as _Record } from "@prisma/client";
 import { useReactTable, type ColumnDef, getCoreRowModel, flexRender } from "@tanstack/react-table";
-import { useVirtualizer } from "@tanstack/react-virtual";
 
-const FAKER_RECORDS_COUNT = 1000;
+const FAKER_RECORDS_COUNT = 5000;
 
 type TableProps = {
   tableId: string;
@@ -88,6 +85,7 @@ const TanStackTable = ({
     { enabled: !!tableId }
   );
 
+  const [offset, setOffset] = useState(0);
   const { data: tableRecords, isLoading: isRecordsLoading, refetch: refetchRecords } = api.table.getRecords.useQuery(
     { 
       tableId: tableId, 
@@ -96,8 +94,10 @@ const TanStackTable = ({
       filterColumnId: filterColumnId,
       filterCond: filter,
       filterValue: filterValue,
+      offset: offset,
+      limit: 100
     },
-    { enabled: !!tableId }
+    { enabled: !!tableId, refetchOnWindowFocus: false }
   );
 
   // local states for optimistic updates
@@ -109,11 +109,17 @@ const TanStackTable = ({
   useEffect(() => {
     if (tableData && tableRecords) {
       setColumns(tableData.columns);
-      setRecords(tableRecords);
-      const combined = tableRecords.flatMap((rec) => rec.cells);
-      setCells(combined);
+      setRecords((prev) =>
+        offset === 0 ? tableRecords : [...prev, ...tableRecords]
+      );
+      setCells((prev) =>
+        offset === 0
+          ? tableRecords.flatMap((rec) => rec.cells)
+          : [...prev, ...tableRecords.flatMap((rec) => rec.cells)]
+      );
     }
-  }, [tableData, tableRecords]);
+  }, [tableData, tableRecords, offset]);
+  
 
   const createFakeRecordsMutation = api.table.createFakeRecords.useMutation({
     onSuccess: () => refetch(),
@@ -181,12 +187,36 @@ const TanStackTable = ({
   });
 
   const parentRef = useRef<HTMLDivElement>(null);
-  const rowVirtualizer = useVirtualizer({
-    count: rowData.length,
-    getScrollElement: () => parentRef.current!,
-    estimateSize: () => 40,
-    overscan: 5,
-  });
+
+  const fetchMoreRecords = () => {
+    if (isRecordsLoading) return;
+    const newOffset = offset + 100;
+    setOffset(newOffset);
+  }
+
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      const element = parentRef.current;
+      if (element) {
+        const handleScroll = () => {
+          const { scrollTop, clientHeight, scrollHeight } = element;
+          if (scrollTop + clientHeight >= scrollHeight) {
+            fetchMoreRecords();
+          }
+        }
+
+        element.addEventListener("scroll", handleScroll);
+
+        clearInterval(interval);
+
+        return () => {
+          element.removeEventListener("scroll", handleScroll);
+        }
+      }
+    }, 500);
+    return () => clearInterval(interval);
+  }, [fetchMoreRecords]);
 
   if (!tableId) {
     return <div className="flex-grow bg-white p-4">No table selected</div>;
@@ -253,23 +283,6 @@ const TanStackTable = ({
       const columnIds = tableData.columns.map((col) => col.id);
       const seed = crypto.randomUUID();
 
-      // const optimisticRecords = Array.from({ length: FAKER_RECORDS_COUNT }, (_, i) => ({
-      //   id: `optimistic-${seed}-${i}`,
-      //   tableId: tableId,
-      //   rowIndex: records.length + i,
-      // }));
-      // setRecords((prev) => [...prev, ...optimisticRecords]);
-
-      // const optimisticCells = optimisticRecords.flatMap((record) => 
-      //   columnIds.map((colId) => ({
-      //     id: `${record.id}-${colId}`,
-      //     recordId: record.id,
-      //     columnId: colId,
-      //     data: faker.person.fullName(),
-      //   }))
-      // )
-      // setCells((prev) => [...prev, ...optimisticCells]);
-
       createFakeRecordsMutation.mutate({
         tableId: tableId,
         columnIds: columnIds,
@@ -280,7 +293,10 @@ const TanStackTable = ({
   };
 
   return (
-    <div className="flex w-full bg-white overflow-y-auto overflow-x-auto">
+    <div 
+      className="flex w-full bg-white overflow-y-auto overflow-x-auto"
+      ref={parentRef}
+    >
       <div className="flex flex-col">
         <TableRow>
           {tableInstance.getHeaderGroups().flatMap(headerGroup =>

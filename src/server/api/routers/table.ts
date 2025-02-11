@@ -98,8 +98,8 @@ export const tableRouter = createTRPCRouter({
         filterColumnId: z.string().optional(),
         filterCond: z.string().optional(),
         filterValue: z.string().optional(),
-        skip: z.number().int().optional(),
-        take: z.number().int().optional(),
+        offset: z.number().int().optional(),
+        limit: z.number().int().optional(),
       })
     )
     .query(async ({ ctx, input }) => {
@@ -107,8 +107,8 @@ export const tableRouter = createTRPCRouter({
         where: { tableId: input.tableId },
         include: { cells: true },
         orderBy: { rowIndex: "asc" },
-        skip: input.skip,
-        take: input.take,
+        skip: input.offset,
+        take: input.limit,
       });
   
       if (input.filterColumnId !== "") {
