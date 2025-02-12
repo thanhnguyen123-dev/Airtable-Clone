@@ -326,11 +326,7 @@ export const tableRouter = createTRPCRouter({
       count: z.number().int().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
-      const {tableId, columnIds, seed, count = 500} = input;
-
-      if (seed) {
-        faker.seed(Number(seed));
-      }
+      const {tableId, columnIds, count = 500} = input;
 
       const currentCount = await ctx.db.record.count({
         where: { tableId },

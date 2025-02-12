@@ -15,7 +15,7 @@ import type { Column, Cell, Record as _Record } from "@prisma/client";
 import { useReactTable, type ColumnDef, getCoreRowModel, flexRender } from "@tanstack/react-table";
 import { useVirtualizer } from "@tanstack/react-virtual";
 
-const FAKER_RECORDS_COUNT = 1000;
+const FAKER_RECORDS_COUNT = 200;
 
 type TableProps = {
   tableId: string;
@@ -251,29 +251,10 @@ const TanStackTable = ({
   const handleAddFakeRecords = () => {
     if (tableData.columns) {
       const columnIds = tableData.columns.map((col) => col.id);
-      const seed = crypto.randomUUID();
-
-      // const optimisticRecords = Array.from({ length: FAKER_RECORDS_COUNT }, (_, i) => ({
-      //   id: `optimistic-${seed}-${i}`,
-      //   tableId: tableId,
-      //   rowIndex: records.length + i,
-      // }));
-      // setRecords((prev) => [...prev, ...optimisticRecords]);
-
-      // const optimisticCells = optimisticRecords.flatMap((record) => 
-      //   columnIds.map((colId) => ({
-      //     id: `${record.id}-${colId}`,
-      //     recordId: record.id,
-      //     columnId: colId,
-      //     data: faker.person.fullName(),
-      //   }))
-      // )
-      // setCells((prev) => [...prev, ...optimisticCells]);
 
       createFakeRecordsMutation.mutate({
         tableId: tableId,
         columnIds: columnIds,
-        seed: seed,
         count: FAKER_RECORDS_COUNT,
       });
     }
