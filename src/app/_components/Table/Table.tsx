@@ -9,13 +9,11 @@ import AddColumnButton from "./AddColumnButton";
 import AddRecordButton from "./AddRecordButton";
 import TableRow from "./TableRow";
 import LoaderTable from "./LoaderTable";
-import { faker } from '@faker-js/faker';
 
 import type { Column, Cell, Record as _Record } from "@prisma/client";
 import { useReactTable, type ColumnDef, getCoreRowModel, flexRender } from "@tanstack/react-table";
-import { useVirtualizer } from "@tanstack/react-virtual";
 
-const FAKER_RECORDS_COUNT = 200;
+const FAKER_RECORDS_COUNT = 20;
 
 type TableProps = {
   tableId: string;
@@ -88,7 +86,11 @@ const TanStackTable = ({
     { enabled: !!tableId }
   );
 
-  const { data: tableRecords, isLoading: isRecordsLoading, refetch: refetchRecords } = api.table.getRecords.useQuery(
+  const { 
+    data: tableRecords, 
+    isLoading: isRecordsLoading, 
+    isFetching: isRecordsFetching, 
+    refetch: refetchRecords } = api.table.getRecords.useQuery(
     { 
       tableId: tableId, 
       sortColumnId: sortColumnId,
@@ -96,6 +98,8 @@ const TanStackTable = ({
       filterColumnId: filterColumnId,
       filterCond: filter,
       filterValue: filterValue,
+      limit: 1000,
+      offset: 0,
     },
     { enabled: !!tableId }
   );
@@ -180,14 +184,6 @@ const TanStackTable = ({
     getCoreRowModel: getCoreRowModel(),
   });
 
-  const parentRef = useRef<HTMLDivElement>(null);
-  const rowVirtualizer = useVirtualizer({
-    count: rowData.length,
-    getScrollElement: () => parentRef.current!,
-    estimateSize: () => 40,
-    overscan: 5,
-  });
-
   if (!tableId) {
     return <div className="flex-grow bg-white p-4">No table selected</div>;
   }
@@ -248,15 +244,16 @@ const TanStackTable = ({
   };
   
   
-  const handleAddFakeRecords = () => {
+  const handleAddFakeRecords = async () => {
     if (tableData.columns) {
       const columnIds = tableData.columns.map((col) => col.id);
 
-      createFakeRecordsMutation.mutate({
+      await createFakeRecordsMutation.mutateAsync({
         tableId: tableId,
         columnIds: columnIds,
         count: FAKER_RECORDS_COUNT,
       });
+
     }
   };
 
@@ -292,6 +289,12 @@ const TanStackTable = ({
             </TableRow>
           );
         })}
+        <div>
+          {(isRecordsFetching || isRecordsLoading || createFakeRecordsMutation.isPending) && 
+            <div className="flex h-[30px] items-center border-b border-r w-full 
+            border-gray-300 text-xs pl-4 text-slate-600">Loading...</div>
+          }
+        </div>
         <AddRecordButton 
           handleClick={handleAddRecord} 
           text="Add record"
