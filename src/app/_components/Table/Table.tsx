@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState, useMemo, useRef, type Dispatch, type SetStateAction } from "react";
+import React, { useEffect, useState, useMemo, type Dispatch, type SetStateAction } from "react";
 import { api } from "~/trpc/react";
 import Loader from "../Loader";
 import TableHeader from "./TableHeader";
@@ -110,14 +110,15 @@ const TanStackTable = ({
   const [cells, setCells] = useState<Cell[]>([]);
 
 
+
   useEffect(() => {
-    if (tableData && tableRecords) {
+    if (tableData) {
       setColumns(tableData.columns);
-      setRecords(tableRecords);
-      const combined = tableRecords.flatMap((rec) => rec.cells);
+      setRecords(tableData.records);
+      const combined = tableData.records.flatMap((rec) => rec.cells);
       setCells(combined);
     }
-  }, [tableData, tableRecords]);
+  }, [tableData]);
 
   const createFakeRecordsMutation = api.table.createFakeRecords.useMutation({
     onSuccess: () => refetch(),

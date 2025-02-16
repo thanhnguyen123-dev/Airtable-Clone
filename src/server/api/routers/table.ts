@@ -26,217 +26,217 @@ export const tableRouter = createTRPCRouter({
       });
     }),
 
-  getRecords: protectedProcedure
-    .input(
-      z.object({
-        tableId: z.string().min(1),
-        sortColumnId: z.string().optional(),
-        sortOrder: z.string().optional(),
-        filterColumnId: z.string().optional(),
-        filterCond: z.string().optional(),
-        filterValue: z.string().optional(),
-        offset: z.number().int(),
-        limit: z.number().int()
-      })
-    )
-    .query(async ({ ctx, input }) => {
-      let records;
-      let condObj = {};
-      if (input.filterColumnId !== "") {
-        switch (input.filterCond) {
-          case "contains":
-            condObj = { data: { contains: input.filterValue, mode: "insensitive" } };
-            break;
-          case "does not contain":
-            condObj = { data: { not: { contains: input.filterValue, mode: "insensitive" } } };
-            break;
-          case "is":
-            condObj = { data: input.filterValue };
-            break;
-          case "is not":
-            condObj = { data: { not: input.filterValue } };
-            break;
-          case "is empty":
-            condObj = { data: "" };
-            break;
-          case "is not empty":
-            condObj = { data: { not: "" } };
-            break;
-          default:
-            break;
-        }
-        if (input.sortColumnId == "") {
-          return await ctx.db.record.findMany({
-            where: { 
-              tableId: input.tableId,
-              cells: {
-                some: {
-                  columnId: input.filterColumnId,
-                  AND: condObj,
-                }
-              }
-            },
-            include: { cells: true },
-            orderBy: { rowIndex: "asc" },
-            skip: input.offset,
-            take: input.limit,
-          });
-        }
-        else {
-          records = await ctx.db.record.findMany({
-            where: { 
-              tableId: input.tableId,
-              cells: {
-                some: {
-                  columnId: input.filterColumnId,
-                  AND: condObj,
-                }
-              }
-            },
-            include: { cells: true },
-            orderBy: { rowIndex: "asc" },
-          });
-        }
-      }
-      else {
-        if (input.sortColumnId == "") {
-          return await ctx.db.record.findMany({
-            where: { tableId: input.tableId },
-            include: { cells: true },
-            orderBy: { rowIndex: "asc" },
-            skip: input.offset,
-            take: input.limit,
-          });
-        }
-        else {
-          records = await ctx.db.record.findMany({
-            where: { tableId: input.tableId },
-            include: { cells: true },
-            orderBy: { rowIndex: "asc" },
-          });
-        }
-      }
-
-      switch (input.sortOrder) {
-        case "A - Z":
-          records.sort((a, b) => {
-            const valA = a.cells.find(cell => cell.columnId === input.sortColumnId)?.data ?? "";
-            const valB = b.cells.find(cell => cell.columnId === input.sortColumnId)?.data ?? "";
-            return valA.localeCompare(valB);
-          });
-          break;
-        case "Z - A":
-          records.sort((a, b) => {
-            const valA = a.cells.find(cell => cell.columnId === input.sortColumnId)?.data ?? "";
-            const valB = b.cells.find(cell => cell.columnId === input.sortColumnId)?.data ?? "";
-            return valB.localeCompare(valA);
-          });
-          break;
-        default:
-          break;
-      }
-
-      records = records.slice(input.offset, input.offset + input.limit);
-
-      return records;
-    }),
-
   // getRecords: protectedProcedure
   //   .input(
-  //     z.object({ 
+  //     z.object({
   //       tableId: z.string().min(1),
   //       sortColumnId: z.string().optional(),
   //       sortOrder: z.string().optional(),
   //       filterColumnId: z.string().optional(),
   //       filterCond: z.string().optional(),
   //       filterValue: z.string().optional(),
-  //       offset: z.number().int().optional(),
-  //       limit: z.number().int().optional(),
+  //       offset: z.number().int(),
+  //       limit: z.number().int()
   //     })
   //   )
   //   .query(async ({ ctx, input }) => {
   //     let records;
-
-  //     if (input.sortColumnId && input.sortOrder) {
-  //       records = await ctx.db.record.findMany({
-  //         where: { 
-  //           tableId: input.tableId,
-  //         },
-  //         include: { cells: true },
-  //         orderBy: { rowIndex: "asc" },
-  //       });
-
-  //       if (input.filterColumnId !== "") {
-  //         records = records.filter((record) => {
-  //           return record.cells.some((cell) => {
-  //             if (cell.columnId !== input.filterColumnId) return false;
-  //             switch (input.filterCond) {
-  //               case "contains":
-  //                 return cell.data.toLowerCase().includes(input.filterValue?.toLowerCase() ?? "");
-  //               case "does not contain":
-  //                 return !cell.data.toLowerCase().includes(input.filterValue?.toLowerCase() ?? "");
-  //               case "is":
-  //                 return cell.data === input.filterValue;
-  //               case "is not":
-  //                 return cell.data !== input.filterValue;
-  //               case "is empty":
-  //                 return cell.data === "";
-  //               case "is not empty":
-  //                 return cell.data !== "";
-  //               default:
-  //                 return false;
+  //     let condObj = {};
+  //     if (input.filterColumnId !== "") {
+  //       switch (input.filterCond) {
+  //         case "contains":
+  //           condObj = { data: { contains: input.filterValue, mode: "insensitive" } };
+  //           break;
+  //         case "does not contain":
+  //           condObj = { data: { not: { contains: input.filterValue, mode: "insensitive" } } };
+  //           break;
+  //         case "is":
+  //           condObj = { data: input.filterValue };
+  //           break;
+  //         case "is not":
+  //           condObj = { data: { not: input.filterValue } };
+  //           break;
+  //         case "is empty":
+  //           condObj = { data: "" };
+  //           break;
+  //         case "is not empty":
+  //           condObj = { data: { not: "" } };
+  //           break;
+  //         default:
+  //           break;
+  //       }
+  //       if (input.sortColumnId == "") {
+  //         return await ctx.db.record.findMany({
+  //           where: { 
+  //             tableId: input.tableId,
+  //             cells: {
+  //               some: {
+  //                 columnId: input.filterColumnId,
+  //                 AND: condObj,
+  //               }
   //             }
-  //           });
+  //           },
+  //           include: { cells: true },
+  //           orderBy: { rowIndex: "asc" },
+  //           skip: input.offset,
+  //           take: input.limit,
   //         });
   //       }
-
-  //       records.sort((a, b) => {
-  //         const valA = a.cells.find(cell => cell.columnId === input.sortColumnId)?.data ?? "";
-  //         const valB = b.cells.find(cell => cell.columnId === input.sortColumnId)?.data ?? "";
-  //         if (input.sortOrder === "A - Z") {
-  //           return valA.localeCompare(valB);
-  //         } else if (input.sortOrder === "Z - A") {
-  //           return valB.localeCompare(valA);
-  //         }
-  //         return 0;
-  //       });
-
-  //     } else {
-  //       records = await ctx.db.record.findMany({
-  //         where: { tableId: input.tableId },
-  //         include: { cells: true },
-  //         orderBy: { rowIndex: "asc" },
-  //         skip: input.offset,
-  //         take: input.limit,
-  //       });
-
-  //       if (input.filterColumnId && input.filterColumnId !== "") {
-  //         records = records.filter((record) => {
-  //           return record.cells.some((cell) => {
-  //             if (cell.columnId !== input.filterColumnId) return false;
-  //             switch (input.filterCond) {
-  //               case "contains":
-  //                 return cell.data.toLowerCase().includes(input.filterValue?.toLowerCase() ?? "");
-  //               case "does not contain":
-  //                 return !cell.data.toLowerCase().includes(input.filterValue?.toLowerCase() ?? "");
-  //               case "is":
-  //                 return cell.data === input.filterValue;
-  //               case "is not":
-  //                 return cell.data !== input.filterValue;
-  //               case "is empty":
-  //                 return cell.data === "";
-  //               case "is not empty":
-  //                 return cell.data !== "";
-  //               default:
-  //                 return false;
+  //       else {
+  //         records = await ctx.db.record.findMany({
+  //           where: { 
+  //             tableId: input.tableId,
+  //             cells: {
+  //               some: {
+  //                 columnId: input.filterColumnId,
+  //                 AND: condObj,
+  //               }
   //             }
-  //           });
+  //           },
+  //           include: { cells: true },
+  //           orderBy: { rowIndex: "asc" },
+  //         });
+  //       }
+  //     }
+  //     else {
+  //       if (input.sortColumnId == "") {
+  //         return await ctx.db.record.findMany({
+  //           where: { tableId: input.tableId },
+  //           include: { cells: true },
+  //           orderBy: { rowIndex: "asc" },
+  //           skip: input.offset,
+  //           take: input.limit,
+  //         });
+  //       }
+  //       else {
+  //         records = await ctx.db.record.findMany({
+  //           where: { tableId: input.tableId },
+  //           include: { cells: true },
+  //           orderBy: { rowIndex: "asc" },
   //         });
   //       }
   //     }
 
-  //   return records;
-  // }),
+  //     switch (input.sortOrder) {
+  //       case "A - Z":
+  //         records.sort((a, b) => {
+  //           const valA = a.cells.find(cell => cell.columnId === input.sortColumnId)?.data ?? "";
+  //           const valB = b.cells.find(cell => cell.columnId === input.sortColumnId)?.data ?? "";
+  //           return valA.localeCompare(valB);
+  //         });
+  //         break;
+  //       case "Z - A":
+  //         records.sort((a, b) => {
+  //           const valA = a.cells.find(cell => cell.columnId === input.sortColumnId)?.data ?? "";
+  //           const valB = b.cells.find(cell => cell.columnId === input.sortColumnId)?.data ?? "";
+  //           return valB.localeCompare(valA);
+  //         });
+  //         break;
+  //       default:
+  //         break;
+  //     }
+
+  //     records = records.slice(input.offset, input.offset + input.limit);
+
+  //     return records;
+  //   }),
+
+  getRecords: protectedProcedure
+    .input(
+      z.object({ 
+        tableId: z.string().min(1),
+        sortColumnId: z.string().optional(),
+        sortOrder: z.string().optional(),
+        filterColumnId: z.string().optional(),
+        filterCond: z.string().optional(),
+        filterValue: z.string().optional(),
+        offset: z.number().int().optional(),
+        limit: z.number().int().optional(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      let records;
+
+      if (input.sortColumnId && input.sortOrder) {
+        records = await ctx.db.record.findMany({
+          where: { 
+            tableId: input.tableId,
+          },
+          include: { cells: true },
+          orderBy: { rowIndex: "asc" },
+        });
+
+        if (input.filterColumnId !== "") {
+          records = records.filter((record) => {
+            return record.cells.some((cell) => {
+              if (cell.columnId !== input.filterColumnId) return false;
+              switch (input.filterCond) {
+                case "contains":
+                  return cell.data.toLowerCase().includes(input.filterValue?.toLowerCase() ?? "");
+                case "does not contain":
+                  return !cell.data.toLowerCase().includes(input.filterValue?.toLowerCase() ?? "");
+                case "is":
+                  return cell.data === input.filterValue;
+                case "is not":
+                  return cell.data !== input.filterValue;
+                case "is empty":
+                  return cell.data === "";
+                case "is not empty":
+                  return cell.data !== "";
+                default:
+                  return false;
+              }
+            });
+          });
+        }
+
+        records.sort((a, b) => {
+          const valA = a.cells.find(cell => cell.columnId === input.sortColumnId)?.data ?? "";
+          const valB = b.cells.find(cell => cell.columnId === input.sortColumnId)?.data ?? "";
+          if (input.sortOrder === "A - Z") {
+            return valA.localeCompare(valB);
+          } else if (input.sortOrder === "Z - A") {
+            return valB.localeCompare(valA);
+          }
+          return 0;
+        });
+
+      } else {
+        records = await ctx.db.record.findMany({
+          where: { tableId: input.tableId },
+          include: { cells: true },
+          orderBy: { rowIndex: "asc" },
+          skip: input.offset,
+          take: input.limit,
+        });
+
+        if (input.filterColumnId && input.filterColumnId !== "") {
+          records = records.filter((record) => {
+            return record.cells.some((cell) => {
+              if (cell.columnId !== input.filterColumnId) return false;
+              switch (input.filterCond) {
+                case "contains":
+                  return cell.data.toLowerCase().includes(input.filterValue?.toLowerCase() ?? "");
+                case "does not contain":
+                  return !cell.data.toLowerCase().includes(input.filterValue?.toLowerCase() ?? "");
+                case "is":
+                  return cell.data === input.filterValue;
+                case "is not":
+                  return cell.data !== input.filterValue;
+                case "is empty":
+                  return cell.data === "";
+                case "is not empty":
+                  return cell.data !== "";
+                default:
+                  return false;
+              }
+            });
+          });
+        }
+      }
+
+    return records;
+  }),
 
   getById: protectedProcedure
     .input(z.object({ 

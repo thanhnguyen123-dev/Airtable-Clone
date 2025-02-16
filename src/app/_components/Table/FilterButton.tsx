@@ -136,7 +136,7 @@ const FilterButton = ({
           role="button"
           className={`flex justify-center items-center gap-1 rounded-md px-2 py-1
             hover:bg-slate-200
-            ${isFiltering(filterOp, filterValue) ? "bg-green-300 hover:bg-green-200" : ""}
+            ${isFiltering(filterOp, filterValue) && hasFilter ? "bg-green-300 hover:bg-green-200" : ""}
           `}
         >
           <svg
