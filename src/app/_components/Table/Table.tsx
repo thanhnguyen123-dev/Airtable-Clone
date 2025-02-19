@@ -289,10 +289,6 @@ const TanStackTable = ({
           if (entries[0]?.isIntersecting && hasNextPage) {
             void fetchNextPage();
           }
-        },
-        {
-          rootMargin: "200px", // This will trigger when the observed element is 200px within the viewport
-          threshold: 0.1,      // Adjust the threshold if needed
         }
       );
   
@@ -352,7 +348,7 @@ const TanStackTable = ({
             </TableRow>
           );
         })}
-        <div>
+        {/* <div>
           {(isRecordsFetching ||
             isRecordsLoading ||
             createFakeRecordsMutation.isPending) && (
@@ -360,7 +356,7 @@ const TanStackTable = ({
               Loading...
             </div>
           )}
-        </div>
+        </div> */}
         <AddRecordButton handleClick={handleAddRecord} text="Add record" />
         <AddRecordButton
           handleClick={handleAddFakeRecords}
