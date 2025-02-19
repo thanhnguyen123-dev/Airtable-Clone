@@ -1,6 +1,7 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { faker } from '@faker-js/faker';
+import next from "next";
 
 export const tableRouter = createTRPCRouter({
   create: protectedProcedure
@@ -26,6 +27,131 @@ export const tableRouter = createTRPCRouter({
       });
     }),
 
+  getCells: protectedProcedure
+    .input(
+      z.object({ 
+        tableId: z.string().min(1),
+        sortColumnId: z.string().optional(),
+        sortOrder: z.string().optional(),
+        filterColumnId: z.string().optional(),
+        filterCond: z.string().optional(),
+        filterValue: z.string().optional(),
+        offset: z.number().int(),
+        limit: z.number().int(),
+      })
+    )
+    .query(async ({ ctx, input }) => {
+      const {
+        tableId,
+        sortColumnId,
+        sortOrder,
+        filterColumnId,
+        filterCond,
+        filterValue,
+        offset,
+        limit,
+      } = input;
+      let condObject = {};
+      let recs;
+
+      if (filterColumnId !== "") {
+        switch (filterCond) {
+          case "contains":
+            condObject = { contains: filterValue };
+            break;
+          case "does not contain":
+            condObject = { not: { contains: filterValue } };
+            break;
+          case "is":
+            condObject = { equals: filterValue };
+            break;
+          case "is not":
+            condObject = { not: { equals: filterValue } };
+            break;
+          case "is empty":
+            condObject = { equals: "" };
+            break;
+          case "is not empty":
+            condObject = { not: { equals: "" } };
+            break;
+          default:
+            break;
+        }
+        if (sortColumnId=== "") {
+          return await ctx.db.record.findMany({
+            where: {
+              tableId: input.tableId,
+              cells: {
+                some: {
+                  columnId: filterColumnId,
+                  data: condObject,
+                },
+              }
+            },
+            include: { cells: true },
+            orderBy: { rowIndex: "asc" },
+            skip: offset,
+            take: limit,
+          }).then((records) => records.flatMap((record) => record.cells));
+        } else {
+          recs = await ctx.db.record.findMany({
+            where: {
+              tableId: input.tableId,
+              cells: {
+                some: {
+                  columnId: filterColumnId,
+                  data: condObject,
+                },
+              }
+            },
+            include: { cells: true },
+            orderBy: { rowIndex: "asc" },
+          });
+        }
+      } 
+      else {
+        if (sortColumnId === "") {
+          return await ctx.db.record.findMany({
+            where: { tableId: input.tableId },
+            include: { cells: true },
+            orderBy: { rowIndex: "asc" },
+            skip: offset,
+            take: limit,
+          }).then((records) => records.flatMap((record) => record.cells));
+        } else {
+          recs = await ctx.db.record.findMany({
+            where: { tableId: input.tableId },
+            include: { cells: true },
+            orderBy: { rowIndex: "asc" },
+          });
+        }
+      }
+
+      switch (sortOrder) {
+        case "A - Z":
+          recs?.sort((a, b) => {
+            const valA = a.cells.find(cell => cell.columnId === sortColumnId)?.data ?? "";
+            const valB = b.cells.find(cell => cell.columnId === sortColumnId)?.data ?? "";
+            return valA.localeCompare(valB);
+          });
+          break;
+        case "Z - A":
+          recs?.sort((a, b) => {
+            const valA = a.cells.find(cell => cell.columnId === sortColumnId)?.data ?? "";
+            const valB = b.cells.find(cell => cell.columnId === sortColumnId)?.data ?? "";
+            return valB.localeCompare(valA);
+          });
+          break;
+        default:
+          break;
+      }
+
+      const nextRecs = recs?.slice(offset, offset + limit); 
+      const nextCells = nextRecs?.flatMap((record) => record.cells);
+
+      return nextCells;
+    }),
+
   getRecords: protectedProcedure
     .input(
       z.object({ 
@@ -35,8 +161,8 @@ export const tableRouter = createTRPCRouter({
         filterColumnId: z.string().optional(),
         filterCond: z.string().optional(),
         filterValue: z.string().optional(),
-        offset: z.number().int().optional(),
-        limit: z.number().int().optional(),
+        cursor: z.string().optional(),
+        limit: z.number().int(),
       })
     )
     .query(async ({ ctx, input }) => {
@@ -91,8 +217,9 @@ export const tableRouter = createTRPCRouter({
           where: { tableId: input.tableId },
           include: { cells: true },
           orderBy: { rowIndex: "asc" },
-          skip: input.offset,
-          take: input.limit,
+          take: input.limit + 1,
+          cursor: input.cursor ? { id: input.cursor } : undefined,
+          skip: input.cursor ? 1 : undefined,
         });
 
         if (input.filterColumnId && input.filterColumnId !== "") {
@@ -119,8 +246,14 @@ export const tableRouter = createTRPCRouter({
           });
         }
       }
+    
+      let nextCursor = undefined;
+      if (records.length > input.limit) {
+        const nextRecord = records.pop();
+        nextCursor = nextRecord?.id;
+      }
 
-    return records;
+    return { records, nextCursor };
   }),
 
   getById: protectedProcedure
