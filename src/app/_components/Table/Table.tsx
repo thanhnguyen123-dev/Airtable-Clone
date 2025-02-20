@@ -206,7 +206,8 @@ const TanStackTable = ({
               searchValue={searchValue}
               isSorted={isSorted}
               isFiltered={isFiltered}
-              columnType={col.type as string}
+              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+              columnType={col.type}
             />
           );
         },
