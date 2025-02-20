@@ -49,9 +49,15 @@ const FilterButton = ({
 
   const [hasFilter, setHasFilter] = useState(false);
 
-  const updateViewMutation = api.table.updateTableView.useMutation();
+  const updateViewMutation = api.table.updateTableView.useMutation({
+    onSuccess: async () => {
+      await utils.table.getRecords.invalidate();
+      await utils.table.getById.invalidate();
+    }
+  });
 
-  const handleFilter = () => {
+  const utils = api.useUtils();
+  const handleFilter = async () => {
     setIsOpen(false);
     const newFilterColumnId = columns?.[colIndex]?.id ?? "";
     setFilterColumnId(columns?.[colIndex]?.id ?? "");
@@ -60,7 +66,7 @@ const FilterButton = ({
     setHasFilter(true);
 
     if (currentView) {
-      updateViewMutation.mutate({
+      await updateViewMutation.mutateAsync({
         viewId: currentView,
         sortOrder: sort,
         sortColumnId: sortColumnId,
@@ -71,7 +77,7 @@ const FilterButton = ({
     }
   }
 
-  const removeFilter = () => {
+  const removeFilter = async () => {
     setIsOpen(false);
     setFilter("contains");
     setFilterColumnId("");
@@ -79,7 +85,7 @@ const FilterButton = ({
     setHasFilter(false);
 
     if (currentView) {
-      updateViewMutation.mutate({
+      await updateViewMutation.mutateAsync({
         viewId: currentView,
         sortOrder: sort,
         sortColumnId: sortColumnId,

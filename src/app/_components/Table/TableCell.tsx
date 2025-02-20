@@ -76,6 +76,7 @@ const TableCell = ({
     ) {
       return;
     }
+
     setValue(e.target.value);
   };
 
@@ -91,9 +92,9 @@ const TableCell = ({
     >
       <input
         ref={inputRef}
-        type={columnType === "NUMBER" ? "text" : "text"}
-        inputMode={columnType === "NUMBER" ? "numeric" : "text"}
-        pattern={columnType === "NUMBER" ? "\\d*" : undefined}
+        // type={columnType === "NUMBER" ? "text" : "text"}
+        // inputMode={columnType === "NUMBER" ? "numeric" : "text"}
+        // pattern={columnType === "NUMBER" ? "\\d*" : undefined}
         value={value}
         onChange={handleChange}
         onBlur={handleBlur}

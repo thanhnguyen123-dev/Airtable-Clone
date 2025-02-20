@@ -44,20 +44,35 @@ const SortButton = (
   
   const updateTableViewMutation = api.table.updateTableView.useMutation();
 
-  const handleClick = () => {
+  const handleClick = async () => {
     setIsOpen(false);
     const newSortColumnId = columns?.[colIndex]?.id ?? "";
     setSortColumnId(columns?.[colIndex]?.id ?? "");
     setSort(sortOp);
     setHasSort(true);
+    await updateTableViewMutation.mutateAsync({
+      viewId: currentView,
+      sortColumnId: newSortColumnId,
+      sortOrder: sortOp,
+      filterCond: filter,
+      filterColumnId: filterColumnId,
+      filterValue: filterValue
+    });
   }
 
-  const utils = api.useUtils();
 
-  const removeSort = () => {  
+  const removeSort = async () => {  
     setSort("");
     setSortColumnId("");
     setHasSort(false);
+    await updateTableViewMutation.mutateAsync({
+      viewId: currentView,
+      sortColumnId: "",
+      sortOrder: "",
+      filterCond: filter,
+      filterColumnId: filterColumnId,
+      filterValue: filterValue
+    });
   }
 
   useEffect(() => {
