@@ -11,10 +11,9 @@ const AddRecordButton = ({ handleClick, text, columns } : AddRecordButtonProps) 
       <div
       role="button"
       onClick={handleClick}
-      className="flex border-b border-r border-gray-300 hover:bg-gray-50"
+      className="flex border-t border-r border-gray-300 hover:bg-gray-50"
       style={{
         height: "40px",
-        width: "99.9%",
       }}
     >
       <div

@@ -50,34 +50,14 @@ const SortButton = (
     setSortColumnId(columns?.[colIndex]?.id ?? "");
     setSort(sortOp);
     setHasSort(true);
-
-    if (currentView) {
-      updateTableViewMutation.mutate({
-        viewId: currentView,
-        sortOrder: sortOp,
-        sortColumnId: newSortColumnId,
-        filterCond: filter,
-        filterColumnId: filterColumnId,
-        filterValue: filterValue
-      });
-    }
   }
+
+  const utils = api.useUtils();
 
   const removeSort = () => {  
     setSort("");
     setSortColumnId("");
     setHasSort(false);
-    if (currentView) {
-      updateTableViewMutation.mutate({
-        viewId: currentView,
-        sortOrder: "",
-        sortColumnId: "",
-        filterCond: filter,
-        filterColumnId: filterColumnId,
-        filterValue: filterValue
-      });
-    }
-    
   }
 
   useEffect(() => {

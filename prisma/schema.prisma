@@ -99,6 +99,7 @@ model Column {
     table       Table      @relation(fields: [tableId], references: [id])
     tableId     String
     cell       Cell[]
+    type        String
 }
 
 model Record {

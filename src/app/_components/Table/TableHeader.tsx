@@ -16,7 +16,7 @@ const TableHeader = ({ header, index, isSorted, isFiltered }: TableHeaderProps) 
       ${isSorted ? "bg-orange-100" : "bg-gray-100"}
       ${isFiltered ? "bg-green-100" : ""}
     `}>
-      <div className={`w-full flex items-center justify-between p-1`}>
+      <div className={`w-full flex items-center justify-between p-2`}>
         <div className="flex items-center gap-2">
           {isFirstCol && (
             <div className="flex items-center justify-center pl-[9px]">
@@ -27,18 +27,6 @@ const TableHeader = ({ header, index, isSorted, isFiltered }: TableHeaderProps) 
               />
             </div>
           )}
-
-          <svg 
-            width="16" 
-            height="16" 
-            viewBox="0 0 16 16" 
-            className="flex-none">
-            <use
-              fill="gray"
-              href="/icons/icons_definitions.svg#Paragraph"
-            />
-          </svg>
-
           <span className="text-xs text-slate-700 font-normal">{header}</span>
         </div>
         <svg

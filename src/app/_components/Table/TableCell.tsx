@@ -8,6 +8,7 @@ type TableCellProps = {
   searchValue: string;
   isSorted: boolean;
   isFiltered: boolean;
+  columnType: string;
 };
 
 const TableCell = ({
@@ -16,7 +17,8 @@ const TableCell = ({
   data,
   searchValue,
   isSorted,
-  isFiltered
+  isFiltered,
+  columnType,
 }: TableCellProps) => {
   const [value, setValue] = useState(data);
   const [lastSaved, setLastSaved] = useState(data);
@@ -66,6 +68,18 @@ const TableCell = ({
     }
   };
 
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (
+      columnType === "NUMBER" &&
+      e.target.value !== "" &&
+      !/^\d+$/.test(e.target.value)
+    ) {
+      return;
+    }
+    setValue(e.target.value);
+  };
+
+
   return (
     <div
       className={`
@@ -77,9 +91,11 @@ const TableCell = ({
     >
       <input
         ref={inputRef}
-        type="text"
+        type={columnType === "NUMBER" ? "text" : "text"}
+        inputMode={columnType === "NUMBER" ? "numeric" : "text"}
+        pattern={columnType === "NUMBER" ? "\\d*" : undefined}
         value={value}
-        onChange={(e) => setValue(e.target.value)}
+        onChange={handleChange}
         onBlur={handleBlur}
         readOnly={!isEditing}
         className="w-full h-full px-2 bg-transparent focus:outline-blue-500"

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unsafe-assignment */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { faker } from '@faker-js/faker';
@@ -27,132 +29,7 @@ export const tableRouter = createTRPCRouter({
       });
     }),
 
-  getCells: protectedProcedure
-    .input(
-      z.object({ 
-        tableId: z.string().min(1),
-        sortColumnId: z.string().optional(),
-        sortOrder: z.string().optional(),
-        filterColumnId: z.string().optional(),
-        filterCond: z.string().optional(),
-        filterValue: z.string().optional(),
-        offset: z.number().int(),
-        limit: z.number().int(),
-      })
-    )
-    .query(async ({ ctx, input }) => {
-      const {
-        tableId,
-        sortColumnId,
-        sortOrder,
-        filterColumnId,
-        filterCond,
-        filterValue,
-        offset,
-        limit,
-      } = input;
-      let condObject = {};
-      let recs;
-
-      if (filterColumnId !== "") {
-        switch (filterCond) {
-          case "contains":
-            condObject = { contains: filterValue };
-            break;
-          case "does not contain":
-            condObject = { not: { contains: filterValue } };
-            break;
-          case "is":
-            condObject = { equals: filterValue };
-            break;
-          case "is not":
-            condObject = { not: { equals: filterValue } };
-            break;
-          case "is empty":
-            condObject = { equals: "" };
-            break;
-          case "is not empty":
-            condObject = { not: { equals: "" } };
-            break;
-          default:
-            break;
-        }
-        if (sortColumnId=== "") {
-          return await ctx.db.record.findMany({
-            where: {
-              tableId: input.tableId,
-              cells: {
-                some: {
-                  columnId: filterColumnId,
-                  data: condObject,
-                },
-              }
-            },
-            include: { cells: true },
-            orderBy: { rowIndex: "asc" },
-            skip: offset,
-            take: limit,
-          }).then((records) => records.flatMap((record) => record.cells));
-        } else {
-          recs = await ctx.db.record.findMany({
-            where: {
-              tableId: input.tableId,
-              cells: {
-                some: {
-                  columnId: filterColumnId,
-                  data: condObject,
-                },
-              }
-            },
-            include: { cells: true },
-            orderBy: { rowIndex: "asc" },
-          });
-        }
-      } 
-      else {
-        if (sortColumnId === "") {
-          return await ctx.db.record.findMany({
-            where: { tableId: input.tableId },
-            include: { cells: true },
-            orderBy: { rowIndex: "asc" },
-            skip: offset,
-            take: limit,
-          }).then((records) => records.flatMap((record) => record.cells));
-        } else {
-          recs = await ctx.db.record.findMany({
-            where: { tableId: input.tableId },
-            include: { cells: true },
-            orderBy: { rowIndex: "asc" },
-          });
-        }
-      }
-
-      switch (sortOrder) {
-        case "A - Z":
-          recs?.sort((a, b) => {
-            const valA = a.cells.find(cell => cell.columnId === sortColumnId)?.data ?? "";
-            const valB = b.cells.find(cell => cell.columnId === sortColumnId)?.data ?? "";
-            return valA.localeCompare(valB);
-          });
-          break;
-        case "Z - A":
-          recs?.sort((a, b) => {
-            const valA = a.cells.find(cell => cell.columnId === sortColumnId)?.data ?? "";
-            const valB = b.cells.find(cell => cell.columnId === sortColumnId)?.data ?? "";
-            return valB.localeCompare(valA);
-          });
-          break;
-        default:
-          break;
-      }
-
-      const nextRecs = recs?.slice(offset, offset + limit); 
-      const nextCells = nextRecs?.flatMap((record) => record.cells);
-
-      return nextCells;
-    }),
-
-  getRecords: protectedProcedure
+    getRecords: protectedProcedure
     .input(
       z.object({ 
         tableId: z.string().min(1),
@@ -167,40 +44,56 @@ export const tableRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       let records;
+  
+      
+      let whereCondition: any = { tableId: input.tableId };
+  
+      // Add a cell filter if a filter is applied.
+      if (input.filterColumnId && input.filterColumnId !== "") {
+        let cellFilter = {};
+        switch (input.filterCond) {
+          case "contains":
+            cellFilter = { data: { contains: input.filterValue, mode: "insensitive" } };
+            break;
+          case "does not contain":
+            cellFilter = { data: { not: { contains: input.filterValue, mode: "insensitive" } } };
+            break;
+          case "is":
+            cellFilter = { data: input.filterValue };
+            break;
+          case "is not":
+            cellFilter = { data: { not: input.filterValue } };
+            break;
+          case "is empty":
+            cellFilter = { data: "" };
+            break;
+          case "is not empty":
+            cellFilter = { data: { not: "" } };
+            break;
+          default:
+            break;
+        }
 
-      if (input.sortColumnId && input.sortOrder) {
-        records = await ctx.db.record.findMany({
-          where: { 
-            tableId: input.tableId,
+        whereCondition = {
+          ...whereCondition,
+          cells: {
+            some: {
+              columnId: input.filterColumnId,
+              ...cellFilter,
+            },
           },
+        };
+      }
+  
+      // Two branches: sorting in-memory vs cursor-based pagination.
+      if (input.sortColumnId && input.sortOrder) {
+        // Fetch all matching records, then sort in memory.
+        records = await ctx.db.record.findMany({
+          where: whereCondition,
           include: { cells: true },
           orderBy: { rowIndex: "asc" },
         });
-
-        if (input.filterColumnId !== "") {
-          records = records.filter((record) => {
-            return record.cells.some((cell) => {
-              if (cell.columnId !== input.filterColumnId) return false;
-              switch (input.filterCond) {
-                case "contains":
-                  return cell.data.toLowerCase().includes(input.filterValue?.toLowerCase() ?? "");
-                case "does not contain":
-                  return !cell.data.toLowerCase().includes(input.filterValue?.toLowerCase() ?? "");
-                case "is":
-                  return cell.data === input.filterValue;
-                case "is not":
-                  return cell.data !== input.filterValue;
-                case "is empty":
-                  return cell.data === "";
-                case "is not empty":
-                  return cell.data !== "";
-                default:
-                  return false;
-              }
-            });
-          });
-        }
-
+        
         records.sort((a, b) => {
           const valA = a.cells.find(cell => cell.columnId === input.sortColumnId)?.data ?? "";
           const valB = b.cells.find(cell => cell.columnId === input.sortColumnId)?.data ?? "";
@@ -211,50 +104,33 @@ export const tableRouter = createTRPCRouter({
           }
           return 0;
         });
-
+        
+        // Limit the returned records and prepare a nextCursor.
+        const slicedRecords = records.slice(0, input.limit);
+        let nextCursor = undefined;
+        if (records.length > input.limit) {
+          nextCursor = records[input.limit]?.id;
+        }
+        return { records: slicedRecords, nextCursor };
       } else {
+        // Cursor-based pagination if no sorting is specified.
         records = await ctx.db.record.findMany({
-          where: { tableId: input.tableId },
+          where: whereCondition,
           include: { cells: true },
           orderBy: { rowIndex: "asc" },
           take: input.limit + 1,
           cursor: input.cursor ? { id: input.cursor } : undefined,
           skip: input.cursor ? 1 : undefined,
         });
-
-        if (input.filterColumnId && input.filterColumnId !== "") {
-          records = records.filter((record) => {
-            return record.cells.some((cell) => {
-              if (cell.columnId !== input.filterColumnId) return false;
-              switch (input.filterCond) {
-                case "contains":
-                  return cell.data.toLowerCase().includes(input.filterValue?.toLowerCase() ?? "");
-                case "does not contain":
-                  return !cell.data.toLowerCase().includes(input.filterValue?.toLowerCase() ?? "");
-                case "is":
-                  return cell.data === input.filterValue;
-                case "is not":
-                  return cell.data !== input.filterValue;
-                case "is empty":
-                  return cell.data === "";
-                case "is not empty":
-                  return cell.data !== "";
-                default:
-                  return false;
-              }
-            });
-          });
+        
+        let nextCursor = undefined;
+        if (records.length > input.limit) {
+          const nextRecord = records.pop();
+          nextCursor = nextRecord?.id;
         }
+        return { records, nextCursor };
       }
-    
-      let nextCursor = undefined;
-      if (records.length > input.limit) {
-        const nextRecord = records.pop();
-        nextCursor = nextRecord?.id;
-      }
-
-    return { records, nextCursor };
-  }),
+    }),
 
   getById: protectedProcedure
     .input(z.object({ 
@@ -266,57 +142,18 @@ export const tableRouter = createTRPCRouter({
       filterValue: z.string().optional(),
     }))
     .query(async ({ ctx, input }) => {
-      const table = await ctx.db.table.findUnique({
-        where: { id: input.tableId },
-        include: { 
-          columns: true ,
-          records: {
-            include: { cells: true },
+      return await ctx.db.table.findUnique({
+        where: {
+          id: input.tableId,
+        },
+        include: {
+          views: {
+            orderBy: {
+              createdAt: "asc",
+            },
           },
-          views: true
         },
       });
-
-      if (input.filterColumnId !== "") {
-        table!.records = table!.records.filter((record) => {
-          return record.cells.some((cell) => {
-            if (cell.columnId !== input.filterColumnId) return false;
-      
-            switch (input.filterCond) {
-              case "contains":
-                return cell.data.includes(input.filterValue ?? "");
-              case "does not contain":
-                return !cell.data.includes(input.filterValue ?? "");
-              case "is":
-                return cell.data === input.filterValue;
-              case "is not":
-                return cell.data !== input.filterValue;
-              case "is empty":
-                return cell.data === "";
-              case "is not empty":
-                return cell.data !== "";
-              default:
-                return false;
-            }
-          });
-        });
-      }
-      
-
-      if (input.sortColumnId && input.sortOrder) {
-        table?.records.sort((a, b) => {
-          const valA = a.cells.find(cell => cell.columnId === input.sortColumnId)?.data ?? "";
-          const valB = b.cells.find(cell => cell.columnId === input.sortColumnId)?.data ?? "";
-          if (input.sortOrder === "A - Z") {
-            return valA.localeCompare(valB);
-          } else if (input.sortOrder === "Z - A") {
-            return valB.localeCompare(valA);
-          }
-          return 0;
-        });
-      }
-
-      return table;
     }),
 
   createColumn: protectedProcedure
@@ -324,6 +161,7 @@ export const tableRouter = createTRPCRouter({
       z.object({ 
         tableId: z.string().min(1), 
         name: z.string().min(1),
+        type: z.string().min(1),
         id: z.string().optional(),
       })
     )
@@ -332,6 +170,7 @@ export const tableRouter = createTRPCRouter({
         data: {
           id: input.id,
           name: input.name,
+          type: input.type,
           tableId: input.tableId,
         },
       });
@@ -430,10 +269,10 @@ export const tableRouter = createTRPCRouter({
           },
           columns: {
             create: [
-              { name: "Name" },
-              { name: "Notes" },
-              { name: "Assignee" },
-              { name: "Status" },
+              { name: "Name", type: "TEXT" },
+              { name: "Notes", type: "TEXT" },
+              { name: "Assignee", type: "TEXT" },
+              { name: "Status", type: "TEXT" },
             ],
           },
           views: {
@@ -492,27 +331,39 @@ export const tableRouter = createTRPCRouter({
       count: z.number().int().optional(),
     }))
     .mutation(async ({ ctx, input }) => {
-      const {tableId, columnIds, count = 500} = input;
-
+      const { tableId, columnIds, count = 500 } = input;
+  
+      // Get the column types for the relevant columns
+      const columns = await ctx.db.column.findMany({
+        where: { tableId, id: { in: columnIds } },
+      });
+      const columnTypeMap = new Map(columns.map(col => [col.id, col.type]));
+  
       const currentCount = await ctx.db.record.count({
         where: { tableId },
       });
-
+  
       const records = Array.from({ length: count }, (_, i) => ({
         id: `${tableId}-${i + currentCount}`,
         tableId: tableId,
         rowIndex: i + currentCount,
-      }))
-
-      const recordsData = records.flatMap((record) => 
-        columnIds.map((columnId) => ({
-          id: `${record.id}-${columnId}`,
-          data: faker.person.fullName(),
-          recordId: record.id,
-          columnId: columnId,
-        })),
+      }));
+  
+      const recordsData = records.flatMap((record) =>
+        columnIds.map((columnId) => {
+          // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
+          const colType = columnTypeMap.get(columnId);
+          return {
+            id: `${record.id}-${columnId}`,
+            data: colType === "NUMBER"
+              ? String(faker.number.int()) 
+              : faker.person.fullName(),
+            recordId: record.id,
+            columnId: columnId,
+          };
+        })
       );
-
+  
       const result = await ctx.db.$transaction(
         async (prisma) => {
           await prisma.record.createMany({
@@ -526,7 +377,7 @@ export const tableRouter = createTRPCRouter({
       );
       return result;
     }),
-  
+
   getSearchRecord: protectedProcedure
     .input(z.object({ searchInput: z.string().min(1) }))
     .query(async ({ ctx, input }) => {

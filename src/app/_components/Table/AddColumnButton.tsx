@@ -1,15 +1,14 @@
-"use client";
-
 import React, { useState, useEffect, useRef } from "react";
 
 type AddColumnProps = {
-  onCreated?: (columnName: string) => void;
+    onCreated?: (columnName: string, columnType: string) => void;
+    colType?: string;
 };
 
-const AddColumnButton = ({ onCreated }: AddColumnProps) => {
+const AddColumnButton = ({ onCreated, colType = "TEXT" }: AddColumnProps) => {
   const [isAdding, setIsAdding] = useState(false);
   const [columnName, setColumnName] = useState("");
-  const [columnType, setColumnType] = useState("TEXT");
+  const [columnType, setColumnType] = useState(colType);
 
   // We'll position the dropdown absolutely relative to this container
   const containerRef = useRef<HTMLDivElement>(null);
@@ -17,8 +16,9 @@ const AddColumnButton = ({ onCreated }: AddColumnProps) => {
 
   const handleCreate = () => {
     if (!columnName.trim()) return;
-    onCreated?.(columnName.trim());
+    onCreated?.(columnName.trim(), columnType);
     setColumnName("");
+    setColumnType(colType);
     setIsAdding(false);
   };
 
@@ -72,7 +72,7 @@ const AddColumnButton = ({ onCreated }: AddColumnProps) => {
             onChange={(e) => setColumnType(e.target.value)}
             className="border p-2 rounded-md text-sm w-full"
           >
-            <option value="TEXT">Single line text</option>
+            <option value="TEXT">Text</option>
             <option value="NUMBER">Number</option>
           </select>
           <div className="flex justify-end gap-2 mt-1 text-xs">

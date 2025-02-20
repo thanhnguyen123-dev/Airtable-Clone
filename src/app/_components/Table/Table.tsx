@@ -108,6 +108,7 @@ const TanStackTable = ({
     isFetchingNextPage,
     isFetching: isRecordsFetching,
     isLoading: isRecordsLoading,
+    refetch: refetchRecords,
   } = api.table.getRecords.useInfiniteQuery(
     {
       tableId: tableId,
@@ -154,6 +155,7 @@ const TanStackTable = ({
 
   const createFakeRecordsMutation = api.table.createFakeRecords.useMutation({
     onSuccess: async () => {
+      await refetch();
       await utils.table.getRecords.invalidate();
     },
   });
@@ -204,6 +206,7 @@ const TanStackTable = ({
               searchValue={searchValue}
               isSorted={isSorted}
               isFiltered={isFiltered}
+              columnType={col.type as string}
             />
           );
         },
@@ -237,12 +240,13 @@ const TanStackTable = ({
     }
   };
 
-  const handleAddColumn = async (colName: string) => {
+  const handleAddColumn = async (colName: string, colType: string) => {
     try {
       const newColId = crypto.randomUUID();
       const optimisticColumn: Column = {
         id: newColId,
         tableId: tableId,
+        type: colType,
         name: colName,
       };
       setColumns((old) => [...old, optimisticColumn]);
@@ -258,6 +262,7 @@ const TanStackTable = ({
       await createColumnMutation.mutateAsync({
         tableId: tableId,
         name: colName,
+        type: colType,
         id: newColId,
       });
     } catch (error) {
@@ -266,8 +271,8 @@ const TanStackTable = ({
   };
 
   const handleAddFakeRecords = async () => {
-    if (tableColumns) {
-      const columnIds = tableColumns.map((col) => col.id);
+    if (columns) {
+      const columnIds = columns.map((col) => col.id);
       await createFakeRecordsMutation.mutateAsync({
         tableId: tableId,
         columnIds: columnIds,
@@ -303,6 +308,25 @@ const TanStackTable = ({
   });
   const virtualRows = rowVirtualizer.getVirtualItems();
 
+  const tableViewMutation = api.table.updateTableView.useMutation();
+  const updateTableView = async () => {
+    await tableViewMutation.mutateAsync({
+      viewId: currentView,
+      sortOrder: sort,
+      sortColumnId: sortColumnId,
+      filterCond: filter,
+      filterColumnId: filterColumnId,
+      filterValue: filterValue,
+    }).then(async () => {
+      await refetchRecords();
+    });
+  }
+
+  useEffect(() => {
+      void updateTableView();
+  }, [sort, sortColumnId, filter, filterColumnId, filterValue]);
+
+
 
   if (!tableId) {
     return <div className="flex-grow bg-white p-4">No table selected</div>;
@@ -335,7 +359,9 @@ const TanStackTable = ({
           className="border-r border-gray-300 flex items-center justify-center text-xs w-[60px] bg-gray-100"
           style={{ height: "40px" }}
         >
-          <AddColumnButton onCreated={handleAddColumn} />
+          <AddColumnButton 
+            onCreated={handleAddColumn}
+          />
         </div>
       </TableRow>
   
@@ -392,11 +418,16 @@ const TanStackTable = ({
         </div>
       </div>
   
-      <div className="flex flex-col">
+      <div 
+        className={`flex flex-col`}
+        style={{
+          width: `calc(230px + 180px * ${columns.length - 1})`,
+        }}
+        >
         <AddRecordButton handleClick={handleAddRecord} columns={columns} />
         <AddRecordButton
           handleClick={handleAddFakeRecords}
-          text={`Generate ${FAKER_RECORDS_COUNT} records`}
+          text={`Generate faker records`}
           columns={columns}
         />
       </div>

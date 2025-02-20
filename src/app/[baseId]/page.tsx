@@ -57,6 +57,7 @@ const BasePage = () => {
     }
   }, [view]);
 
+
   useEffect(() => {
     if (tables?.[0] && tables.length > 0 && !currentTableId) {
       setCurrentTableId(tables[0].id);
