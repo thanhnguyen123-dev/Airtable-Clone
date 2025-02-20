@@ -26,8 +26,8 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 
-const FAKER_RECORDS_COUNT = 15000;
-const FETCH_RECORD_LIMIT = 500;
+const FAKER_RECORDS_COUNT = 2000;
+const FETCH_RECORD_LIMIT = 50;
 
 type TableProps = {
   tableId: string;
