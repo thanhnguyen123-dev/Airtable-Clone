@@ -26,8 +26,6 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 
-import { useVirtualizer } from "@tanstack/react-virtual";
-
 const FAKER_RECORDS_COUNT = 1000;
 const FETCH_RECORD_LIMIT = 50;
 
@@ -298,16 +296,7 @@ const TanStackTable = ({
     },
     [isFetchingNextPage, hasNextPage, fetchNextPage]
   );
-
-
-  const parentRef = useRef<HTMLDivElement>(null);
-
-  const rowVirtualizer = useVirtualizer({
-    count: tableInstance.getRowModel().rows.length,
-    getScrollElement: () => parentRef.current,
-    estimateSize: () => 30,
-    overscan: 5,
-  });
+  
   
 
   if (!tableId) {
@@ -323,11 +312,8 @@ const TanStackTable = ({
 
 
   return (
-    <div
-      ref={parentRef}
-      className="flex w-full bg-white overflow-y-auto overflow-x-auto h-[600px]"
-    >
-      <div className="flex flex-col w-full" style={{ height: rowVirtualizer.getTotalSize(), position: "relative" }}>
+    <div className="flex w-full bg-white overflow-y-auto overflow-x-auto">
+      <div className="flex flex-col">
         <TableRow>
           {tableInstance.getHeaderGroups().flatMap((headerGroup) =>
             headerGroup.headers.map((header) => (
@@ -337,46 +323,38 @@ const TanStackTable = ({
             ))
           )}
         </TableRow>
-        {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-          const row = tableInstance.getRowModel().rows[virtualRow.index];
+        {tableInstance.getRowModel().rows.map((row, index) => {
+          // Attach the ref to the last row so that scrolling triggers fetching more data.
+          const isLastRow =
+            index === tableInstance.getRowModel().rows.length - 1;
           return (
-            <div
-              key={row?.id}
-              style={{
-                position: "absolute",
-                top: 0,
-                left: 0,
-                width: "100%",
-                height: `${virtualRow.size}px`,
-                transform: `translateY(${virtualRow.start}px)`,
-              }}
-            >
-              <TableRow ref={virtualRow.index === tableInstance.getRowModel().rows.length - 1 ? lastRowRef : null}>
-                {row?.getVisibleCells().map((cell, colIndex) => (
-                  <div key={cell.id} className="flex items-center justify-center m-0 p-0 w-full">
-                    {colIndex === 0 && (
-                      <div className="flex items-center justify-start w-[70px] pl-[15px]">
-                        <span className="flex items-center justify-start text-xs text-gray-500">
-                          {virtualRow.index + 1}
-                        </span>
-                      </div>
-                    )}
-                    {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                  </div>
-                ))}
-              </TableRow>
-            </div>
+            // IMPORTANT: Ensure that TableRow forwards the ref!
+            <TableRow key={index} ref={isLastRow ? lastRowRef : null}>
+              {row.getVisibleCells().map((cell, colIndex) => (
+                <div
+                  key={cell.id}
+                  className="flex items-center justify-center m-0 p-0 w-full"
+                >
+                  {colIndex === 0 && (
+                    <div className="flex items-center justify-start w-[70px] pl-[15px]">
+                      <span className="flex items-center justify-start text-xs text-gray-500">
+                        {index + 1}
+                      </span>
+                    </div>
+                  )}
+                  {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                </div>
+              ))}
+            </TableRow>
           );
         })}
-      </div>
-      <AddColumnButton onCreated={handleAddColumn} />
-      <div className="flex flex-col">
         <AddRecordButton handleClick={handleAddRecord} text="Add record" />
         <AddRecordButton
           handleClick={handleAddFakeRecords}
           text={`Add ${FAKER_RECORDS_COUNT} records`}
         />
       </div>
+      <AddColumnButton onCreated={handleAddColumn} />
     </div>
   );
 };
