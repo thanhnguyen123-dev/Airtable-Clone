@@ -1,28 +1,52 @@
+import { type Column } from "@prisma/client"
+
 type AddRecordButtonProps = {
   handleClick: () => void;
   text?: string;
+  columns?: Column[];
 }
 
-const AddRecordButton = ({ handleClick, text } : AddRecordButtonProps) => {
+const AddRecordButton = ({ handleClick, text, columns } : AddRecordButtonProps) => {
   return (
-    <div
-    className={`flex h-[30px] items-center border-b border-r w-full border-gray-300 bg-white pr-5 text-left text-[13px] text-gray-500 hover:bg-gray-50`}
-    role="button"
-    onClick={handleClick}
-    > 
-      <div className="flex items-center w-[230px] h-full border-r border-gray-300 pl-[13px]">
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 16 16"
-          className="flex-none"
-          fill="rgb(71, 85, 105)"
+      <div
+      role="button"
+      onClick={handleClick}
+      className="flex border-b border-r border-gray-300 hover:bg-gray-50"
+      style={{
+        height: "40px",
+        width: "99.9%",
+      }}
+    >
+      <div
+        className="flex items-center border-gray-300 text-xs w-[230px]"
+        style={{ height: "40px" }}
+      >
+        <div className="flex items-center justify-start w-[70px] pl-[12px]">
+          <svg
+            width="16"
+            height="16"
+            viewBox="0 0 16 16"
+            className="flex-none"
+            fill="rgb(71, 85, 105)"
+          >
+            <use href="icons/icons_definitions.svg#Plus"></use>
+          </svg>
+        </div>
+        <span
+          className="text-sm text-blue-600"
         >
-          <use href="icons/icons_definitions.svg#Plus"></use>
-        </svg>
+          {text}
+        </span>
       </div>
-      <span className="p-2 text-gray-400">{text}</span>
-  </div>
+
+      {columns?.slice(1).map((_, i) => (
+        <div
+          key={`add-record-col-${i}`}
+          className="flex items-center border-gray-300 text-xs w-[180px]"
+          style={{ height: "40px" }}
+        />
+      ))}
+    </div>
   )
 }
 

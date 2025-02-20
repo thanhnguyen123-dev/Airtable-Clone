@@ -1,18 +1,16 @@
 "use client";
-import React, {forwardRef} from "react";
+import React, { forwardRef } from "react";
 
 type TableRowProps = {
   children: React.ReactNode;
   style?: React.CSSProperties;
+  className?: string;
 };
 
 const TableRow = forwardRef<HTMLDivElement, TableRowProps>(
-  ({ children }, ref) => {
+  ({ children, style, className }, ref) => {
     return (
-      <div 
-        className="flex border-b border-gray-300 m-0 p-0"
-        ref={ref}
-      >
+      <div ref={ref} style={style} className={className}>
         {children}
       </div>
     );
@@ -21,5 +19,3 @@ const TableRow = forwardRef<HTMLDivElement, TableRowProps>(
 
 TableRow.displayName = "TableRow";
 export default TableRow;
-
-

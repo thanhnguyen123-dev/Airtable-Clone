@@ -12,7 +12,7 @@ const TableHeader = ({ header, index, isSorted, isFiltered }: TableHeaderProps) 
   const containerWidth = isFirstCol ? "w-[230px]" : "w-[160px]";
 
   return (
-    <div className={`flex h-8 items-center ${containerWidth}  border-r border-gray-300
+    <div className={`flex h-8 items-center ${containerWidth} border-gray-300
       ${isSorted ? "bg-orange-100" : "bg-gray-100"}
       ${isFiltered ? "bg-green-100" : ""}
     `}>

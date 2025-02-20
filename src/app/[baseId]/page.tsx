@@ -51,13 +51,9 @@ const BasePage = () => {
       setHasView(true);
       setSort(view.sortOrder);
       setSortColumnId(view.sortColumnId);
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       setFilter(view.filterCond);
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       setFilterColumnId(view.filterColumnId);
-      // eslint-disable-next-line @typescript-eslint/no-unsafe-argument
       setFilterValue(view.filterValue);
-
     }
   }, [view]);
 
@@ -88,6 +84,7 @@ const BasePage = () => {
     }
   }, [currentTableId]);
 
+  
   if (isBaseLoading || isTablesLoading) {
     return <Loader />
   }

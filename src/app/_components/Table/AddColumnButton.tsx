@@ -11,13 +11,13 @@ const AddColumnButton = ({ onCreated }: AddColumnProps) => {
   const [columnName, setColumnName] = useState("");
   const [columnType, setColumnType] = useState("TEXT");
 
+  // We'll position the dropdown absolutely relative to this container
+  const containerRef = useRef<HTMLDivElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handleCreate = () => {
     if (!columnName.trim()) return;
-    // Just tell the parent that the user wants a new column
     onCreated?.(columnName.trim());
-    // Then close the dropdown, reset field
     setColumnName("");
     setIsAdding(false);
   };
@@ -25,7 +25,11 @@ const AddColumnButton = ({ onCreated }: AddColumnProps) => {
   // Close dropdown when clicking outside
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node) &&
+        !containerRef.current?.contains(event.target as Node)
+      ) {
         setIsAdding(false);
       }
     };
@@ -40,19 +44,21 @@ const AddColumnButton = ({ onCreated }: AddColumnProps) => {
   }, [isAdding]);
 
   return (
-    <div className="relative top-0 h-[32.5px] border-b border-r border-gray-300 bg-gray-100 flex items-start">
+    <div ref={containerRef} className="relative">
+      {/* A small button with an icon */}
       <button
         onClick={() => setIsAdding((prev) => !prev)}
-        className="flex items-center justify-center px-8 py-[8px]"
+        className="flex items-center justify-center px-2 py-1"
       >
         <svg width={16} height={16} viewBox="0 0 16 16" fill="black">
           <use href="icons/icons_definitions.svg#Plus"></use>
         </svg>
       </button>
+
       {isAdding && (
         <div
           ref={dropdownRef}
-          className="absolute top-10 left-0 flex flex-col gap-2 border rounded-md p-3 z-50 bg-white w-64 shadow-md"
+          className="absolute top-full left-0 mt-1 flex flex-col gap-2 border rounded-md p-3 z-50 bg-white w-64 shadow-md"
         >
           <input
             type="text"
