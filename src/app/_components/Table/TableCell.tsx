@@ -83,18 +83,14 @@ const TableCell = ({
 
   return (
     <div
-      className={`
-        border-r border-gray-300 text-xs
+      className={` flex items-center
+        border-r border-gray-300 text-xs w-full h-full py-[1px]
         ${searchValue && value.includes(searchValue) ? "bg-yellow-200" : ""}
       `}
-      style={{ width: "100%", height: "100%" }}
       onClick={handleContainerClick}
     >
       <input
         ref={inputRef}
-        // type={columnType === "NUMBER" ? "text" : "text"}
-        // inputMode={columnType === "NUMBER" ? "numeric" : "text"}
-        // pattern={columnType === "NUMBER" ? "\\d*" : undefined}
         value={value}
         onChange={handleChange}
         onBlur={handleBlur}

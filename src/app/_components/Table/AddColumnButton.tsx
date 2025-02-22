@@ -35,7 +35,7 @@ const AddColumnButton = ({ onCreated, colType = "TEXT" }: AddColumnProps) => {
       <PopoverTrigger>
         <div
           role="button"
-          className="border-r border-gray-300 flex items-center justify-center text-xs w-[140px] bg-gray-100"
+          className="border-r border-gray-300 flex items-center justify-center text-xs w-[94px] bg-gray-100"
         >
           <svg
             width={16}

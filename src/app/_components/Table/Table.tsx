@@ -304,7 +304,7 @@ const TanStackTable = ({
   const rowVirtualizer = useVirtualizer({
     count: tableInstance.getRowModel().rows.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 40,
+    estimateSize: () => 30,
     overscan: 30,
   });
   const virtualRows = rowVirtualizer.getVirtualItems();
@@ -350,17 +350,12 @@ const TanStackTable = ({
               className={`border-r border-gray-300 flex items-center text-xs
                 ${colIndex === 0 ? "w-[230px]" : "w-[180px]"}
                 bg-gray-100`}
-              style={{ height: "40px" }}
+              style={{ height: "32px" }}
             >
               {flexRender(header.column.columnDef.header, header.getContext())}
             </div>
           ))
         )}
-        {/* <div
-          key="add-col-btn"
-          className="border-r border-gray-300 flex items-center justify-center text-xs w-[180px] bg-gray-100"
-          style={{ height: "40px" }}
-        > */}
         <AddColumnButton 
           onCreated={handleAddColumn}
         />
@@ -391,7 +386,7 @@ const TanStackTable = ({
                     top: 0,
                     left: 0,
                     width: "fit-content",
-                    height: "40px",
+                    height: "32px",
                     transform: `translateY(${virtualRow.start}px)`,
                   }}
                 >
@@ -401,7 +396,7 @@ const TanStackTable = ({
                       className={`flex items-center border-gray-300 text-xs
                         ${colIndex === 0 ? "w-[230px]" : "w-[180px]"}
                       `}
-                      style={{ height: "40px" }}
+                      style={{ height: "32px" }}
                     >
                       {colIndex === 0 && (
                         <div className="flex items-center justify-start w-[70px] pl-[15px]">
@@ -421,7 +416,7 @@ const TanStackTable = ({
       </div>
   
       <div 
-        className={`flex flex-col`}
+        className={`flex flex-col h-[32px]`}
         style={{
           width: `calc(230px + 180px * ${columns.length - 1})`,
         }}
