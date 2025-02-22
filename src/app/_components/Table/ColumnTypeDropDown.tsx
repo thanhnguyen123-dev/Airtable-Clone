@@ -19,6 +19,7 @@ const ColumnTypeDropDown = ({ columnType, setColumnType }: ColumnTypeDropDownPro
       isOpen={isOpen}
       onOpenChange={setIsOpen}
       placement="bottom-start"
+      triggerScaleOnOpen={false}
       classNames={{
         content: [
           "no-animation rounded-md shadow-none border border-gray-300",

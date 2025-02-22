@@ -85,6 +85,7 @@ const SortButton = (
       isOpen={isOpen} 
       onOpenChange={(open) => setIsOpen(open)} 
       placement={"bottom-start"}
+      triggerScaleOnOpen={false}
       classNames={{
         content: [
           "no-animation rounded-md shadow-none border border-gray-300",

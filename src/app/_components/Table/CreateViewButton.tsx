@@ -29,6 +29,7 @@ const CreateViewButton = ({ tableId, viewName, setViewName, handleCreateView  } 
         } 
         offset={10}
         placement={"right-start"}
+        triggerScaleOnOpen={false}
         classNames={{
           content: [
             "rounded-md shadow-none border border-gray-300 ",

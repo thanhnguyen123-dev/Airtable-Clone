@@ -24,6 +24,7 @@ const FilterColumnDropdown = ({
     onOpenChange={(open) => setIsOpen(open)} 
     placement={"bottom"}
     offset={0}
+    triggerScaleOnOpen={false}
     classNames={{
       content: [
         "rounded-md shadow-none border border-gray-300",

@@ -419,7 +419,8 @@ const TanStackTable = ({
       <div 
         className={`flex items-center pl-[15px] py-1 gap-24 border-t border-r border-gray-300`}
         style={{
-          width: `calc(230px + 180px * ${columns.length - 1})`,
+          // width: `calc(230px + 180px * ${columns.length - 1})`,
+          width: "100%",
         }}
         >
         <span className="text-xs text-gray-500">

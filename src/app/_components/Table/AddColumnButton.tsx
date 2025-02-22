@@ -26,6 +26,8 @@ const AddColumnButton = ({ onCreated, colType = "TEXT" }: AddColumnProps) => {
       isOpen={isOpen}
       onOpenChange={(open) => setIsOpen(open)}
       placement="bottom-start"
+      offset={1}
+      triggerScaleOnOpen={false}
       classNames={{
         content: [
           "no-animation rounded-md shadow-none border border-gray-300",
