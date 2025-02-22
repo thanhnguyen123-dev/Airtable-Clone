@@ -269,10 +269,10 @@ export const tableRouter = createTRPCRouter({
           },
           columns: {
             create: [
-              { name: "Name", type: "TEXT" },
-              { name: "Notes", type: "TEXT" },
-              { name: "Assignee", type: "TEXT" },
-              { name: "Status", type: "TEXT" },
+              { name: "Column 1", type: "TEXT" },
+              { name: "Column 2", type: "TEXT" },
+              { name: "Column 3", type: "TEXT" },
+              { name: "Colmmn 4", type: "TEXT" },
             ],
           },
           views: {
@@ -356,7 +356,7 @@ export const tableRouter = createTRPCRouter({
           return {
             id: `${record.id}-${columnId}`,
             data: colType === "NUMBER"
-              ? String(faker.number.int()) 
+              ? String(faker.number.int({ min: 1, max: 1000 })) 
               : faker.person.fullName(),
             recordId: record.id,
             columnId: columnId,

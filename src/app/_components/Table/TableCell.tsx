@@ -99,7 +99,7 @@ const TableCell = ({
         onChange={handleChange}
         onBlur={handleBlur}
         readOnly={!isEditing}
-        className="w-full h-full px-2 bg-transparent focus:outline-blue-500"
+        className={`w-full h-full px-2 bg-transparent focus:outline-blue-500 ${isEditing ? "cursor-text" : "cursor-default"}`}
       />
     </div>
   );
