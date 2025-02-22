@@ -417,11 +417,14 @@ const TanStackTable = ({
       </div>
   
       <div 
-        className={`flex flex-col h-[32px]`}
+        className={`flex items-center pl-[15px] py-1 gap-24 border-t border-r border-gray-300`}
         style={{
           width: `calc(230px + 180px * ${columns.length - 1})`,
         }}
         >
+        <span className="text-xs text-gray-500">
+          {`${records.length} records`}
+        </span>
         <AddRecordButton 
           handleAddRecord={handleAddRecord} 
           handleAddFakeRecords={handleAddFakeRecords}

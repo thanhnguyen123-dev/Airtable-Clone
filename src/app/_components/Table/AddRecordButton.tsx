@@ -16,7 +16,7 @@ const AddRecordButton = ({
 } : AddRecordButtonProps) => {
   return (
       <div
-      className="flex items-center pl-[15px] gap-24 border-t border-r border-gray-300 h-[40px]"
+      className="flex items-center gap-24"
     >
       <AddButton handleClick={handleAddRecord} text="Add record" />
       <AddButton handleClick={handleAddFakeRecords} text="Generate fake records" />
@@ -34,8 +34,8 @@ const AddButton = ({
     onClick={handleClick}
     >
       <svg
-        width="16"
-        height="16"
+        width="12"
+        height="12"
         viewBox="0 0 16 16"
         className="flex-none"
         fill="rgb(71, 85, 105)"
@@ -43,7 +43,7 @@ const AddButton = ({
         <use href="icons/icons_definitions.svg#Plus"></use>
       </svg>
       <span
-        className="text-sm text-blue-600"
+        className="text-xs text-blue-600"
       >
         {text}
       </span>
