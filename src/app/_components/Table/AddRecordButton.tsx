@@ -1,50 +1,52 @@
 import { type Column } from "@prisma/client"
 
 type AddRecordButtonProps = {
-  handleClick: () => void;
-  text?: string;
-  columns?: Column[];
+  handleAddRecord: () => void;
+  handleAddFakeRecords: () => void;
 }
 
-const AddRecordButton = ({ handleClick, text, columns } : AddRecordButtonProps) => {
+type AddButtonProps = {
+  handleClick: () => void;
+  text: string;
+}
+
+const AddRecordButton = ({ 
+  handleAddRecord, 
+  handleAddFakeRecords, 
+} : AddRecordButtonProps) => {
   return (
       <div
-      role="button"
-      onClick={handleClick}
-      className="flex border-t border-r border-gray-300 hover:bg-gray-50"
-      style={{
-        height: "40px",
-      }}
+      className="flex items-center pl-[15px] gap-24 border-t border-r border-gray-300 h-[40px]"
     >
-      <div
-        className="flex items-center border-gray-300 text-xs w-[230px]"
-        style={{ height: "40px" }}
-      >
-        <div className="flex items-center justify-start w-[70px] pl-[12px]">
-          <svg
-            width="16"
-            height="16"
-            viewBox="0 0 16 16"
-            className="flex-none"
-            fill="rgb(71, 85, 105)"
-          >
-            <use href="icons/icons_definitions.svg#Plus"></use>
-          </svg>
-        </div>
-        <span
-          className="text-sm text-blue-600"
-        >
-          {text}
-        </span>
-      </div>
+      <AddButton handleClick={handleAddRecord} text="Add record" />
+      <AddButton handleClick={handleAddFakeRecords} text="Generate fake records" />
+    </div>
+  )
+}
 
-      {columns?.slice(1).map((_, i) => (
-        <div
-          key={`add-record-col-${i}`}
-          className="flex items-center border-gray-300 text-xs w-[180px]"
-          style={{ height: "40px" }}
-        />
-      ))}
+const AddButton = ({ 
+  handleClick, 
+  text } : AddButtonProps) => {
+  return (
+    <div
+    role="button"
+    className="flex gap-2 items-center border-gray-300 text-xs hover:bg-gray-100 h-[1/2] px-2 py-1 rounded-md"
+    onClick={handleClick}
+    >
+      <svg
+        width="16"
+        height="16"
+        viewBox="0 0 16 16"
+        className="flex-none"
+        fill="rgb(71, 85, 105)"
+      >
+        <use href="icons/icons_definitions.svg#Plus"></use>
+      </svg>
+      <span
+        className="text-sm text-blue-600"
+      >
+        {text}
+      </span>
     </div>
   )
 }

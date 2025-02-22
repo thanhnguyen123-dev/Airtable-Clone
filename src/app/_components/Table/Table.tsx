@@ -190,6 +190,7 @@ const TanStackTable = ({
               index={String(column.getIndex() ?? "")}
               isSorted={isSorted}
               isFiltered={isFiltered}
+              columnType={col.type} 
             />
           );
         },
@@ -206,7 +207,6 @@ const TanStackTable = ({
               searchValue={searchValue}
               isSorted={isSorted}
               isFiltered={isFiltered}
-              // eslint-disable-next-line @typescript-eslint/no-unsafe-assignment
               columnType={col.type}
             />
           );
@@ -311,6 +311,7 @@ const TanStackTable = ({
 
   const tableViewMutation = api.table.updateTableView.useMutation();
   const updateTableView = async () => {
+    if (!currentView) return;
     await tableViewMutation.mutateAsync({
       viewId: currentView,
       sortOrder: sort,
@@ -355,15 +356,15 @@ const TanStackTable = ({
             </div>
           ))
         )}
-        <div
+        {/* <div
           key="add-col-btn"
-          className="border-r border-gray-300 flex items-center justify-center text-xs w-[60px] bg-gray-100"
+          className="border-r border-gray-300 flex items-center justify-center text-xs w-[180px] bg-gray-100"
           style={{ height: "40px" }}
-        >
-          <AddColumnButton 
-            onCreated={handleAddColumn}
-          />
-        </div>
+        > */}
+        <AddColumnButton 
+          onCreated={handleAddColumn}
+        />
+
       </TableRow>
   
       <div ref={parentRef} className="w-full flex-1 overflow-auto">
@@ -425,11 +426,9 @@ const TanStackTable = ({
           width: `calc(230px + 180px * ${columns.length - 1})`,
         }}
         >
-        <AddRecordButton handleClick={handleAddRecord} columns={columns} />
-        <AddRecordButton
-          handleClick={handleAddFakeRecords}
-          text={`Generate faker records`}
-          columns={columns}
+        <AddRecordButton 
+          handleAddRecord={handleAddRecord} 
+          handleAddFakeRecords={handleAddFakeRecords}
         />
       </div>
     </div>

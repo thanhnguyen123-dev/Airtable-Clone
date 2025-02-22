@@ -1,97 +1,91 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState } from "react";
+import { Popover, PopoverTrigger, PopoverContent } from "@heroui/popover";
+import ColumnTypeDropDown from "./ColumnTypeDropDown";
 
 type AddColumnProps = {
-    onCreated?: (columnName: string, columnType: string) => void;
-    colType?: string;
+  onCreated?: (columnName: string, columnType: string) => void;
+  colType?: string;
 };
 
 const AddColumnButton = ({ onCreated, colType = "TEXT" }: AddColumnProps) => {
-  const [isAdding, setIsAdding] = useState(false);
+  const [isOpen, setIsOpen] = useState(false);
   const [columnName, setColumnName] = useState("");
   const [columnType, setColumnType] = useState(colType);
-
-  // We'll position the dropdown absolutely relative to this container
-  const containerRef = useRef<HTMLDivElement>(null);
-  const dropdownRef = useRef<HTMLDivElement>(null);
 
   const handleCreate = () => {
     if (!columnName.trim()) return;
     onCreated?.(columnName.trim(), columnType);
     setColumnName("");
     setColumnType(colType);
-    setIsAdding(false);
+    setIsOpen(false);
   };
 
-  // Close dropdown when clicking outside
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (
-        dropdownRef.current &&
-        !dropdownRef.current.contains(event.target as Node) &&
-        !containerRef.current?.contains(event.target as Node)
-      ) {
-        setIsAdding(false);
-      }
-    };
-    if (isAdding) {
-      document.addEventListener("mousedown", handleClickOutside);
-    } else {
-      document.removeEventListener("mousedown", handleClickOutside);
-    }
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [isAdding]);
-
   return (
-    <div ref={containerRef} className="relative">
-      {/* A small button with an icon */}
-      <button
-        onClick={() => setIsAdding((prev) => !prev)}
-        className="flex items-center justify-center px-2 py-1"
-      >
-        <svg width={16} height={16} viewBox="0 0 16 16" fill="black">
-          <use href="icons/icons_definitions.svg#Plus"></use>
-        </svg>
-      </button>
-
-      {isAdding && (
+    <Popover
+      key="add-col-btn"
+      isOpen={isOpen}
+      onOpenChange={(open) => setIsOpen(open)}
+      placement="bottom-start"
+      classNames={{
+        content: [
+          "no-animation rounded-md shadow-none border border-gray-300",
+        ]
+      }}
+    >
+      <PopoverTrigger>
         <div
-          ref={dropdownRef}
-          className="absolute top-full left-0 mt-1 flex flex-col gap-2 border rounded-md p-3 z-50 bg-white w-64 shadow-md"
+          role="button"
+          className="border-r border-gray-300 flex items-center justify-center text-xs w-[140px] bg-gray-100"
         >
-          <input
-            type="text"
-            value={columnName}
-            onChange={(e) => setColumnName(e.target.value)}
-            placeholder="Field name"
-            className="border p-2 rounded-md text-sm w-full"
-          />
-          <select
-            value={columnType}
-            onChange={(e) => setColumnType(e.target.value)}
-            className="border p-2 rounded-md text-sm w-full"
+          <svg
+            width={16}
+            height={16}
+            viewBox="0 0 16 16"
+            className="flex-none"
+            fill="rgb(71, 85, 105)"
           >
-            <option value="TEXT">Text</option>
-            <option value="NUMBER">Number</option>
-          </select>
-          <div className="flex justify-end gap-2 mt-1 text-xs">
+            <use href="icons/icons_definitions.svg#Plus"></use>
+          </svg>
+        </div>
+      </PopoverTrigger>
+      <PopoverContent className="w-[400px]">
+        <div className="flex flex-col gap-2 p-2 w-full">
+          <div className="flex flex-col gap-3">
+            <input
+              type="text"
+              value={columnName}
+              onChange={(e) => setColumnName(e.target.value)}
+              placeholder="Field name"
+              className="border border-slate-200 px-2 py-1 rounded-md text-sm w-full focus:outline-none focus:border-blue-600 focus:border-2"
+            />
+
+            <ColumnTypeDropDown 
+              columnType={columnType}
+              setColumnType={setColumnType}
+            />
+          </div>
+
+          <div className="flex justify-end gap-2 mt-2">
             <button
-              onClick={() => setIsAdding(false)}
-              className="hover:bg-gray-100 text-gray-600 p-2 rounded-md"
+              onClick={() => setIsOpen(false)}
+              className="px-3 py-1.5 text-xs text-slate-600 hover:bg-slate-100 rounded-md"
             >
               Cancel
             </button>
             <button
               onClick={handleCreate}
-              className="bg-blue-600 text-white p-2 rounded-md font-medium"
+              disabled={!columnName.trim()}
+              className={`px-3 py-1.5 text-xs text-white rounded-md bg-blue-600 hover:bg-blue-500
+                ${columnName.trim() 
+                  ? "" 
+                  : "cursor-not-allowed"}`}
             >
               Create field
             </button>
           </div>
         </div>
-      )}
-    </div>
+      </PopoverContent>
+    </Popover>
   );
 };
 
