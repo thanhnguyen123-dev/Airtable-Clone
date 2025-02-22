@@ -152,6 +152,8 @@ export const tableRouter = createTRPCRouter({
               createdAt: "asc",
             },
           },
+          columns: true,
+          records: true,
         },
       });
     }),
@@ -272,7 +274,7 @@ export const tableRouter = createTRPCRouter({
               { name: "Column 1", type: "TEXT" },
               { name: "Column 2", type: "TEXT" },
               { name: "Column 3", type: "TEXT" },
-              { name: "Colmmn 4", type: "TEXT" },
+              { name: "Column 4", type: "TEXT" },
             ],
           },
           views: {

@@ -140,18 +140,19 @@ const TanStackTable = ({
   }, [tableRecords]);
 
   useEffect(() => {
-    if (tableRecords) {
+    if (tableRecords && tableData?.columns) {
+      setColumns(tableData.columns);
       setRecords(allRecords);
       const combinedCells = allRecords.flatMap((r) => r.cells);
       setCells(combinedCells);
     }
-  }, [tableRecords, allRecords]);
+  }, [tableRecords, allRecords, tableData]);
 
-  useEffect(() => { 
-    if (tableColumns) {
-      setColumns(tableColumns);
-    }
-  }, [tableColumns]);
+  // useEffect(() => { 
+  //   if (tableColumns) {
+  //     setColumns(tableColumns);
+  //   }
+  // }, [tableColumns]);
 
   const createFakeRecordsMutation = api.table.createFakeRecords.useMutation({
     onSuccess: async () => {

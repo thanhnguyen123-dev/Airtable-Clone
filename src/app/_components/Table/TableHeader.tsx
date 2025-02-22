@@ -15,14 +15,13 @@ const TableHeader = ({
   isFiltered, 
   columnType }: TableHeaderProps) => {
   const isFirstCol = index === "0";
-  const containerWidth = isFirstCol ? "w-[230px]" : "w-[160px]";
 
   return (
-    <div className={`flex items-center justify-between px-2 ${containerWidth} border-gray-300
+    <div className={`flex items-center justify-between px-2 border-gray-300 w-full
       ${isSorted ? "bg-orange-100" : "bg-gray-100"}
       ${isFiltered ? "bg-green-100" : ""}
     `}>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center">
         {isFirstCol && (
           <div className="flex items-center justify-center pl-[9px]">
             <input
@@ -32,8 +31,8 @@ const TableHeader = ({
             />
           </div>
         )}
-        <div className="flex items-center gap-1">
-          {columnType === "TEXT" ? 
+        <div className="flex items-center mr-1">
+          {columnType === "TEXT" ?
             (
               <svg
                 width="16"
@@ -56,9 +55,9 @@ const TableHeader = ({
               </svg>
             )
           }
-          <span className="text-xs text-slate-700 font-normal">{header}</span>
         </div>
-      </div>
+        <span className="text-xs text-slate-700 font-normal">{header}</span>
+      </div>  
       <svg
         role="button"
         width="16"
@@ -66,14 +65,9 @@ const TableHeader = ({
         viewBox="0 0 16 16"
         className="flex-none"
       >
-        <use
-          fill="currentColor"
-          href="/icons/icons_definitions.svg#ChevronDown"
-        />
-      </svg>
-      
+        <use href="icons/icons_definitions.svg#ChevronDown"></use>
+      </svg>  
     </div>
-
   );
 };
 
