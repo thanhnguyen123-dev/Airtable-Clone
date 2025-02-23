@@ -81,16 +81,29 @@ const TableCell = ({
   };
 
   const hasBothFilterAndSort = isFiltered && isSorted;
+  
+  const colorize = (searchValue: string, isFiltered: boolean, isSorted: boolean) => {
+    if (searchValue && value.toLowerCase().includes(searchValue.toLowerCase())) {
+      return "bg-yellow-200";
+    }
+    if (hasBothFilterAndSort) {
+      return "bg-[#EBE6A7]";
+    }
+    if (isFiltered && !hasBothFilterAndSort) {
+      return "bg-[#EBFBEC]";
+    }
+    if (isSorted && !hasBothFilterAndSort) {
+      return "bg-[#FFF2EA]";
+    }
+    return "";
+  }
 
 
   return (
     <div
       className={` flex items-center
         border-r border-gray-300 text-xs w-full h-full py-[1px]
-        ${searchValue && value.includes(searchValue) ? "bg-yellow-200" : ""}
-        ${isFiltered && !hasBothFilterAndSort ? "bg-[#EBFBEC]" : ""}
-        ${isSorted && !hasBothFilterAndSort ? "bg-[#FFF2EA]" : ""}
-        ${hasBothFilterAndSort ? "bg-[#EBE6A7]" : ""}
+        ${colorize(searchValue, isFiltered, isSorted)}
       `}
       onClick={handleContainerClick}
     >
