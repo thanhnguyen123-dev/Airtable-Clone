@@ -63,7 +63,7 @@ const CreateViewButton = ({ tableId, viewName, setViewName, handleCreateView  } 
           </div>
         </PopoverTrigger>
         <PopoverContent>
-          <div className="flex flex-col p-2 gap-4">
+          <div className="w-[380px] flex flex-col p-2 gap-6">
             <input 
               type="text"
               className="bg-gray-100 py-1 px-2 border rounded-md focus:outline-gray-300"
@@ -71,6 +71,15 @@ const CreateViewButton = ({ tableId, viewName, setViewName, handleCreateView  } 
               value={viewName}
               onChange={(e) => setViewName(e.target.value)}
             />
+            <div className="flex flex-col gap-2">
+              <span className="text-md font-medium">Who can edit</span>
+              <div className="flex gap-2 w-full items-center justify-between">
+                <EditPermission text="Collaborative" d="UsersThree" check={true} />
+                <EditPermission text="Personal" d="User" d2="UpsellStar" />
+                <EditPermission text="Locked" d="Lock" d2="UpsellStar" />
+              </div>
+              <span className="text-xs font-light ">All collaborators can edit the configuration</span>
+            </div>
             <div className="flex justify-end gap-2 text-xs">
               <button
                 className="hover:bg-gray-100 text-gray-600 p-2 rounded-md"
@@ -90,6 +99,37 @@ const CreateViewButton = ({ tableId, viewName, setViewName, handleCreateView  } 
       </Popover>
     </div>
   );
+}
+
+const EditPermission = ({text, d, d2, check}: {text: string, d: string, d2?: string, check?: boolean}) => {
+  return (
+    <div className="flex gap-1">
+      <div className="flex items-center justify-center rounded-full w-4 h-4 bg-[#FFFFFF] border border-slate-200">
+        {check && <div className="rounded-full w-2 h-2 bg-[#166EE1]"></div>}
+      </div>
+      <svg
+          width={16}
+          height={16}
+          viewBox="0 0 16 16"
+          className="flex-none"
+          fill="rgb(71, 85, 105)"
+        >
+          <use href={`icons/icons_definitions.svg#${d}`}></use>
+      </svg>      
+      <span className="text-xs">{text}</span>
+      {d2 && (
+        <svg
+          width={16}
+          height={16}
+          viewBox="0 0 16 16"
+          className="flex-none"
+          fill="#1591EA"
+        >
+          <use href={`icons/icons_definitions.svg#${d2}`}></use>
+        </svg>
+      )}
+    </div>
+  )
 }
 
 export default CreateViewButton;

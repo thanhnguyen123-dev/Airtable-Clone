@@ -59,7 +59,6 @@ const BasePage = () => {
 
   const { 
     data: view,
-    refetch: refetchView,
   } = api.table.getTableView.useQuery(
     { viewId: currentView },
     { refetchOnWindowFocus: false }

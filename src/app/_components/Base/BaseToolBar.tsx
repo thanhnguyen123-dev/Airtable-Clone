@@ -29,10 +29,10 @@ const BaseToolBar = ({baseId, tables, currentTableId, handleTableSwitch } : Base
 
   return (
     <div 
-      className="flex items-center justify-between w-full h-[32px] text-[10px] sticky top-0 z-20 bg-pale-teal-green"
+      className="flex items-center justify-between w-full h-[32px] text-[11px] sticky top-0 z-20 bg-pale-teal-green"
     >
       <div 
-        className="flex items-center w-[91%] h-[2rem] px-4 sticky top-0 rounded-tr-md bg-dark-teal-green"
+        className="flex items-center w-[89%] h-[2rem] px-4 sticky top-0 rounded-tr-md bg-dark-teal-green"
       >
         {/* Render table tabs */}
         {tables.map((table, index) => (
@@ -76,7 +76,7 @@ const BaseToolBar = ({baseId, tables, currentTableId, handleTableSwitch } : Base
       </div>
 
       <div 
-        className="flex text-white justify-between items-center w-[8.5%] h-[2rem] px-4 sticky top-0 rounded-tl-md bg-dark-teal-green"
+        className="flex text-white justify-between items-center w-[10%] h-[2rem] px-4 sticky top-0 rounded-tl-md bg-dark-teal-green"
       >
         <div role='button'>
           <span>Extensions</span>

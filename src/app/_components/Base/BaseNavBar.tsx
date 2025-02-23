@@ -85,7 +85,7 @@ const NavBar = () => {
 
       {/** right portion */}
       <div className="flex items-center gap-1">
-        <div className="base-nav-item">
+        <div className="base-nav-item -mr-1">
           <svg
             width="16"
             height="16"
