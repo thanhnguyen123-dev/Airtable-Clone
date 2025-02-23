@@ -1,4 +1,4 @@
-import React from "react";
+import ColumnTypeIcon from "./ColumnTypeIcon";
 
 type TableHeaderProps = {
   header: string;
@@ -32,29 +32,7 @@ const TableHeader = ({
           </div>
         )}
         <div className="flex items-center mr-1">
-          {columnType === "TEXT" ?
-            (
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-                className="flex-none"
-                fill="rgb(71, 85, 105)"
-              >
-                <use href="icons/icons_definitions.svg#TextAlt"></use>
-              </svg>
-            ) : (
-              <svg
-                width="16"
-                height="16"
-                viewBox="0 0 16 16"
-                className="flex-none"
-                fill="rgb(71, 85, 105)"
-              >
-                <use href="icons/icons_definitions.svg#HashStraight"></use>
-              </svg>
-            )
-          }
+          <ColumnTypeIcon columnType={columnType} />
         </div>
         <span className="text-xs text-slate-700 font-normal">{header}</span>
       </div>  

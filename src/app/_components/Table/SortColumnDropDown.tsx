@@ -1,6 +1,7 @@
 import {Popover, PopoverTrigger, PopoverContent} from "@heroui/popover";
 import { type Column } from "@prisma/client";
 import { useState, type Dispatch, type SetStateAction } from "react";
+import ColumnTypeIcon from "./ColumnTypeIcon";
 
 type SortColumnDropdownProps = {
   columns: Column[];
@@ -60,11 +61,12 @@ const SortColumnDropdown = ({
                 setSelectedColumnIndex(index);
                 setIsOpen(false);
               }}
-              className={`flex items-center justify-start p-2 w-full hover:bg-slate-100
+              className={`flex items-center justify-start p-2 w-full hover:bg-slate-100 gap-2
                 ${index === 0 ? "rounded-t-md " : ""}
                 ${index === columns.length - 1 ? "rounded-b-md " : ""}
               `}
             >
+              <ColumnTypeIcon columnType={col.type} />
               <span>{col.name}</span>
             </div>
           );

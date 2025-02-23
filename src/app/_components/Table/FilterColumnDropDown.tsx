@@ -2,7 +2,7 @@ import {Popover, PopoverTrigger, PopoverContent} from "@heroui/popover";
 import { useState, useEffect, type SetStateAction, type Dispatch } from "react";
 import { api } from "~/trpc/react";
 import { type Column } from "@prisma/client";
-
+import ColumnTypeIcon from "./ColumnTypeIcon";
 type FilterColumnDropdownProps = {
   columns: Column[];
   selectedColumnIndex: number;
@@ -62,11 +62,12 @@ const FilterColumnDropdown = ({
                 setSelectedColumnIndex(index);
                 setIsOpen(false);
               }}
-              className={`flex items-center justify-start p-2 w-full hover:bg-slate-100
+              className={`flex items-center justify-start p-2 w-full hover:bg-slate-100 gap-2
                 ${index === 0 ? "rounded-t-sm " : ""}
                 ${index === columns.length - 1 ? "rounded-b-sm " : ""}
               `}
             >
+              <ColumnTypeIcon columnType={col.type} />
               <span className="text-slate-600 text-xs">{col.name}</span>
             </div>
           );
