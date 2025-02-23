@@ -27,7 +27,7 @@ import {
 } from "@tanstack/react-table";
 
 const FAKER_RECORDS_COUNT = 2000;
-const FETCH_RECORD_LIMIT = 50;
+const FETCH_RECORD_LIMIT = 100;
 
 type TableProps = {
   tableId: string;
