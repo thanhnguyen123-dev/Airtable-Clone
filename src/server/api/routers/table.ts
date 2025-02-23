@@ -56,19 +56,19 @@ export const tableRouter = createTRPCRouter({
             cellFilter = { data: { contains: input.filterValue, mode: "insensitive" } };
             break;
           case "does not contain":
-            cellFilter = { data: { not: { contains: input.filterValue, mode: "insensitive" } } };
+            cellFilter = { NOT: { data: { contains: input.filterValue, mode: "insensitive" } } };
             break;
           case "is":
             cellFilter = { data: input.filterValue };
             break;
           case "is not":
-            cellFilter = { data: { not: input.filterValue } };
+            cellFilter = { NOT: { data: input.filterValue } };
             break;
           case "is empty":
             cellFilter = { data: "" };
             break;
           case "is not empty":
-            cellFilter = { data: { not: "" } };
+            cellFilter = { NOT: { data: "" } };
             break;
           default:
             break;
@@ -472,5 +472,5 @@ export const tableRouter = createTRPCRouter({
         }
       });
     }),
-    
+
 });
