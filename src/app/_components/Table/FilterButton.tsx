@@ -109,8 +109,12 @@ const FilterButton = ({
   }, [filter]);
 
   useEffect(() => {
-    setHasFilter(sortColumnId !== "");
-  }, [sortColumnId]);
+    setHasFilter(
+      filterColumnId !== "" && 
+      filter !== "" && 
+      (filterValue !== "" || filter === "is empty" || filter === "is not empty")
+    );
+  }, [filterColumnId, filter, filterValue]);
 
   const isFiltering = (filter: string, filterVal: string) => {
     switch (filter) {
@@ -159,7 +163,7 @@ const FilterButton = ({
           role="button"
           className={`flex justify-center items-center gap-1 rounded-md px-2 py-1
             hover:bg-slate-200
-            ${isFiltering(filterOp, filterValue) && hasFilter ? "bg-green-300 hover:bg-green-200" : ""}
+            ${isFiltering(filterOp, filterValue) && hasFilter ? "bg-[#CFF5D1]" : ""}
           `}
         >
           <svg

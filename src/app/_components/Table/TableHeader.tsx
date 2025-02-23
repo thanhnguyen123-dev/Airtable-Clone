@@ -16,10 +16,13 @@ const TableHeader = ({
   columnType }: TableHeaderProps) => {
   const isFirstCol = index === "0";
 
+  const hasBothFilterAndSort = isFiltered && isSorted;
+
   return (
     <div className={`h-full flex items-center justify-between px-2 border-gray-300 w-full
-      ${isSorted ? "bg-orange-100" : ""}
-      ${isFiltered ? "bg-green-100" : ""}
+      ${isSorted && !hasBothFilterAndSort ? "bg-[#FFF2EA]" : ""}
+      ${isFiltered && !hasBothFilterAndSort ? "bg-[#EBFBEC]" : ""}
+      ${hasBothFilterAndSort ? "bg-[#EBE6A7]" : ""}
     `}>
       <div className="flex items-center">
         {isFirstCol && (

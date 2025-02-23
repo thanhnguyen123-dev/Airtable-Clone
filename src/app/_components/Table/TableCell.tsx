@@ -80,12 +80,17 @@ const TableCell = ({
     setValue(e.target.value);
   };
 
+  const hasBothFilterAndSort = isFiltered && isSorted;
+
 
   return (
     <div
       className={` flex items-center
         border-r border-gray-300 text-xs w-full h-full py-[1px]
-        ${searchValue && value.toLowerCase().includes(searchValue.toLowerCase()) ? "bg-yellow-200" : ""}
+        ${searchValue && value.includes(searchValue) ? "bg-yellow-200" : ""}
+        ${isFiltered && !hasBothFilterAndSort ? "bg-[#EBFBEC]" : ""}
+        ${isSorted && !hasBothFilterAndSort ? "bg-[#FFF2EA]" : ""}
+        ${hasBothFilterAndSort ? "bg-[#EBE6A7]" : ""}
       `}
       onClick={handleContainerClick}
     >
