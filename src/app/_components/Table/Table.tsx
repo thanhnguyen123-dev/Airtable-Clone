@@ -125,19 +125,13 @@ const TanStackTable = ({
       filterValue: filterValue,
       searchValue: searchValue,
       limit: FETCH_RECORD_LIMIT,
-      page: page,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
+      refetchOnWindowFocus: false,
     }
   );
 
-  const {
-    data: tableColumns,
-  } = api.table.getColumns.useQuery(
-    { tableId: tableId }, 
-    { enabled: !!tableId }
-  );
 
   const [columns, setColumns] = useState<Column[]>([]);
   // const [records, setRecords] = useState<_Record[]>([]);
@@ -148,19 +142,14 @@ const TanStackTable = ({
   }, [tableRecords]);
 
   useEffect(() => {
-    if (tableRecords && tableData?.columns) {
-      setColumns(tableData.columns);
+    if (tableRecords) {
+      setColumns(tableRecords?.pages[0]?.columns ?? []);
       setRecords(allRecords);
       const combinedCells = allRecords.flatMap((r) => r.cells);
       setCells(combinedCells);
     }
-  }, [tableRecords, allRecords, tableData]);
+  }, [tableRecords, allRecords, setColumns, setRecords]);
 
-  // useEffect(() => { 
-  //   if (tableColumns) {
-  //     setColumns(tableColumns);
-  //   }
-  // }, [tableColumns]);
 
   const createFakeRecordsMutation = api.table.createFakeRecords.useMutation({
     onSuccess: async () => {
@@ -169,8 +158,17 @@ const TanStackTable = ({
     },
   });
   const createColumnMutation = api.table.createColumn.useMutation({
+    onSuccess: async () => {
+      await refetch();
+      await utils.table.getRecords.invalidate();
+    },
   });
-  const createRecordMutation = api.table.createRecord.useMutation();
+  const createRecordMutation = api.table.createRecord.useMutation({
+    onSuccess: async () => {
+      await refetch();
+      await utils.table.getRecords.invalidate();
+    },
+  });
 
   const rowData = useMemo(() => {
     const map: Record<string, Record<string, string>> = {};
@@ -253,36 +251,42 @@ const TanStackTable = ({
   const handleAddColumn = async (colName: string, colType: string) => {
     try {
       const newColId = crypto.randomUUID();
-      const optimisticColumn: Column = {
-        id: newColId,
-        tableId: tableId,
-        type: colType,
-        name: colName,
-      };
-      setColumns((old) => [...old, optimisticColumn]);
+      // const optimisticColumn: Column = {
+      //   id: newColId,
+      //   tableId: tableId,
+      //   type: colType,
+      //   name: colName,
+      // };
+      // setColumns((old) => [...old, optimisticColumn]);
 
       // optimistic update for dropdown
-      utils.table.getColumns.setData(
-        { tableId: tableId },
-        (old) => {
-          return old ? [...old, optimisticColumn] : [optimisticColumn];
-        }
-      );
 
-      const newCells: Cell[] = records.map((record) => ({
-        id: `${record.id}-${newColId}`,
-        recordId: record.id,
-        columnId: newColId,
-        data: "",
-      }));
-      setCells((old) => [...old, ...newCells]);
 
-      await createColumnMutation.mutateAsync({
+      // const newCells: Cell[] = records.map((record) => ({
+      //   id: `${record.id}-${newColId}`,
+      //   recordId: record.id,
+      //   columnId: newColId,
+      //   data: "",
+      // }));
+      // setCells((old) => [...old, ...newCells]);
+
+      const column = await createColumnMutation.mutateAsync({
         tableId: tableId,
         name: colName,
         type: colType,
         id: newColId,
       });
+
+      utils.table.getRecords.setData(
+        { tableId: tableId, limit: FETCH_RECORD_LIMIT },
+        (old) => {
+          if (!old) return old;
+          return {
+            ...old,
+            columns: [...(old.columns ?? []), column],
+          };
+        }
+      );
     } catch (error) {
       console.error("Error creating column", error);
     }
@@ -310,7 +314,13 @@ const TanStackTable = ({
         if (entries[0]?.isIntersecting && hasNextPage) {
           void fetchNextPage();
         }
-      });
+        
+      },
+      {
+        rootMargin: "200px 0px",
+        threshold: 0.1,
+      }
+    );
   
       if (node) observerRef.current.observe(node);
     },
@@ -321,8 +331,8 @@ const TanStackTable = ({
   const rowVirtualizer = useVirtualizer({
     count: tableInstance.getRowModel().rows.length,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 30,
-    overscan: 30,
+    estimateSize: () => 32,
+    overscan: 60,
   });
   const virtualRows = rowVirtualizer.getVirtualItems();
 

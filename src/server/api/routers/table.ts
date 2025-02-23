@@ -30,8 +30,7 @@ export const tableRouter = createTRPCRouter({
       });
     }),
 
-  // get all records (with optional sorting, filtering)
-  getRecords: protectedProcedure
+    getRecords: protectedProcedure
     .input(
       z.object({ 
         tableId: z.string().min(1),
@@ -42,13 +41,15 @@ export const tableRouter = createTRPCRouter({
         filterValue: z.string().optional(),
         searchValue: z.string().optional(),
         cursor: z.string().optional(),
-        page: z.number().optional(),
         limit: z.number().int(),
       })
     )
     .query(async ({ ctx, input }) => {
+      const columns = await ctx.db.column.findMany({
+        where: { tableId: input.tableId },
+      });
       let whereCondition: any = { tableId: input.tableId };
-
+  
       if (input.searchValue && input.searchValue.trim() !== "") {
         whereCondition = {
           ...whereCondition,
@@ -104,7 +105,7 @@ export const tableRouter = createTRPCRouter({
             where: {
               cells: {
                 some: { 
-                  columnId: input.filterColumnId ,
+                  columnId: input.filterColumnId,
                   data: { not: "" }
                 }
               }
@@ -129,7 +130,7 @@ export const tableRouter = createTRPCRouter({
             return false;
           })
           .map(record => record.id);
-
+  
           whereCondition = {
             ...whereCondition,
             AND: [
@@ -140,58 +141,57 @@ export const tableRouter = createTRPCRouter({
         }
       }
   
-      // offset pagination for sorting
       if (input.sortColumnId && input.sortOrder) {
-        // get all records that match the filter with sorting column's cells
-        const allRecords = await ctx.db.record.findMany({
+        const allRecordIds = await ctx.db.record.findMany({
           where: whereCondition,
-          include: {
-            cells: {
-              where: { columnId: input.sortColumnId }
-            }
-          },
+          select: { id: true },
         });
-
+  
+        const sortCells = await ctx.db.cell.findMany({
+          where: {
+            columnId: input.sortColumnId,
+            recordId: { in: allRecordIds.map(r => r.id) }
+          }
+        });
+  
         const sortColumn = await ctx.db.column.findUnique({
           where: { id: input.sortColumnId },
         });
   
-        allRecords.sort((a, b) => {
-          const cellA = a.cells[0]?.data ?? "";
-          const cellB = b.cells[0]?.data ?? "";
-          
-          if (sortColumn?.type === "NUMBER") {
-            // Convert to numbers for numerical sorting
-            const numA = parseFloat(cellA) || 0;
-            const numB = parseFloat(cellB) || 0;
-            
-            if (input.sortOrder === "A - Z") {
-              return numA - numB;
-            } else if (input.sortOrder === "Z - A") {
-              return numB - numA;
-            }
-          } else {
-            // String sorting for non-number columns
-            if (input.sortOrder === "A - Z") {
-              return cellA.localeCompare(cellB);
-            } else if (input.sortOrder === "Z - A") {
-              return cellB.localeCompare(cellA);
-            }
-          }
-          return 0;
-        });
-      
+        const cellDataMap = new Map(
+          sortCells.map(cell => [cell.recordId, cell.data])
+        );
   
-        // calculate offset based on cursor
-        const page = input.cursor ? parseInt(input.cursor) : 0;
-        const offset = page * input.limit;
-        
-        // get the subset of sorted record IDs for this page
-        const pageRecordIds = allRecords
-          .slice(offset, offset + input.limit)
+        const sortedRecordIds = allRecordIds
+          .sort((a, b) => {
+            const cellA = cellDataMap.get(a.id) ?? "";
+            const cellB = cellDataMap.get(b.id) ?? "";
+            
+            if (sortColumn?.type === "NUMBER") {
+              const numA = parseFloat(cellA) || 0;
+              const numB = parseFloat(cellB) || 0;
+              return input.sortOrder === "A - Z" ? numA - numB : numB - numA;
+            } else {
+              return input.sortOrder === "A - Z" 
+                ? cellA.localeCompare(cellB) 
+                : cellB.localeCompare(cellA);
+            }
+          })
           .map(r => r.id);
   
-        // fetch full record data for the page
+        let startIndex = 0;
+        if (input.cursor) {
+          const cursorIndex = sortedRecordIds.indexOf(input.cursor);
+          if (cursorIndex !== -1) {
+            startIndex = cursorIndex + 1;
+          }
+        }
+  
+        const pageRecordIds = sortedRecordIds.slice(
+          startIndex,
+          startIndex + input.limit + 1
+        );
+  
         const records = await ctx.db.record.findMany({
           where: {
             id: { in: pageRecordIds }
@@ -203,15 +203,19 @@ export const tableRouter = createTRPCRouter({
           .map(id => records.find(r => r.id === id))
           .filter((r): r is NonNullable<typeof r> => r !== undefined);
   
-        const hasNextPage = offset + input.limit < allRecords.length;
+        let nextCursor = undefined;
+        if (orderedRecords.length > input.limit) {
+          const nextRecord = orderedRecords.pop();
+          nextCursor = nextRecord?.id;
+        }
   
         return { 
           records: orderedRecords,
-          nextCursor: hasNextPage ? String(page + 1) : undefined,
+          nextCursor,
+          columns 
         };
       }
   
-      // cursor pagination if no sorting applies
       const records = await ctx.db.record.findMany({
         where: whereCondition,
         include: { cells: true },
@@ -227,7 +231,7 @@ export const tableRouter = createTRPCRouter({
         nextCursor = nextRecord?.id;
       }
   
-      return { records, nextCursor };
+      return { records, nextCursor, columns };
     }),
 
   // get a table by id
