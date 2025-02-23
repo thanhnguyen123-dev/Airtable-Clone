@@ -28,7 +28,20 @@ const BasePage = () => {
   );
 
 
-  const [currentTableId, setCurrentTableId] = useState<string | undefined>(tables?.[0]?.id);
+  const [currentTableId, setCurrentTableId] = useState<string | undefined>(() => {
+    if (typeof window !== "undefined") {
+      const lastOpenedTable = localStorage.getItem(`currentTable-${baseId}`);
+      return lastOpenedTable ?? "";
+    }
+    return "";
+  });
+
+  useEffect(() => {
+    if (currentTableId) {
+      localStorage.setItem(`currentTable-${baseId}`, currentTableId);
+    }
+  }, [currentTableId, baseId]);
+
   const [searchValue, setSearchValue] = useState("");
   const [appliedSearchValue, setAppliedSearchValue] = useState("");
 
