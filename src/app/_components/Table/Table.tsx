@@ -44,7 +44,9 @@ type TableProps = {
   setFilterColumnId: Dispatch<SetStateAction<string>>;
   filterValue: string;
   setFilterValue: Dispatch<SetStateAction<string>>;
-};
+  records: _Record[];
+  setRecords: Dispatch<SetStateAction<_Record[]>>;
+}
 
 const isFiltering = (
   colId1: string,
@@ -82,6 +84,8 @@ const TanStackTable = ({
   setFilterColumnId,
   filterValue,
   setFilterValue,
+  records,
+  setRecords,
 }: TableProps) => {
   const utils = api.useUtils();
   const [page, setPage] = useState(0);
@@ -98,6 +102,7 @@ const TanStackTable = ({
       filterColumnId: filterColumnId,
       filterCond: filter,
       filterValue: filterValue,
+      searchValue: searchValue,
     },
     { enabled: !!tableId }
   );
@@ -118,6 +123,7 @@ const TanStackTable = ({
       filterColumnId: filterColumnId,
       filterCond: filter,
       filterValue: filterValue,
+      searchValue: searchValue,
       limit: FETCH_RECORD_LIMIT,
       page: page,
     },
@@ -134,7 +140,7 @@ const TanStackTable = ({
   );
 
   const [columns, setColumns] = useState<Column[]>([]);
-  const [records, setRecords] = useState<_Record[]>([]);
+  // const [records, setRecords] = useState<_Record[]>([]);
   const [cells, setCells] = useState<Cell[]>([]);
 
   const allRecords = useMemo(() => {
@@ -322,6 +328,7 @@ const TanStackTable = ({
       filterCond: filter,
       filterColumnId: filterColumnId,
       filterValue: filterValue,
+      searchValue: searchValue,
     }).then(async () => {
       await refetchRecords();
     });
@@ -329,7 +336,7 @@ const TanStackTable = ({
 
   useEffect(() => {
       void updateTableView();
-  }, [sort, sortColumnId, filter, filterColumnId, filterValue]);
+  }, [sort, sortColumnId, filter, filterColumnId, filterValue, searchValue]);
 
 
 

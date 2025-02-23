@@ -3,7 +3,7 @@ import TableToolItem from './TableToolItem';
 import SearchRecordButton from './SearchRecordButton';
 import SortButton from './SortButton';
 import FilterButton from './FilterButton';
-
+import { type Record as _Record } from "@prisma/client";
 type TableToolBarProps = {
   searchValue: string;
   setSearchValue: Dispatch<SetStateAction<string>>;
@@ -19,6 +19,10 @@ type TableToolBarProps = {
   setFilterColumnId: Dispatch<SetStateAction<string>>;
   filterValue: string;
   setFilterValue: Dispatch<SetStateAction<string>>;
+  records: _Record[];
+  setRecords: Dispatch<SetStateAction<_Record[]>>;
+  appliedSearchValue: string;
+  setAppliedSearchValue: Dispatch<SetStateAction<string>>;
 }
 
 const TableToolBar = ({ 
@@ -35,7 +39,11 @@ const TableToolBar = ({
   filterColumnId,
   setFilterColumnId,
   filterValue,
-  setFilterValue
+  setFilterValue,
+  records,
+  setRecords,
+  appliedSearchValue,
+  setAppliedSearchValue
 } : TableToolBarProps ) => {
   return (
     <div className="flex items-center justify-between w-full border-b h-[40px] px-4 py-3 sticky z-10">
@@ -115,6 +123,10 @@ const TableToolBar = ({
         searchValue={searchValue}
         setSearchValue={setSearchValue}
         tableId={tableId}
+        records={records}
+        setRecords={setRecords}
+        appliedSearchValue={appliedSearchValue}
+        setAppliedSearchValue={setAppliedSearchValue}
       />
 
     </div>

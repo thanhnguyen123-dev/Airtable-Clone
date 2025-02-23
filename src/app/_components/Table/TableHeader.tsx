@@ -17,8 +17,8 @@ const TableHeader = ({
   const isFirstCol = index === "0";
 
   return (
-    <div className={`flex items-center justify-between px-2 border-gray-300 w-full
-      ${isSorted ? "bg-orange-100" : "bg-gray-100"}
+    <div className={`h-full flex items-center justify-between px-2 border-gray-300 w-full
+      ${isSorted ? "bg-orange-100" : ""}
       ${isFiltered ? "bg-green-100" : ""}
     `}>
       <div className="flex items-center">

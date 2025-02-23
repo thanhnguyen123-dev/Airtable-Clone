@@ -40,6 +40,7 @@ export const tableRouter = createTRPCRouter({
         filterColumnId: z.string().optional(),
         filterCond: z.string().optional(),
         filterValue: z.string().optional(),
+        searchValue: z.string().optional(),
         cursor: z.string().optional(),
         page: z.number().optional(),
         limit: z.number().int(),
@@ -47,13 +48,20 @@ export const tableRouter = createTRPCRouter({
     )
     .query(async ({ ctx, input }) => {
       let whereCondition: any = { tableId: input.tableId };
-  
-      // fitlering condition
-      const filterColumn = await ctx.db.column.findUnique({
-        where: { id: input.filterColumnId },
-      });
 
+      if (input.searchValue && input.searchValue.trim() !== "") {
+        whereCondition = {
+          ...whereCondition,
+          cells: {
+            some: { data: { contains: input.searchValue, mode: "insensitive" } },
+          },
+        };
+      }
+  
       if (input.filterColumnId && input.filterColumnId !== "") {
+        const filterColumn = await ctx.db.column.findUnique({
+          where: { id: input.filterColumnId },
+        });
         if (filterColumn?.type === "TEXT" && input.filterCond !== "greater than" && input.filterCond !== "smaller than") {
           let cellFilter = {};
           switch (input.filterCond) {
@@ -81,12 +89,14 @@ export const tableRouter = createTRPCRouter({
     
           whereCondition = {
             ...whereCondition,
-            cells: {
-              some: {
-                columnId: input.filterColumnId,
-                ...cellFilter,
+            AND: [{
+              cells: {
+                some: {
+                  columnId: input.filterColumnId,
+                  ...cellFilter,
+                },
               },
-            },
+            }]
           };
         } 
         else if (filterColumn?.type === "NUMBER" && (input.filterCond === "greater than" || input.filterCond === "smaller than")) {
@@ -121,8 +131,11 @@ export const tableRouter = createTRPCRouter({
           .map(record => record.id);
 
           whereCondition = {
-            id: { in: matchingIds },
-            tableId: input.tableId,
+            ...whereCondition,
+            AND: [
+              { id: { in: matchingIds } },
+              { tableId: input.tableId },
+            ],
           }
         }
       }
@@ -226,6 +239,7 @@ export const tableRouter = createTRPCRouter({
       filterColumnId: z.string().optional(),
       filterCond: z.string().optional(),
       filterValue: z.string().optional(),
+      searchValue: z.string().optional(),
     }))
     .query(async ({ ctx, input }) => {
       return await ctx.db.table.findUnique({
@@ -361,6 +375,7 @@ export const tableRouter = createTRPCRouter({
               filterColumnId: "",
               filterCond: "",
               filterValue: "",
+              searchValue: "",
             }
           }
         },
@@ -467,6 +482,7 @@ export const tableRouter = createTRPCRouter({
             some: {
               data: {
                 contains: input.searchInput,
+                mode: "insensitive",
               },
             },
           }
@@ -493,6 +509,7 @@ export const tableRouter = createTRPCRouter({
           filterColumnId: "",
           filterCond: "",
           filterValue: "",
+          searchValue: "",
         }
       })
     }),
@@ -517,6 +534,7 @@ export const tableRouter = createTRPCRouter({
         filterColumnId: z.string(),
         filterCond: z.string(),
         filterValue: z.string(),
+        searchValue: z.string(),
       })
     )
     .mutation(async ({ ctx, input }) => {
@@ -528,6 +546,7 @@ export const tableRouter = createTRPCRouter({
           filterColumnId: input.filterColumnId,
           filterCond: input.filterCond,
           filterValue: input.filterValue,
+          searchValue: input.searchValue,
         }
       });
     }),

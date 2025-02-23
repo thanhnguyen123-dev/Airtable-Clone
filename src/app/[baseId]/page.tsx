@@ -9,6 +9,7 @@ import TableSideBar from "../_components/Table/TableSideBar";
 import { FcBrokenLink } from "react-icons/fc";
 import React, { useState, useEffect, useRef } from "react";
 import Table from "../_components/Table/Table";
+import { type Record as _Record } from "@prisma/client";
 
 const BasePage = () => {
   // extract the base id based on url
@@ -29,6 +30,8 @@ const BasePage = () => {
 
   const [currentTableId, setCurrentTableId] = useState<string | undefined>(tables?.[0]?.id);
   const [searchValue, setSearchValue] = useState("");
+  const [appliedSearchValue, setAppliedSearchValue] = useState("");
+
   const [currentView, setCurrentView] = useState("");
 
   const [sort, setSort] = useState("");
@@ -37,13 +40,15 @@ const BasePage = () => {
   const [filterColumnId, setFilterColumnId] = useState("");
   const [filterValue, setFilterValue] = useState("");
 
+  const [records, setRecords] = useState<_Record[]>([]);
+
   const [hasView, setHasView] = useState(false);
 
   const { 
     data: view,
   } = api.table.getTableView.useQuery(
     { viewId: currentView },
-    { staleTime: 0, refetchOnMount: true}
+    { refetchOnWindowFocus: false }
   );
 
   useEffect(() => { 
@@ -66,7 +71,7 @@ const BasePage = () => {
 
   useEffect(() => {
     setSearchValue("");
-  }, [currentTableId]);
+  }, [currentTableId, view]);
 
   const isFirstRender = useRef(true);
 
@@ -123,6 +128,10 @@ const BasePage = () => {
         setFilterColumnId={setFilterColumnId}
         filterValue={filterValue}
         setFilterValue={setFilterValue}
+        records={records}
+        setRecords={setRecords}
+        appliedSearchValue={appliedSearchValue}
+        setAppliedSearchValue={setAppliedSearchValue}
       />
       <div className="h-screen max-w-10xl flex flex-grow overflow-y-auto">
         <TableSideBar 
@@ -145,6 +154,8 @@ const BasePage = () => {
           setFilter={setFilter}
           setFilterColumnId={setFilterColumnId}
           setFilterValue={setFilterValue}
+          records={records}
+          setRecords={setRecords}
         />
       </div>
     </div>

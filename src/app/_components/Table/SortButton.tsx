@@ -46,7 +46,6 @@ const SortButton = (
 
   const handleClick = async () => {
     setIsOpen(false);
-    const newSortColumnId = columns?.[colIndex]?.id ?? "";
     setSortColumnId(columns?.[colIndex]?.id ?? "");
     setSort(sortOp);
     setHasSort(true);
@@ -75,9 +74,9 @@ const SortButton = (
     // });
   }
 
-  useEffect(() => {
-    setHasSort(sortColumnId !== "");
-  }, [sortColumnId]);
+  // useEffect(() => {
+  //   setHasSort(sortColumnId !== "");
+  // }, [sortColumnId]);
 
 
   return (

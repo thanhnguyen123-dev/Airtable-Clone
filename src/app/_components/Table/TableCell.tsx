@@ -85,7 +85,7 @@ const TableCell = ({
     <div
       className={` flex items-center
         border-r border-gray-300 text-xs w-full h-full py-[1px]
-        ${searchValue && value.includes(searchValue) ? "bg-yellow-200" : ""}
+        ${searchValue && value.toLowerCase().includes(searchValue.toLowerCase()) ? "bg-yellow-200" : ""}
       `}
       onClick={handleContainerClick}
     >
