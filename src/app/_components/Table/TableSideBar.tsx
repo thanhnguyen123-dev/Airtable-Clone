@@ -54,7 +54,7 @@ const TableSideBar = ({ tableId, currentView, setCurrentView } : TableSideBarPro
 
 
   return (
-    <div className='border-r w-[280px] min-w-[280px] flex flex-col justify-between h-full'>
+    <div className='border-r w-[281px] flex flex-col justify-between h-full bg-white'>
       <div className='flex flex-col w-full px-3'>
         <ViewSearchBar />
         <div className='flex flex-col'>

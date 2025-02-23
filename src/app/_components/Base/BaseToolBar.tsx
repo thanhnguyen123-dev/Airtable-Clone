@@ -29,10 +29,10 @@ const BaseToolBar = ({baseId, tables, currentTableId, handleTableSwitch } : Base
 
   return (
     <div 
-      className="flex items-center justify-between w-full h-[2rem] sticky top-0 z-20 bg-pale-teal-green"
+      className="flex items-center justify-between w-full h-[32px] text-[10px] sticky top-0 z-20 bg-pale-teal-green"
     >
       <div 
-        className="flex items-center w-[88%] h-[2rem] px-4 sticky top-0 rounded-tr-md bg-dark-teal-green"
+        className="flex items-center w-[91%] h-[2rem] px-4 sticky top-0 rounded-tr-md bg-dark-teal-green"
       >
         {/* Render table tabs */}
         {tables.map((table, index) => (
@@ -70,13 +70,13 @@ const BaseToolBar = ({baseId, tables, currentTableId, handleTableSwitch } : Base
             >
               <use href="icons/icons_definitions.svg#Plus"></use>
             </svg>
-            <span className="text-xs text-slate-100 hover:text-white">Add or import</span>
+            <span className="text-slate-100 hover:text-white">Add or import</span>
           </div>
         </div>
       </div>
 
       <div 
-        className="flex text-white text-xs justify-between items-center w-[11.5%] h-[2rem] px-4 sticky top-0 rounded-tl-md bg-dark-teal-green"
+        className="flex text-white justify-between items-center w-[8.5%] h-[2rem] px-4 sticky top-0 rounded-tl-md bg-dark-teal-green"
       >
         <div role='button'>
           <span>Extensions</span>
