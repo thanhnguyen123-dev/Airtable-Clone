@@ -3,9 +3,9 @@
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { faker } from '@faker-js/faker';
-import next from "next";
 
 export const tableRouter = createTRPCRouter({
+  // create a table
   create: protectedProcedure
     .input(z.object({ baseId: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
@@ -21,6 +21,7 @@ export const tableRouter = createTRPCRouter({
       });
     }),
   
+  // get all tables
   getAll: protectedProcedure
     .input(z.object({ baseId: z.string().min(1) }))
     .query(async ({ ctx, input }) => {
@@ -29,7 +30,8 @@ export const tableRouter = createTRPCRouter({
       });
     }),
 
-    getRecords: protectedProcedure
+  // get all records (with optional sorting, filtering)
+  getRecords: protectedProcedure
     .input(
       z.object({ 
         tableId: z.string().min(1),
@@ -39,16 +41,14 @@ export const tableRouter = createTRPCRouter({
         filterCond: z.string().optional(),
         filterValue: z.string().optional(),
         cursor: z.string().optional(),
+        page: z.number().optional(),
         limit: z.number().int(),
       })
     )
     .query(async ({ ctx, input }) => {
-      let records;
-  
-      
       let whereCondition: any = { tableId: input.tableId };
   
-      // Add a cell filter if a filter is applied.
+      // fitlering condition
       if (input.filterColumnId && input.filterColumnId !== "") {
         let cellFilter = {};
         switch (input.filterCond) {
@@ -73,7 +73,7 @@ export const tableRouter = createTRPCRouter({
           default:
             break;
         }
-
+  
         whereCondition = {
           ...whereCondition,
           cells: {
@@ -85,53 +85,80 @@ export const tableRouter = createTRPCRouter({
         };
       }
   
-      // Two branches: sorting in-memory vs cursor-based pagination.
+      // offset pagination for sorting
       if (input.sortColumnId && input.sortOrder) {
-        // Fetch all matching records, then sort in memory.
-        records = await ctx.db.record.findMany({
+        // get all records that match the filter with sorting column's cells
+        const allRecords = await ctx.db.record.findMany({
           where: whereCondition,
-          include: { cells: true },
-          orderBy: { rowIndex: "asc" },
+          include: {
+            cells: {
+              where: { columnId: input.sortColumnId }
+            }
+          },
         });
-        
-        records.sort((a, b) => {
-          const valA = a.cells.find(cell => cell.columnId === input.sortColumnId)?.data ?? "";
-          const valB = b.cells.find(cell => cell.columnId === input.sortColumnId)?.data ?? "";
+  
+        // sort records based on cell data
+        allRecords.sort((a, b) => {
+          const cellA = a.cells[0]?.data ?? "";
+          const cellB = b.cells[0]?.data ?? "";
+          
           if (input.sortOrder === "A - Z") {
-            return valA.localeCompare(valB);
+            return cellA.localeCompare(cellB);
           } else if (input.sortOrder === "Z - A") {
-            return valB.localeCompare(valA);
+            return cellB.localeCompare(cellA);
           }
           return 0;
         });
+  
+        // calculate offset based on cursor
+        const page = input.cursor ? parseInt(input.cursor) : 0;
+        const offset = page * input.limit;
         
-        // Limit the returned records and prepare a nextCursor.
-        const slicedRecords = records.slice(0, input.limit);
-        let nextCursor = undefined;
-        if (records.length > input.limit) {
-          nextCursor = records[input.limit]?.id;
-        }
-        return { records: slicedRecords, nextCursor };
-      } else {
-        // Cursor-based pagination if no sorting is specified.
-        records = await ctx.db.record.findMany({
-          where: whereCondition,
+        // get the subset of sorted record IDs for this page
+        const pageRecordIds = allRecords
+          .slice(offset, offset + input.limit)
+          .map(r => r.id);
+  
+        // fetch full record data for the page
+        const records = await ctx.db.record.findMany({
+          where: {
+            id: { in: pageRecordIds }
+          },
           include: { cells: true },
-          orderBy: { rowIndex: "asc" },
-          take: input.limit + 1,
-          cursor: input.cursor ? { id: input.cursor } : undefined,
-          skip: input.cursor ? 1 : undefined,
         });
-        
-        let nextCursor = undefined;
-        if (records.length > input.limit) {
-          const nextRecord = records.pop();
-          nextCursor = nextRecord?.id;
-        }
-        return { records, nextCursor };
+  
+        const orderedRecords = pageRecordIds
+          .map(id => records.find(r => r.id === id))
+          .filter((r): r is NonNullable<typeof r> => r !== undefined);
+  
+        const hasNextPage = offset + input.limit < allRecords.length;
+  
+        return { 
+          records: orderedRecords,
+          nextCursor: hasNextPage ? String(page + 1) : undefined,
+        };
       }
+  
+      // cursor pagination if no sorting applies
+      const records = await ctx.db.record.findMany({
+        where: whereCondition,
+        include: { cells: true },
+        orderBy: { rowIndex: "asc" },
+        take: input.limit + 1,
+        cursor: input.cursor ? { id: input.cursor } : undefined,
+        skip: input.cursor ? 1 : undefined,
+      });
+      
+      let nextCursor = undefined;
+      if (records.length > input.limit) {
+        const nextRecord = records.pop();
+        nextCursor = nextRecord?.id;
+      }
+  
+      return { records, nextCursor };
     }),
 
+  // get a table by id
   getById: protectedProcedure
     .input(z.object({ 
       tableId: z.string().min(1),
@@ -158,6 +185,7 @@ export const tableRouter = createTRPCRouter({
       });
     }),
 
+  // create a column
   createColumn: protectedProcedure
     .input(
       z.object({ 
@@ -195,7 +223,8 @@ export const tableRouter = createTRPCRouter({
       return newColumn;
     }),
 
-    createRecord: protectedProcedure
+  // create a record
+  createRecord: protectedProcedure
     .input(z.object({ tableId: z.string().min(1), rowIndex: z.number().int(), id: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
       const record = await ctx.db.record.create({
@@ -219,23 +248,10 @@ export const tableRouter = createTRPCRouter({
         }))
       });
   
-      // Return the complete record with its cells
-      // return ctx.db.record.findUnique({
-      //   where: { id: record.id },
-      //   include: {
-      //     cells: true
-      //   }
-      // });
-
-      // return {
-      //   ...record,
-      //   cells: cells
-      // }
-
       return record;
     }),
-  
-  // update cell
+
+  // update a cell
   updateCell: protectedProcedure
   .input(
     z.object({
@@ -259,6 +275,7 @@ export const tableRouter = createTRPCRouter({
     return updatedCellValue;
   }),
 
+  // create a default table
   createDefaultTable: protectedProcedure
     .input(z.object({ baseId: z.string().min(1), name: z.string().min(1) }))
     .mutation(async ({ ctx, input }) => {
@@ -273,8 +290,8 @@ export const tableRouter = createTRPCRouter({
             create: [
               { name: "Column 1", type: "TEXT" },
               { name: "Column 2", type: "TEXT" },
-              { name: "Column 3", type: "TEXT" },
-              { name: "Column 4", type: "TEXT" },
+              { name: "Column 3", type: "NUMBER" },
+              { name: "Column 4", type: "NUMBER" },
             ],
           },
           views: {
@@ -317,6 +334,7 @@ export const tableRouter = createTRPCRouter({
 
     }),
 
+  // get all columns
   getColumns: protectedProcedure
     .input(z.object({ tableId: z.string().min(1) }))
     .query(async ({ ctx, input }) => {
@@ -325,6 +343,7 @@ export const tableRouter = createTRPCRouter({
       });
     }),
 
+  // create fake records
   createFakeRecords: protectedProcedure
     .input(z.object({
       tableId: z.string().min(1), 
@@ -399,6 +418,7 @@ export const tableRouter = createTRPCRouter({
       });
     }),
   
+  // create a view
   createView: protectedProcedure
     .input(
       z.object({ 
@@ -419,7 +439,7 @@ export const tableRouter = createTRPCRouter({
     }),
 
 
-
+  // get a view by view id
   getTableView: protectedProcedure
     .input(z.object({ viewId: z.string().min(1) }))
     .query(async ({ ctx, input }) => {
@@ -428,6 +448,7 @@ export const tableRouter = createTRPCRouter({
       });
     }),
 
+  // update a view
   updateTableView: protectedProcedure
     .input(
       z.object({ 
@@ -451,6 +472,5 @@ export const tableRouter = createTRPCRouter({
         }
       });
     }),
-
-
+    
 });

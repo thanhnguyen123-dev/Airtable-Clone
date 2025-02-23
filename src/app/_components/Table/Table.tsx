@@ -84,6 +84,7 @@ const TanStackTable = ({
   setFilterValue,
 }: TableProps) => {
   const utils = api.useUtils();
+  const [page, setPage] = useState(0);
 
   const {
     data: tableData,
@@ -118,6 +119,7 @@ const TanStackTable = ({
       filterCond: filter,
       filterValue: filterValue,
       limit: FETCH_RECORD_LIMIT,
+      page: page,
     },
     {
       getNextPageParam: (lastPage) => lastPage.nextCursor,
