@@ -44,10 +44,14 @@ const FilterButton = ({
     columns?.findIndex((col) => col.id === filterColumnId) ?? 0
   );
 
-  const [filterOp, setFilterOp] = useState(filter === "" ? "contains" : filter);
+  const [filterOp, setFilterOp] = useState(filter ? filter : columns?.[colIndex]?.type === "TEXT" ? "contains" : "greater than");
   const [inputValue, setInputValue] = useState(filterValue);
 
   const [hasFilter, setHasFilter] = useState(false);
+
+  useEffect(() => {
+    setFilterOp(columns?.[colIndex]?.type === "TEXT" ? "contains" : "greater than");
+  }, [colIndex, columns]);
 
   const updateViewMutation = api.table.updateTableView.useMutation({
     onSuccess: async () => {
@@ -65,35 +69,35 @@ const FilterButton = ({
     setFilterValue(inputValue);
     setHasFilter(true);
 
-    if (currentView) {
-      await updateViewMutation.mutateAsync({
-        viewId: currentView,
-        sortOrder: sort,
-        sortColumnId: sortColumnId,
-        filterCond: filterOp,
-        filterColumnId: newFilterColumnId,
-        filterValue: inputValue,
-      });
-    }
+    // if (currentView) {
+    //   await updateViewMutation.mutateAsync({
+    //     viewId: currentView,
+    //     sortOrder: sort,
+    //     sortColumnId: sortColumnId,
+    //     filterCond: filterOp,
+    //     filterColumnId: newFilterColumnId,
+    //     filterValue: inputValue,
+    //   });
+    // }
   }
 
   const removeFilter = async () => {
     setIsOpen(false);
-    setFilter("contains");
+    setFilter(columns?.[colIndex]?.type === "TEXT" ? "contains" : "greater than");
     setFilterColumnId("");
     setFilterValue("");
     setHasFilter(false);
 
-    if (currentView) {
-      await updateViewMutation.mutateAsync({
-        viewId: currentView,
-        sortOrder: sort,
-        sortColumnId: sortColumnId,
-        filterCond: "contains",
-        filterColumnId: "",
-        filterValue: "",
-      });
-    }
+    // if (currentView) {
+    //   await updateViewMutation.mutateAsync({
+    //     viewId: currentView,
+    //     sortOrder: sort,
+    //     sortColumnId: sortColumnId,
+    //     filterCond: "contains",
+    //     filterColumnId: "",
+    //     filterValue: "",
+    //   });
+    // }
   }
 
   useEffect(() => {
@@ -122,10 +126,22 @@ const FilterButton = ({
         return true;
       case "is not empty":
         return true;
+      case "greater than":
+        return filterVal !== "";
+      case "smaller than":
+        return filterVal !== "";
       default:
         return false;
     }
   }
+
+  const shouldShowInput = (filterOp: string) => {
+    if (filterOp === "is empty" || filterOp === "is not empty") {
+      return false;
+    }
+    return true;
+  }
+
   return (
     <Popover
     isOpen={isOpen}
@@ -159,7 +175,9 @@ const FilterButton = ({
               >
               </path>
           </svg>
-          <span className="text-slate-600">Filter</span>
+          <span className="text-slate-600">
+            {isFiltering(filterOp, filterValue) && hasFilter ? `Filtered by ${columns?.[colIndex]?.name}` : "Filter"}
+          </span>
         </div>
       </PopoverTrigger>
       <PopoverContent className={`${true ? "w-[560px]" : "w-[327px]"}`}>
@@ -216,15 +234,18 @@ const FilterButton = ({
                   <FilterConditionDropdown
                     filterCondition={filterOp}
                     setFilterCondition={setFilterOp}
+                    columnType={columns?.[colIndex]?.type ?? ""}
                   />
                   <div className="flex items-center px-2 h-[25.6px] w-[124px] border-slate-200 border">
-                    <input
-                      type="text"
-                      className="w-full text-xs text-slate-600 focus:outline-none"
-                      value={inputValue}
-                      onChange={(e) => setInputValue(e.target.value)}
-                      placeholder="Enter value"
-                    />
+                    {shouldShowInput(filterOp) && (
+                      <input
+                        type="text"
+                        className="w-full text-xs text-slate-600 focus:outline-none"
+                        value={inputValue}
+                        onChange={(e) => setInputValue(e.target.value)}
+                        placeholder="Enter value"
+                      />
+                    )}
                   </div>
                   <div
                     role="button"

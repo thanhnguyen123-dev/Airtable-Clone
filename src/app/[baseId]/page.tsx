@@ -33,7 +33,7 @@ const BasePage = () => {
 
   const [sort, setSort] = useState("");
   const [sortColumnId, setSortColumnId] = useState("");
-  const [filter, setFilter] = useState("contains");
+  const [filter, setFilter] = useState("");
   const [filterColumnId, setFilterColumnId] = useState("");
   const [filterValue, setFilterValue] = useState("");
 

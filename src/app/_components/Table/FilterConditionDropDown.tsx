@@ -5,15 +5,19 @@ import { api } from "~/trpc/react";
 type FilterConditionDropdownProps = {
   filterCondition: string;
   setFilterCondition: Dispatch<SetStateAction<string>>;
+  columnType: string;
 }
 
-const conds = [
+const textConds = [
   "contains", 
   "does not contain", 
   "is", 
   "is not", 
   "is empty", 
   "is not empty",
+];
+
+const numberConds = [
   "greater than",
   "smaller than",
 ];
@@ -21,9 +25,11 @@ const conds = [
 const FilterConditionDropdown = ({
   filterCondition, 
   setFilterCondition, 
+  columnType,
 } : FilterConditionDropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
 
+  const conds = columnType === "TEXT" ? textConds : numberConds;
 
   return (
     <Popover 

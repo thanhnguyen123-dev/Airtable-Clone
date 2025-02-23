@@ -50,14 +50,14 @@ const SortButton = (
     setSortColumnId(columns?.[colIndex]?.id ?? "");
     setSort(sortOp);
     setHasSort(true);
-    await updateTableViewMutation.mutateAsync({
-      viewId: currentView,
-      sortColumnId: newSortColumnId,
-      sortOrder: sortOp,
-      filterCond: filter,
-      filterColumnId: filterColumnId,
-      filterValue: filterValue
-    });
+    // await updateTableViewMutation.mutateAsync({
+    //   viewId: currentView,
+    //   sortColumnId: newSortColumnId,
+    //   sortOrder: sortOp,
+    //   filterCond: filter,
+    //   filterColumnId: filterColumnId,
+    //   filterValue: filterValue
+    // });
   }
 
 
@@ -65,14 +65,14 @@ const SortButton = (
     setSort("");
     setSortColumnId("");
     setHasSort(false);
-    await updateTableViewMutation.mutateAsync({
-      viewId: currentView,
-      sortColumnId: "",
-      sortOrder: "",
-      filterCond: filter,
-      filterColumnId: filterColumnId,
-      filterValue: filterValue
-    });
+    // await updateTableViewMutation.mutateAsync({
+    //   viewId: currentView,
+    //   sortColumnId: "",
+    //   sortOrder: "",
+    //   filterCond: filter,
+    //   filterColumnId: filterColumnId,
+    //   filterValue: filterValue
+    // });
   }
 
   useEffect(() => {
