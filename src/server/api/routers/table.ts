@@ -96,19 +96,36 @@ export const tableRouter = createTRPCRouter({
             }
           },
         });
+
+        const sortColumn = await ctx.db.column.findUnique({
+          where: { id: input.sortColumnId },
+        });
   
-        // sort records based on cell data
         allRecords.sort((a, b) => {
           const cellA = a.cells[0]?.data ?? "";
           const cellB = b.cells[0]?.data ?? "";
           
-          if (input.sortOrder === "A - Z") {
-            return cellA.localeCompare(cellB);
-          } else if (input.sortOrder === "Z - A") {
-            return cellB.localeCompare(cellA);
+          if (sortColumn?.type === "NUMBER") {
+            // Convert to numbers for numerical sorting
+            const numA = parseFloat(cellA) || 0;
+            const numB = parseFloat(cellB) || 0;
+            
+            if (input.sortOrder === "A - Z") {
+              return numA - numB;
+            } else if (input.sortOrder === "Z - A") {
+              return numB - numA;
+            }
+          } else {
+            // String sorting for non-number columns
+            if (input.sortOrder === "A - Z") {
+              return cellA.localeCompare(cellB);
+            } else if (input.sortOrder === "Z - A") {
+              return cellB.localeCompare(cellA);
+            }
           }
           return 0;
         });
+      
   
         // calculate offset based on cursor
         const page = input.cursor ? parseInt(input.cursor) : 0;
