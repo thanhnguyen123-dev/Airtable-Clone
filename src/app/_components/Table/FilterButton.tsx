@@ -61,9 +61,31 @@ const FilterButton = ({
   });
 
   const utils = api.useUtils();
+
+  const isPreventingFilter = (filterOp: string, inputValue: string) => {
+    if ((filterOp === "greater than" || filterOp === "smaller than") && !inputValue.trim()) {
+      return true;
+    }
+    if (filterOp === "contains" && !inputValue.trim()) {
+      return true;
+    }
+    if (filterOp === "does not contain" && !inputValue.trim()) {
+      return true;
+    }
+    if (filterOp === "is" && !inputValue.trim()) {
+      return true;
+    }
+    if (filterOp === "is not" && !inputValue.trim()) {
+      return true;
+    }
+    return false;
+  }
+
   const handleFilter = async () => {
+    if (isPreventingFilter(filterOp, inputValue)) {
+      return;
+    }
     setIsOpen(false);
-    const newFilterColumnId = columns?.[colIndex]?.id ?? "";
     setFilterColumnId(columns?.[colIndex]?.id ?? "");
     setFilter(filterOp);
     setFilterValue(inputValue);

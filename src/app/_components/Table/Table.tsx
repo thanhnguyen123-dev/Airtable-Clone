@@ -205,7 +205,8 @@ const TanStackTable = ({
           const val = row.original[col.id] ?? "";
           const recId = row.original.recordId;
           const isSorted = col.id === sortColumnId && sort !== "";
-          const isFiltered = isFiltering(col.id, filterColumnId, filter, filterValue);
+          const isFiltered = col.id === filterColumnId && filter !== "" && 
+          (filterValue !== "" || filter === "is empty" || filter === "is not empty");
           return (
             <TableCell
               columnId={col.id}

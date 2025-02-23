@@ -39,6 +39,7 @@ const TableCell = ({
     },
     onSettled: () => {
       void utils.table.getById.invalidate();
+      void utils.table.getRecords.invalidate();
     },
   });
 
@@ -49,10 +50,16 @@ const TableCell = ({
         updateCellMutation.mutate({ columnId, recordId, data: value });
         setLastSaved(value);
       }
-    }, 500);
+    }, 300);
 
     return () => clearTimeout(timer);
   }, [value, lastSaved, columnId, recordId, updateCellMutation]);
+
+  useEffect(() => {
+    setValue(data);
+    setLastSaved(data);
+  }, [data]);
+
 
   const handleBlur = () => {
     setIsEditing(false);
@@ -103,7 +110,6 @@ const TableCell = ({
     <div
       className={` flex items-center
         border-r border-gray-300 text-xs w-full h-full py-[1px]
-        ${colorize(searchValue, isFiltered, isSorted)}
       `}
       onClick={handleContainerClick}
     >
@@ -113,7 +119,10 @@ const TableCell = ({
         onChange={handleChange}
         onBlur={handleBlur}
         readOnly={!isEditing}
-        className={`w-full h-full px-2 bg-transparent focus:outline-blue-500 ${isEditing ? "cursor-text" : "cursor-default"}`}
+        className={`w-full h-full px-2 focus:outline-blue-500 
+          ${isEditing ? "cursor-text" : "cursor-default"}
+          ${colorize(searchValue, isFiltered, isSorted)}
+          `}
       />
     </div>
   );
