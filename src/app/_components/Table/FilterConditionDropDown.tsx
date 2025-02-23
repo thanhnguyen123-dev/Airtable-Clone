@@ -7,10 +7,20 @@ type FilterConditionDropdownProps = {
   setFilterCondition: Dispatch<SetStateAction<string>>;
 }
 
-const conds = ["contains", "does not contain", "is", "is not", "is empty", "is not empty"];
+const conds = [
+  "contains", 
+  "does not contain", 
+  "is", 
+  "is not", 
+  "is empty", 
+  "is not empty",
+  "greater than",
+  "smaller than",
+];
 
 const FilterConditionDropdown = ({
-  filterCondition, setFilterCondition
+  filterCondition, 
+  setFilterCondition, 
 } : FilterConditionDropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
 

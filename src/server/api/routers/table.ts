@@ -49,40 +49,82 @@ export const tableRouter = createTRPCRouter({
       let whereCondition: any = { tableId: input.tableId };
   
       // fitlering condition
+      const filterColumn = await ctx.db.column.findUnique({
+        where: { id: input.filterColumnId },
+      });
+
       if (input.filterColumnId && input.filterColumnId !== "") {
-        let cellFilter = {};
-        switch (input.filterCond) {
-          case "contains":
-            cellFilter = { data: { contains: input.filterValue, mode: "insensitive" } };
-            break;
-          case "does not contain":
-            cellFilter = { NOT: { data: { contains: input.filterValue, mode: "insensitive" } } };
-            break;
-          case "is":
-            cellFilter = { data: input.filterValue };
-            break;
-          case "is not":
-            cellFilter = { NOT: { data: input.filterValue } };
-            break;
-          case "is empty":
-            cellFilter = { data: "" };
-            break;
-          case "is not empty":
-            cellFilter = { NOT: { data: "" } };
-            break;
-          default:
-            break;
-        }
-  
-        whereCondition = {
-          ...whereCondition,
-          cells: {
-            some: {
-              columnId: input.filterColumnId,
-              ...cellFilter,
+        if (filterColumn?.type === "TEXT" && input.filterCond !== "greater than" && input.filterCond !== "smaller than") {
+          let cellFilter = {};
+          switch (input.filterCond) {
+            case "contains":
+              cellFilter = { data: { contains: input.filterValue, mode: "insensitive" } };
+              break;
+            case "does not contain":
+              cellFilter = { NOT: { data: { contains: input.filterValue, mode: "insensitive" } } };
+              break;
+            case "is":
+              cellFilter = { data: input.filterValue };
+              break;
+            case "is not":
+              cellFilter = { NOT: { data: input.filterValue } };
+              break;
+            case "is empty":
+              cellFilter = { data: "" };
+              break;
+            case "is not empty":
+              cellFilter = { NOT: { data: "" } };
+              break;
+            default:
+              break;
+          }
+    
+          whereCondition = {
+            ...whereCondition,
+            cells: {
+              some: {
+                columnId: input.filterColumnId,
+                ...cellFilter,
+              },
             },
-          },
-        };
+          };
+        } 
+        else if (filterColumn?.type === "NUMBER" && (input.filterCond === "greater than" || input.filterCond === "smaller than")) {
+          const records = await ctx.db.record.findMany({
+            where: {
+              cells: {
+                some: { 
+                  columnId: input.filterColumnId ,
+                  data: { not: "" }
+                }
+              }
+            },
+            include: {
+              cells: {
+                where: {
+                  columnId: input.filterColumnId,
+                }
+              }
+            }
+          });
+          const numericValue = parseFloat(input.filterValue ?? "0");
+          const matchingIds = records
+          .filter(record => {
+            const cellValue = parseFloat(record.cells[0]?.data ?? "0");
+            if (input.filterCond === "greater than") {
+              return !isNaN(cellValue) && cellValue > numericValue;
+            } else if (input.filterCond === "smaller than") {
+              return !isNaN(cellValue) && cellValue < numericValue;
+            }
+            return false;
+          })
+          .map(record => record.id);
+
+          whereCondition = {
+            id: { in: matchingIds },
+            tableId: input.tableId,
+          }
+        }
       }
   
       // offset pagination for sorting
