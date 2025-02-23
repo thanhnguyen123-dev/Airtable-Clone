@@ -261,6 +261,14 @@ const TanStackTable = ({
       };
       setColumns((old) => [...old, optimisticColumn]);
 
+      // optimistic update for dropdown
+      utils.table.getColumns.setData(
+        { tableId: tableId },
+        (old) => {
+          return old ? [...old, optimisticColumn] : [optimisticColumn];
+        }
+      );
+
       const newCells: Cell[] = records.map((record) => ({
         id: `${record.id}-${newColId}`,
         recordId: record.id,
