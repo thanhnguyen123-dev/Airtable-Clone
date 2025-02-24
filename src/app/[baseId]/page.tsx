@@ -9,7 +9,7 @@ import TableSideBar from "../_components/Table/TableSideBar";
 import { FcBrokenLink } from "react-icons/fc";
 import React, { useState, useEffect, useRef } from "react";
 import Table from "../_components/Table/Table";
-import { type Record as _Record } from "@prisma/client";
+import { type Record as _Record, type Column } from "@prisma/client";
 
 const BasePage = () => {
   // extract the base id based on url
@@ -54,6 +54,7 @@ const BasePage = () => {
   const [filterValue, setFilterValue] = useState("");
 
   const [records, setRecords] = useState<_Record[]>([]);
+  const [columns, setColumns] = useState<Column[]>([]);
 
   const [hasView, setHasView] = useState(false);
 
@@ -157,10 +158,7 @@ const BasePage = () => {
         setFilterColumnId={setFilterColumnId}
         filterValue={filterValue}
         setFilterValue={setFilterValue}
-        records={records}
-        setRecords={setRecords}
-        appliedSearchValue={appliedSearchValue}
-        setAppliedSearchValue={setAppliedSearchValue}
+        columns={columns}
       />
       <div className="h-screen max-w-10xl flex flex-grow overflow-y-auto">
         <TableSideBar 
@@ -174,17 +172,13 @@ const BasePage = () => {
           searchValue={searchValue}
           sortColumnId={sortColumnId}
           sort={sort}
-          setSort={setSort}
-          setSortColumnId={setSortColumnId}
-          hasView={hasView}
           filter={filter}
           filterColumnId={filterColumnId}
           filterValue={filterValue}
-          setFilter={setFilter}
-          setFilterColumnId={setFilterColumnId}
-          setFilterValue={setFilterValue}
           records={records}
           setRecords={setRecords}
+          columns={columns}
+          setColumns={setColumns}
         />
       </div>
     </div>

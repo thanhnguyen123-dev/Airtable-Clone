@@ -3,13 +3,15 @@ import { useState, type SetStateAction, type Dispatch } from "react";
 
 
 type CreateViewButtonProps = {
-  tableId: string;
   viewName: string;
   setViewName:Dispatch<SetStateAction<string>>;
   handleCreateView: () => void;
 };
 
-const CreateViewButton = ({ tableId, viewName, setViewName, handleCreateView  } : CreateViewButtonProps) => {
+const CreateViewButton = ({ 
+  viewName, 
+  setViewName, 
+  handleCreateView  } : CreateViewButtonProps) => {
   const [isOpen, setIsOpen] = useState(false);
   
   const handleCreateViewAndClose = () => {

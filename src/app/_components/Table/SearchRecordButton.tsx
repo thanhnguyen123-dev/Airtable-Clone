@@ -1,39 +1,21 @@
 import {Popover, PopoverTrigger, PopoverContent} from "@heroui/popover";
-import { useState, useEffect, SetStateAction, Dispatch } from "react";
-import { api } from "~/trpc/react";
-import { type Record as _Record } from "@prisma/client";
+import { useState, type SetStateAction, type Dispatch } from "react";
+
 type SearchRecordButtonProps = {
   searchValue: string;
   setSearchValue: Dispatch<SetStateAction<string>>;
-  tableId: string;
-  records: _Record[];
-  setRecords: Dispatch<SetStateAction<_Record[]>>;
-  appliedSearchValue: string;
-  setAppliedSearchValue: Dispatch<SetStateAction<string>>;
 }
 
 const SearchRecordButton = ({
   searchValue, 
   setSearchValue, 
-  tableId, 
-  records, 
-  setRecords,
-  appliedSearchValue,
-  setAppliedSearchValue
 } : SearchRecordButtonProps ) => {  
+
   const [isOpen, setIsOpen] = useState(false);
-
-  // const [inputValue, setInputValue] = useState(searchValue);
-
-  // useEffect(() => {
-  //   setInputValue(searchValue);
-  // }, [searchValue]);
-
 
   const clearSearch = async () => {
     setSearchValue("");
     setIsOpen(false);
-    // await utils.table.getRecords.invalidate();
   }
 
   return (

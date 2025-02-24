@@ -3,7 +3,7 @@ import TableToolItem from './TableToolItem';
 import SearchRecordButton from './SearchRecordButton';
 import SortButton from './SortButton';
 import FilterButton from './FilterButton';
-import { type Record as _Record } from "@prisma/client";
+import { type Record as _Record, type Column } from "@prisma/client";
 import { api } from "~/trpc/react";
 
 type TableToolBarProps = {
@@ -21,16 +21,12 @@ type TableToolBarProps = {
   setFilterColumnId: Dispatch<SetStateAction<string>>;
   filterValue: string;
   setFilterValue: Dispatch<SetStateAction<string>>;
-  records: _Record[];
-  setRecords: Dispatch<SetStateAction<_Record[]>>;
-  appliedSearchValue: string;
-  setAppliedSearchValue: Dispatch<SetStateAction<string>>;
+  columns: Column[];
 }
 
 const TableToolBar = ({ 
   searchValue, 
   setSearchValue, 
-  tableId , 
   sort, 
   setSort, 
   sortColumnId, 
@@ -42,10 +38,7 @@ const TableToolBar = ({
   setFilterColumnId,
   filterValue,
   setFilterValue,
-  records,
-  setRecords,
-  appliedSearchValue,
-  setAppliedSearchValue
+  columns
 } : TableToolBarProps ) => {
   // get view name
   const { data: view } = api.table.getTableView.useQuery(
@@ -117,17 +110,13 @@ const TableToolBar = ({
           name="Hide fields"
         />
         <FilterButton 
-          tableId={tableId}
-          currentView={currentView}
           filter={filter}
           setFilter={setFilter}
           filterColumnId={filterColumnId}
           setFilterColumnId={setFilterColumnId}
           filterValue={filterValue}
           setFilterValue={setFilterValue}
-
-          sort={sort} 
-          sortColumnId={sortColumnId}
+          columns={columns}
         />
         <TableToolItem
           d="Group"
@@ -135,20 +124,11 @@ const TableToolBar = ({
         />
 
         <SortButton 
-          tableId={tableId}
           sort={sort}
           setSort={setSort}
           sortColumnId={sortColumnId}
           setSortColumnId={setSortColumnId}
-          currentView={currentView}
-
-          filter={filter}
-          filterColumnId={filterColumnId}
-          filterValue={filterValue}
-
-          searchValue={searchValue}
-          setSearchValue={setSearchValue}
-          
+          columns={columns}          
         />
         <div role='button' className='flex justify-center items-center gap-1 rounded-md px-2 py-1 hover:bg-slate-200'>
           <svg
@@ -175,13 +155,7 @@ const TableToolBar = ({
       <SearchRecordButton 
         searchValue={searchValue}
         setSearchValue={setSearchValue}
-        tableId={tableId}
-        records={records}
-        setRecords={setRecords}
-        appliedSearchValue={appliedSearchValue}
-        setAppliedSearchValue={setAppliedSearchValue}
       />
-
     </div>
   )
 }

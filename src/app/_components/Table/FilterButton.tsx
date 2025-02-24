@@ -3,41 +3,27 @@ import { useState, useEffect, type SetStateAction, type Dispatch } from "react";
 import { api } from "~/trpc/react";
 import FilterColumnDropdown from "./FilterColumnDropDown";
 import FilterConditionDropdown from "./FilterConditionDropDown";
-import { Span } from "next/dist/trace";
-import { set } from "zod";
+import { type Column } from "@prisma/client";
 
 type FilterButtonProps = {
-  tableId: string;
-  currentView: string;
   filter: string;
   setFilter: Dispatch<SetStateAction<string>>;
   filterColumnId: string;
   setFilterColumnId: Dispatch<SetStateAction<string>>;
   filterValue: string;
   setFilterValue: Dispatch<SetStateAction<string>>;
-
-  sort: string;
-  sortColumnId: string;
+  columns: Column[];
 }
 
-
 const FilterButton = ({  
-    tableId,
-    currentView,
     filter,
     setFilter,
     filterColumnId,
     setFilterColumnId,
     filterValue,
     setFilterValue,
-    sort,
-    sortColumnId,
+    columns
   } : FilterButtonProps) => {
-  const { data: columns } = api.table.getColumns.useQuery(
-    { tableId: tableId },
-    { refetchOnWindowFocus: false }
-  );
-
   const [isOpen, setIsOpen] = useState(false);
 
   const [colIndex, setColIndex] = useState(() =>
@@ -52,15 +38,6 @@ const FilterButton = ({
   useEffect(() => {
     setFilterOp(columns?.[colIndex]?.type === "TEXT" ? "contains" : "greater than");
   }, [colIndex, columns]);
-
-  const updateViewMutation = api.table.updateTableView.useMutation({
-    onSuccess: async () => {
-      await utils.table.getRecords.invalidate();
-      await utils.table.getById.invalidate();
-    }
-  });
-
-  const utils = api.useUtils();
 
   const isPreventingFilter = (filterOp: string, inputValue: string) => {
     if ((filterOp === "greater than" || filterOp === "smaller than") && !inputValue.trim()) {
@@ -90,17 +67,6 @@ const FilterButton = ({
     setFilter(filterOp);
     setFilterValue(inputValue);
     setHasFilter(true);
-
-    // if (currentView) {
-    //   await updateViewMutation.mutateAsync({
-    //     viewId: currentView,
-    //     sortOrder: sort,
-    //     sortColumnId: sortColumnId,
-    //     filterCond: filterOp,
-    //     filterColumnId: newFilterColumnId,
-    //     filterValue: inputValue,
-    //   });
-    // }
   }
 
   const removeFilter = async () => {
@@ -109,17 +75,6 @@ const FilterButton = ({
     setFilterColumnId("");
     setFilterValue("");
     setHasFilter(false);
-
-    // if (currentView) {
-    //   await updateViewMutation.mutateAsync({
-    //     viewId: currentView,
-    //     sortOrder: sort,
-    //     sortColumnId: sortColumnId,
-    //     filterCond: "contains",
-    //     filterColumnId: "",
-    //     filterValue: "",
-    //   });
-    // }
   }
 
   useEffect(() => {
@@ -308,15 +263,6 @@ const FilterButton = ({
                 role="button"
                 onClick={handleFilter}
                 className="flex items-center gap-1">
-                {/* <svg
-                  width={12}
-                  height={12}
-                  viewBox="0 0 16 16"
-                  className="flex-none"
-                  fill="rgb(71, 85, 105)"
-                >
-                  <use href="icons/icons_definitions.svg#Plus"></use>
-                </svg> */}
                 <span className="text-blue-500 text-xs font-semibold">Filter</span>
               </div>
             </>
@@ -327,9 +273,5 @@ const FilterButton = ({
     </Popover>
   );
 }
-
-
-
-
 
 export default FilterButton;

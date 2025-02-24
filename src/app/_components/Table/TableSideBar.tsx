@@ -90,7 +90,6 @@ const TableSideBar = ({ tableId, currentView, setCurrentView } : TableSideBarPro
           </div>
         </div>
         <CreateViewButton 
-          tableId={tableId}
           viewName={viewName}
           setViewName={setViewName}
           handleCreateView={handleCreateView}

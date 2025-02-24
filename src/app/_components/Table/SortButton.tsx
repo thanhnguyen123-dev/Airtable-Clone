@@ -3,41 +3,23 @@ import { useState, useEffect, type SetStateAction, type Dispatch } from "react";
 import { api } from "~/trpc/react";
 import SortColumnDropdown from "./SortColumnDropDown";
 import SortOrderDropdown from "./SortOrderDropDown";
-
+import { type Column } from "@prisma/client";
 type SortButtonProps = {
-  tableId: string;
   sort: string;
   setSort: Dispatch<SetStateAction<string>>;
   sortColumnId: string;
   setSortColumnId: Dispatch<SetStateAction<string>>;
-  currentView: string;
-  filter: string;
-  filterColumnId: string;
-  filterValue: string;
-  searchValue: string;
-  setSearchValue: Dispatch<SetStateAction<string>>;
+  columns: Column[];
 }
 
-const SortButton = (
-  { 
-    tableId, 
+const SortButton = ({ 
     sort, 
     setSort, 
     sortColumnId, 
     setSortColumnId, 
-    currentView,
-    filter,
-    filterColumnId,
-    filterValue,
-    searchValue,
-    setSearchValue
-   } : SortButtonProps
-) => {
+    columns
+  } : SortButtonProps) => {
   const [isOpen, setIsOpen] = useState(false);
-  const { data: columns, isLoading: isColumnsLoading } = api.table.getColumns.useQuery(
-    { tableId: tableId },
-    { enabled: !!tableId }
-  );
 
   const [colIndex, setColIndex] = useState(() => 
     columns?.findIndex((col) => col.id === sortColumnId) ?? 0
@@ -46,22 +28,11 @@ const SortButton = (
   const [sortOp, setSortOp] = useState(sort === "" ? "A - Z" : sort);
   const [hasSort, setHasSort] = useState(false);
   
-  const updateTableViewMutation = api.table.updateTableView.useMutation();
-
   const handleClick = async () => {
     setIsOpen(false);
     setSortColumnId(columns?.[colIndex]?.id ?? "");
     setSort(sortOp);
     setHasSort(true);
-    // await updateTableViewMutation.mutateAsync({
-    //   viewId: currentView,
-    //   sortColumnId: columns?.[colIndex]?.id ?? "",
-    //   sortOrder: sortOp,
-    //   filterCond: filter,
-    //   filterColumnId: filterColumnId,
-    //   filterValue: filterValue,
-    //   searchValue: searchValue
-    // });
   }
 
 
@@ -69,20 +40,7 @@ const SortButton = (
     setSort("");
     setSortColumnId("");
     setHasSort(false);
-    // await updateTableViewMutation.mutateAsync({
-    //   viewId: currentView,
-    //   sortColumnId: "",
-    //   sortOrder: "",
-    //   filterCond: filter,
-    //   filterColumnId: filterColumnId,
-    //   filterValue: filterValue
-    // });
   }
-
-  // useEffect(() => {
-  //   setHasSort(sortColumnId !== "");
-  // }, [sortColumnId]);
-
 
   return (
     <Popover 

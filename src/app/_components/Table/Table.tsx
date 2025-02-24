@@ -35,17 +35,13 @@ type TableProps = {
   currentView: string;
   sortColumnId: string;
   sort: string;
-  setSort: Dispatch<SetStateAction<string>>;
-  setSortColumnId: Dispatch<SetStateAction<string>>;
-  hasView: boolean;
   filter: string;
-  setFilter: Dispatch<SetStateAction<string>>;
   filterColumnId: string;
-  setFilterColumnId: Dispatch<SetStateAction<string>>;
   filterValue: string;
-  setFilterValue: Dispatch<SetStateAction<string>>;
   records: _Record[];
   setRecords: Dispatch<SetStateAction<_Record[]>>;
+  columns: Column[];
+  setColumns: Dispatch<SetStateAction<Column[]>>;
 }
 
 const isFiltering = (
@@ -75,20 +71,15 @@ const TanStackTable = ({
   currentView,
   sortColumnId,
   sort,
-  setSort,
-  setSortColumnId,
-  hasView,
   filter,
-  setFilter,
   filterColumnId,
-  setFilterColumnId,
   filterValue,
-  setFilterValue,
   records,
   setRecords,
+  columns,
+  setColumns,
 }: TableProps) => {
   const utils = api.useUtils();
-  const [page, setPage] = useState(0);
 
   const {
     data: tableData,
@@ -134,9 +125,6 @@ const TanStackTable = ({
     }
   );
 
-
-  const [columns, setColumns] = useState<Column[]>([]);
-  // const [records, setRecords] = useState<_Record[]>([]);
   const [cells, setCells] = useState<Cell[]>([]);
 
   const allRecords = useMemo(() => {
@@ -349,7 +337,11 @@ const TanStackTable = ({
     return <LoaderTable />;
   }
   if (!tableData) {
-    return <div>Table not found</div>;
+    return (
+      <div className="p-4">
+        <span className="text-black font-bold text-lg">Table not found</span>
+      </div>
+    );
   }
 
   return (
@@ -359,10 +351,9 @@ const TanStackTable = ({
           headerGroup.headers.map((header, colIndex) => (
             <div
               key={header.id}
-              className={`border-r border-gray-300 flex items-center text-xs
+              className={`border-r border-gray-300 flex items-center text-xs h-[32px]
                 ${colIndex === 0 ? "w-[230px]" : "w-[180px]"}
                 bg-gray-100`}
-              style={{ height: "32px" }}
             >
               {flexRender(header.column.columnDef.header, header.getContext())}
             </div>
@@ -405,10 +396,9 @@ const TanStackTable = ({
                   {row?.getVisibleCells().map((cell, colIndex) => (
                     <div
                       key={cell.id}
-                      className={`flex items-center border-gray-300 text-xs
+                      className={`flex items-center border-gray-300 text-xs h-[32px]
                         ${colIndex === 0 ? "w-[230px]" : "w-[180px]"}
                       `}
-                      style={{ height: "32px" }}
                     >
                       {colIndex === 0 && (
                         <div className="flex items-center justify-start w-[70px] pl-[15px]">
@@ -428,12 +418,8 @@ const TanStackTable = ({
       </div>
   
       <div 
-        className={`flex items-center pl-[15px] py-1 gap-24 border-t border-r border-gray-300`}
-        style={{
-          // width: `calc(230px + 180px * ${columns.length - 1})`,
-          width: "100%",
-        }}
-        >
+        className="flex w-full items-center pl-[15px] py-1 gap-24 border-t border-r border-gray-300"
+      >
         <span className="text-xs text-gray-500">
           {`${records.length} records`}
         </span>
