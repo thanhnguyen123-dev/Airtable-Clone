@@ -88,21 +88,30 @@ const BasePage = () => {
 
   const isFirstRender = useRef(true);
 
-  useEffect(() => {
-    setCurrentView("");
-    setSort("");
-    setSortColumnId("");
-    setFilter("");
-    setFilterColumnId("");
-    setFilterValue("");
-
-  }, [currentTableId]);
-
   // useEffect(() => {
   //   setCurrentView("");
-  //   setSearchValue("");
+  //   setSort("");
+  //   setSortColumnId("");
+  //   setFilter("");
+  //   setFilterColumnId("");
+  //   setFilterValue("");
+
   // }, [currentTableId]);
 
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+    }
+    else {
+      setCurrentView("");
+      setSort("");
+      setSortColumnId("");
+      setFilter("");
+      setFilterColumnId("");
+      setFilterValue("");
+ 
+    }
+  }, [currentTableId]);
 
   
   if (isBaseLoading || isTablesLoading) {
