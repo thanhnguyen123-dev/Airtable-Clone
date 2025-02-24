@@ -254,24 +254,6 @@ const TanStackTable = ({
   const handleAddColumn = async (colName: string, colType: string) => {
     try {
       const newColId = crypto.randomUUID();
-      // const optimisticColumn: Column = {
-      //   id: newColId,
-      //   tableId: tableId,
-      //   type: colType,
-      //   name: colName,
-      // };
-      // setColumns((old) => [...old, optimisticColumn]);
-
-      // optimistic update for dropdown
-
-
-      // const newCells: Cell[] = records.map((record) => ({
-      //   id: `${record.id}-${newColId}`,
-      //   recordId: record.id,
-      //   columnId: newColId,
-      //   data: "",
-      // }));
-      // setCells((old) => [...old, ...newCells]);
 
       const column = await createColumnMutation.mutateAsync({
         tableId: tableId,

@@ -61,7 +61,13 @@ const BasePage = () => {
     data: view,
   } = api.table.getTableView.useQuery(
     { viewId: currentView },
-    { refetchOnWindowFocus: false }
+    { 
+      // refetchOnWindowFocus: false 
+      staleTime: 0,
+      refetchOnMount: true,
+      refetchOnReconnect: false,
+      refetchOnWindowFocus: false,
+    }
   );
 
   useEffect(() => { 
@@ -88,30 +94,30 @@ const BasePage = () => {
 
   const isFirstRender = useRef(true);
 
-  useEffect(() => {
-    setCurrentView("");
-    setSort("");
-    setSortColumnId("");
-    setFilter("");
-    setFilterColumnId("");
-    setFilterValue("");
-
-  }, [currentTableId]);
-
   // useEffect(() => {
-  //   if (isFirstRender.current) {
-  //     isFirstRender.current = false;
-  //   }
-  //   else {
-  //     setCurrentView("");
-  //     setSort("");
-  //     setSortColumnId("");
-  //     setFilter("");
-  //     setFilterColumnId("");
-  //     setFilterValue("");
- 
-  //   }
+  //   setCurrentView("");
+  //   setSort("");
+  //   setSortColumnId("");
+  //   setFilter("");
+  //   setFilterColumnId("");
+  //   setFilterValue("");
+
   // }, [currentTableId]);
+
+  useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+    }
+    else {
+      setCurrentView("");
+      setSort("");
+      setSortColumnId("");
+      setFilter("");
+      setFilterColumnId("");
+      setFilterValue("");
+ 
+    }
+  }, [currentTableId]);
 
   
   if (isBaseLoading || isTablesLoading) {
