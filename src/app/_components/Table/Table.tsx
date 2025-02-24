@@ -106,8 +106,7 @@ const TanStackTable = ({
     },
     { 
       enabled: !!tableId,
-      refetchOnWindowFocus: false,
-     }
+    }
   );
 
   const {
