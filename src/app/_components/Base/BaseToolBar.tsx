@@ -76,7 +76,7 @@ const BaseToolBar = ({baseId, tables, currentTableId, handleTableSwitch } : Base
       </div>
 
       <div 
-        className="flex text-white justify-between items-center w-[10%] h-[2rem] px-4 sticky top-0 rounded-tl-md bg-dark-teal-green"
+        className="flex text-white justify-between items-center w-[10%] h-[2rem] px-[10px] sticky top-0 rounded-tl-md bg-dark-teal-green"
       >
         <div role='button'>
           <span>Extensions</span>

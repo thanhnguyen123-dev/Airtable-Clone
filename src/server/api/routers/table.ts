@@ -30,7 +30,7 @@ export const tableRouter = createTRPCRouter({
       });
     }),
 
-    getRecords: protectedProcedure
+  getRecords: protectedProcedure
     .input(
       z.object({ 
         tableId: z.string().min(1),

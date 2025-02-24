@@ -54,9 +54,11 @@ const TableSideBar = ({ tableId, currentView, setCurrentView } : TableSideBarPro
 
 
   return (
-    <div className='border-r w-[281px] flex flex-col justify-between h-full bg-white'>
+    <div className='border-r w-[255px] flex flex-col justify-between h-full bg-white'>
       <div className='flex flex-col w-full px-3'>
-        <ViewSearchBar />
+        <div className='flex justify-between w-full'>
+          <ViewSearchBar />
+        </div>
         <div className='flex flex-col'>
             {table?.views.map((view, index) => {
               return (
@@ -71,11 +73,11 @@ const TableSideBar = ({ tableId, currentView, setCurrentView } : TableSideBarPro
             })}
         </div>
       </div>
-      <div className='flex flex-col justify-between w-full p-4'>
+      <div className='flex flex-col justify-between w-full px-4 py-[6px]'>
         <div className='flex flex-col'>
           <hr className='my-2'/>
           <div className='flex justify-between w-full p-2'>
-            <span className='text-sm font-medium'>Create...</span>
+            <span className='text-[12px] font-medium'>Create...</span>
             <svg
               width={16}
               height={16}
@@ -93,17 +95,19 @@ const TableSideBar = ({ tableId, currentView, setCurrentView } : TableSideBarPro
           setViewName={setViewName}
           handleCreateView={handleCreateView}
         />
-        {tableSideItems.map((item, index) => (
-          <TableSideItem
-            key={index}
-            name={item.name}
-            color={item.color}
-            d={item.d}
-          />
-        ))}
-        <TableSideItem key={tableSideItems.length} name='New sections'/>
-        <hr className='my-2'/>
-        <TableSideItem key={tableSideItems.length+1} name='Form' color='rgb(221, 4, 168)' d="M4.5 6.5C4.5 6.22386 4.72386 6 5 6H7.5C7.77614 6 8 6.22386 8 6.5C8 6.77614 7.77614 7 7.5 7H5C4.72386 7 4.5 6.77614 4.5 6.5Z M5.5 8C4.67157 8 4 8.67157 4 9.5C4 10.3284 4.67157 11 5.5 11H10.5C11.3284 11 12 10.3284 12 9.5C12 8.67157 11.3284 8 10.5 8H5.5ZM5 9.5C5 9.22386 5.22386 9 5.5 9H10.5C10.7761 9 11 9.22386 11 9.5C11 9.77614 10.7761 10 10.5 10H5.5C5.22386 10 5 9.77614 5 9.5Z M1 3.5C1 2.67157 1.67157 2 2.5 2H13.5C14.3284 2 15 2.67157 15 3.5V12.5C15 13.3284 14.3284 14 13.5 14H2.5C1.67157 14 1 13.3284 1 12.5V3.5ZM2.5 3C2.22386 3 2 3.22386 2 3.5V12.5C2 12.7761 2.22386 13 2.5 13H13.5C13.7761 13 14 12.7761 14 12.5V3.5C14 3.22386 13.7761 3 13.5 3H2.5Z"/>
+        <div className='flex flex-col'>
+          {tableSideItems.map((item, index) => (
+            <TableSideItem
+              key={index}
+              name={item.name}
+              color={item.color}
+              d={item.d}
+            />
+          ))}
+          <TableSideItem key={tableSideItems.length} name='New sections'/>
+          <hr className='my-2'/>
+          <TableSideItem key={tableSideItems.length+1} name='Form' color='rgb(221, 4, 168)' d="M4.5 6.5C4.5 6.22386 4.72386 6 5 6H7.5C7.77614 6 8 6.22386 8 6.5C8 6.77614 7.77614 7 7.5 7H5C4.72386 7 4.5 6.77614 4.5 6.5Z M5.5 8C4.67157 8 4 8.67157 4 9.5C4 10.3284 4.67157 11 5.5 11H10.5C11.3284 11 12 10.3284 12 9.5C12 8.67157 11.3284 8 10.5 8H5.5ZM5 9.5C5 9.22386 5.22386 9 5.5 9H10.5C10.7761 9 11 9.22386 11 9.5C11 9.77614 10.7761 10 10.5 10H5.5C5.22386 10 5 9.77614 5 9.5Z M1 3.5C1 2.67157 1.67157 2 2.5 2H13.5C14.3284 2 15 2.67157 15 3.5V12.5C15 13.3284 14.3284 14 13.5 14H2.5C1.67157 14 1 13.3284 1 12.5V3.5ZM2.5 3C2.22386 3 2 3.22386 2 3.5V12.5C2 12.7761 2.22386 13 2.5 13H13.5C13.7761 13 14 12.7761 14 12.5V3.5C14 3.22386 13.7761 3 13.5 3H2.5Z"/>
+        </div>
       </div>
     </div>
   )

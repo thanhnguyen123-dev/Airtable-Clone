@@ -24,7 +24,7 @@ const TableSideItem = ({handleClick, name, color, d, fillRule} : TableSideItemPr
           >
           <path fill-rule="non-zero" d={d} />
           </svg>)}
-        <span className='text-xs font-medium'>{name}</span>
+        <span className='text-[10px] font-medium'>{name}</span>
       </div>
 
       <svg

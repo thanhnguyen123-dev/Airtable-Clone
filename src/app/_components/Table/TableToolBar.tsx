@@ -79,7 +79,7 @@ const TableToolBar = ({
 
         <div className='separator'></div>
 
-        <div role='button' className='flex items-center gap-2 mr-2 rounded-md px-2 py-1 hover:bg-slate-200'>
+        <div role='button' className='flex items-center gap-1 mr-2 rounded-md px-2 py-1 hover:bg-slate-200'>
           <svg
             role='button'
             width={16}
@@ -100,6 +100,15 @@ const TableToolBar = ({
             fill="black"
           >
             <use href="icons/icons_definitions.svg#UsersThree"></use>
+          </svg>
+          <svg
+            width={16}
+            height={16}
+            viewBox="0 0 16 16"
+            className="flex-none"
+            fill="black"
+          >
+            <use href="icons/icons_definitions.svg#ChevronDown"></use>
           </svg>
         </div>
 

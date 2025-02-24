@@ -23,7 +23,6 @@ const TableCell = ({
   const [value, setValue] = useState(data);
   const [lastSaved, setLastSaved] = useState(data);
   const [isFocused, setIsFocused] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
 
   const utils = api.useUtils();
@@ -47,10 +46,10 @@ const TableCell = ({
     // Debounce saving
     const timer = setTimeout(() => {
       if (value !== lastSaved) {
-        updateCellMutation.mutate({ columnId, recordId, data: value });
+        void updateCellMutation.mutateAsync({ columnId, recordId, data: value });
         setLastSaved(value);
       }
-    }, 300);
+    }, 500);
 
     return () => clearTimeout(timer);
   }, [value, lastSaved, columnId, recordId, updateCellMutation]);
@@ -62,17 +61,7 @@ const TableCell = ({
 
 
   const handleBlur = () => {
-    setIsEditing(false);
     setIsFocused(false);
-  };
-
-  const handleContainerClick = () => {
-    if (!isFocused) {
-      setIsFocused(true);
-    } else if (isFocused && !isEditing) {
-      setIsEditing(true);
-      inputRef.current?.focus();
-    }
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -111,16 +100,13 @@ const TableCell = ({
       className={` flex items-center
         border-r border-gray-300 text-xs w-full h-full py-[1px]
       `}
-      onClick={handleContainerClick}
     >
       <input
         ref={inputRef}
         value={value}
         onChange={handleChange}
         onBlur={handleBlur}
-        readOnly={!isEditing}
-        className={`w-full h-full px-2 focus:outline-blue-500 
-          ${isEditing ? "cursor-text" : "cursor-default"}
+        className={`w-full h-full px-2 focus:outline-blue-500 cursor-text
           ${colorize(searchValue, isFiltered, isSorted)}
           `}
       />
