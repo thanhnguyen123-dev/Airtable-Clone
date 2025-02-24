@@ -99,6 +99,7 @@ const SortButton = ({
             <SortOrderDropdown 
               sortOrder={sortOp}
               setSortOrder={setSortOp}
+              columnType={columns?.[colIndex]?.type ?? ""}
             />
             {hasSort && (
               <svg

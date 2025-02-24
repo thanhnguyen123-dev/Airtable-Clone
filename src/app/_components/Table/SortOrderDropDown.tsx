@@ -5,14 +5,27 @@
   type SortOrderDropdownProps = {
     sortOrder: string;
     setSortOrder: Dispatch<SetStateAction<string>>;
+    columnType: string;
   }
 
   const orders = ["A - Z", "Z - A"];
 
   const SortOrderDropdown = ({
-    sortOrder, setSortOrder
+    sortOrder, 
+    setSortOrder,
+    columnType,
   } : SortOrderDropdownProps) => {
     const [isOpen, setIsOpen] = useState(false);
+
+    const convertStringWithArrow = (order: string) => {
+      if (columnType === "NUMBER") {
+        return order === "A - Z" ? "1 → 9" : "9 → 1";
+      }
+      else {
+        return order === "A - Z" ? "A → Z" : "Z → A";
+      }
+    }
+
 
     return (
       <Popover 
@@ -35,7 +48,7 @@
             className="flex justify-between items-center rounded-md px-2 py-1 
             hover:bg-slate-50 border-slate-200 border w-[120px]"
           >
-            <span>{sortOrder}</span>
+            <span>{convertStringWithArrow(sortOrder)}</span>
             <svg
               width={16}
               height={16}
@@ -64,7 +77,7 @@
                   ${index === orders.length - 1 ? "rounded-b-md " : ""}
                   `}
               >
-                <span>{order}</span>
+                <span>{convertStringWithArrow(order)}</span>
               </div>
             );
           })}
