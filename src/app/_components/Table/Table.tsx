@@ -26,7 +26,7 @@ import {
   flexRender,
 } from "@tanstack/react-table";
 
-const FAKER_RECORDS_COUNT = 2000;
+const FAKER_RECORDS_COUNT = 5000;
 const FETCH_RECORD_LIMIT = 100;
 
 type TableProps = {
@@ -457,6 +457,7 @@ const TanStackTable = ({
         <AddRecordButton 
           handleAddRecord={handleAddRecord} 
           handleAddFakeRecords={handleAddFakeRecords}
+          isLoading={isRecordsLoading}
         />
       </div>
     </div>

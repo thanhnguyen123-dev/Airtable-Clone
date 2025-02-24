@@ -1,26 +1,49 @@
-import { type Column } from "@prisma/client"
+import { useState } from "react";
+import CircularProgress from "@mui/material/CircularProgress";
 
 type AddRecordButtonProps = {
   handleAddRecord: () => void;
-  handleAddFakeRecords: () => void;
+  handleAddFakeRecords: () => Promise<void>;
+  isLoading?: boolean;
 }
 
 type AddButtonProps = {
   handleClick: () => void;
   text: string;
   d: string;
+  isLoading?: boolean;
 }
 
 const AddRecordButton = ({ 
   handleAddRecord, 
   handleAddFakeRecords, 
 } : AddRecordButtonProps) => {
+  const [isGenerating, setIsGenerating] = useState(false);
+
+  const handleGenerateFakeRecords = async () => {
+    setIsGenerating(true);
+    try {
+      await handleAddFakeRecords();
+    } finally {
+      setIsGenerating(false);
+    }
+  };
+
   return (
-      <div
-      className="flex items-center gap-24"
-    >
-      <AddButton handleClick={handleAddRecord} text="Add record" d="Plus" />
-      <AddButton handleClick={handleAddFakeRecords} text="Generate fake records" d="Database" />
+    <div className="flex items-center gap-24">
+      <AddButton 
+        handleClick={handleAddRecord} 
+        text="Add record" 
+        d="Plus" 
+      />
+      <div className="flex flex-col items-center gap-2">
+        <AddButton 
+          handleClick={handleGenerateFakeRecords} 
+          text="Generate records" 
+          d="Database"
+          isLoading={isGenerating}
+        />
+      </div>
     </div>
   )
 }
@@ -28,12 +51,16 @@ const AddRecordButton = ({
 const AddButton = ({ 
   handleClick, 
   text, 
-  d } : AddButtonProps) => {
+  d,
+  isLoading 
+} : AddButtonProps) => {
   return (
     <div
-    role="button"
-    className="flex gap-2 items-center border-gray-300 text-xs hover:bg-gray-100 h-[1/2] px-1 py-[2px] rounded-md"
-    onClick={handleClick}
+      role="button"
+      className={`flex gap-2 items-center border-gray-300 text-xs 
+        ${!isLoading ? 'hover:bg-gray-100' : 'cursor-not-allowed opacity-50'} 
+        h-[1/2] px-1 py-[2px] rounded-md`}
+      onClick={!isLoading ? handleClick : undefined}
     >
       <svg
         width="12"
@@ -44,11 +71,12 @@ const AddButton = ({
       >
         <use href={`icons/icons_definitions.svg#${d}`}></use>
       </svg>
-      <span
-        className="text-xs text-blue-600"
-      >
-        {text}
+      <span className="text-xs text-blue-600">
+        {isLoading ? "Generating..." : text}
       </span>
+      {isLoading && (
+        <CircularProgress size={10} />
+      )}
     </div>
   )
 }
