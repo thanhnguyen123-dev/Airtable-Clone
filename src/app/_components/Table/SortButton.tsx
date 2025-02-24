@@ -14,6 +14,8 @@ type SortButtonProps = {
   filter: string;
   filterColumnId: string;
   filterValue: string;
+  searchValue: string;
+  setSearchValue: Dispatch<SetStateAction<string>>;
 }
 
 const SortButton = (
@@ -26,7 +28,9 @@ const SortButton = (
     currentView,
     filter,
     filterColumnId,
-    filterValue
+    filterValue,
+    searchValue,
+    setSearchValue
    } : SortButtonProps
 ) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -51,11 +55,12 @@ const SortButton = (
     setHasSort(true);
     // await updateTableViewMutation.mutateAsync({
     //   viewId: currentView,
-    //   sortColumnId: newSortColumnId,
+    //   sortColumnId: columns?.[colIndex]?.id ?? "",
     //   sortOrder: sortOp,
     //   filterCond: filter,
     //   filterColumnId: filterColumnId,
-    //   filterValue: filterValue
+    //   filterValue: filterValue,
+    //   searchValue: searchValue
     // });
   }
 

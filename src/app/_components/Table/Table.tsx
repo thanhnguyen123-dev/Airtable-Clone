@@ -104,7 +104,10 @@ const TanStackTable = ({
       filterValue: filterValue,
       searchValue: searchValue,
     },
-    { enabled: !!tableId }
+    { 
+      enabled: !!tableId,
+      refetchOnWindowFocus: false,
+     }
   );
 
   const {
@@ -356,7 +359,6 @@ const TanStackTable = ({
   useEffect(() => {
       void updateTableView();
   }, [sort, sortColumnId, filter, filterColumnId, filterValue, searchValue]);
-
 
 
   if (!tableId) {

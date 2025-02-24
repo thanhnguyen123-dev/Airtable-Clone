@@ -145,6 +145,9 @@ const TableToolBar = ({
           filter={filter}
           filterColumnId={filterColumnId}
           filterValue={filterValue}
+
+          searchValue={searchValue}
+          setSearchValue={setSearchValue}
           
         />
         <div role='button' className='flex justify-center items-center gap-1 rounded-md px-2 py-1 hover:bg-slate-200'>

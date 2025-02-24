@@ -18,13 +18,13 @@ const BasePage = () => {
   // load the current base
   const { data: base, isLoading: isBaseLoading } = api.base.getById.useQuery(
     { id: baseId! },
-    { enabled: !!baseId }
+    { enabled: !!baseId, refetchOnWindowFocus: false }
   );
 
   // extract all tables from the base
   const { data: tables, isLoading: isTablesLoading } = api.table.getAll.useQuery(
     { baseId: baseId! },
-    { enabled: !!baseId }
+    { enabled: !!baseId, refetchOnWindowFocus: false }
   );
 
 
@@ -89,18 +89,20 @@ const BasePage = () => {
   const isFirstRender = useRef(true);
 
   useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-    }
-    else {
-      setCurrentView("");
-      setSort("");
-      setSortColumnId("");
-      setFilter("");
-      setFilterColumnId("");
-      setFilterValue("");
-    }
+    setCurrentView("");
+    setSort("");
+    setSortColumnId("");
+    setFilter("");
+    setFilterColumnId("");
+    setFilterValue("");
+
   }, [currentTableId]);
+
+  // useEffect(() => {
+  //   setCurrentView("");
+  //   setSearchValue("");
+  // }, [currentTableId]);
+
 
   
   if (isBaseLoading || isTablesLoading) {
