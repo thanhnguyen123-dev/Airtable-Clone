@@ -104,11 +104,11 @@ const TableToolBar = ({
             <use href="icons/icons_definitions.svg#ChevronDown"></use>
           </svg>
         </div>
-
+{/* 
         <TableToolItem
           d="EyeSlash"
           name="Hide fields"
-        />
+        /> */}
         <FilterButton 
           filter={filter}
           setFilter={setFilter}
@@ -118,10 +118,10 @@ const TableToolBar = ({
           setFilterValue={setFilterValue}
           columns={columns}
         />
-        <TableToolItem
+        {/* <TableToolItem
           d="Group"
           name='Group'
-        />
+        /> */}
 
         <SortButton 
           sort={sort}
@@ -130,7 +130,7 @@ const TableToolBar = ({
           setSortColumnId={setSortColumnId}
           columns={columns}          
         />
-        <div role='button' className='flex justify-center items-center gap-1 rounded-md px-2 py-1 hover:bg-slate-200'>
+        {/* <div role='button' className='flex justify-center items-center gap-1 rounded-md px-2 py-1 hover:bg-slate-200'>
           <svg
             width={16}
             height={16}
@@ -148,7 +148,7 @@ const TableToolBar = ({
         <TableToolItem
           d = "ArrowSquareOut"
           name = "Share and sync"
-        />
+        /> */}
 
       </div>
 
